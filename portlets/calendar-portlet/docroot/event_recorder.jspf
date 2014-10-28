@@ -14,6 +14,8 @@
  */
 --%>
 
+<!-- This template corresponds to popup opened when click on event in calendar -->
+
 <script id="<portlet:namespace />eventRecorderHeaderTpl" type="text/x-alloy-template">
 	<div class="calendar-portlet-event-recorder">
 		<div class="scheduler-event-recorder-header">

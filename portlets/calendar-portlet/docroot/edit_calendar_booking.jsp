@@ -14,12 +14,22 @@
  */
 --%>
 
+<!-- This template corresponds to creation or updating event popup -->
+
 <%@ include file="/init.jsp" %>
+
+<%@ page import="com.liferay.calendar.util.SurveyUtil" %>
+<%@ page import="com.liferay.calendar.util.Survey" %>
 
 <%
 String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
+		 
+String surveyId = null;
+if (calendarBooking != null) {
+	surveyId = (String) calendarBooking.getExpandoBridge().getAttribute("surveyId");
+}
 
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
@@ -116,6 +126,8 @@ else if (calendar != null) {
 	}
 }
 
+List<Survey> surveys = SurveyUtil.getSurveys();
+
 List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, null, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarNameComparator(true), ActionKeys.MANAGE_BOOKINGS);
 %>
 
@@ -158,18 +170,32 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 		<aui:input checked="<%= allDay %>" name="allDay" />
 
-		<aui:field-wrapper cssClass="calendar-portlet-recurrence-container" inlineField="<%= true %>" label="">
-			<aui:input checked="<%= recurring %>" name="repeat" type="checkbox" />
-
-			<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
-		</aui:field-wrapper>
-
 		<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
+	</aui:fieldset>
+	
+	<aui:fieldset>
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingQuestionnairesPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="questionnaire">
+				<aui:select label="Sélectionner le questionnaire" name="questionnaireId">
+					<%
+					for (final Survey survey : surveys) {
+					%>
+		
+						<aui:option selected="<%= (surveyId != null && Long.parseLong(surveyId) == survey.getId()) ? true : false %>" value="<%= survey.getId() %>">
+							<%= HtmlUtil.escape(survey.getName()) + " - " + HtmlUtil.escape(survey.getDescription()) %>
+						</aui:option>
+		
+					<%
+					}
+					%>
+				</aui:select>
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
 	</aui:fieldset>
 
 	<aui:fieldset>
 		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingDetailsPanelContainer" persistState="<%= true %>">
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingDetailsPanel" persistState="<%= true %>" title="details">
+			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= true %>" id="calendarBookingDetailsPanel" persistState="<%= true %>" title="details">
 				<aui:select label="calendar" name="calendarId">
 
 					<%
@@ -189,22 +215,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 				<aui:input name="location" />
 
-				<liferay-ui:custom-attributes-available className="<%= CalendarBooking.class.getName() %>">
-					<liferay-ui:custom-attribute-list
-						className="<%= CalendarBooking.class.getName() %>"
-						classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>"
-						editable="<%= true %>"
-						label="<%= true %>"
-					/>
-				</liferay-ui:custom-attributes-available>
-
-				<c:if test="<%= calendarBooking == null %>">
-					<aui:field-wrapper label="permissions">
-						<liferay-ui:input-permissions
-							modelName="<%= CalendarBooking.class.getName() %>"
-						/>
-					</aui:field-wrapper>
-				</c:if>
 			</liferay-ui:panel>
 
 			<liferay-ui:panel collapsible="<%= true %>" defaultState='<%= BrowserSnifferUtil.isMobile(request) ? "closed" : "open" %>' extended="<%= false %>" id="calendarBookingInvitationPanel" persistState="<%= true %>" title="invitations">
@@ -247,40 +257,11 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 						</aui:column>
 					</c:if>
 
-					<aui:column columnWidth="100">
-						<div class="calendar-portlet-list-header toggler-header-collapsed" id="<portlet:namespace />checkAvailability">
-							<span class="calendar-portlet-list-arrow"></span>
-
-							<span class="calendar-portlet-list-text"><liferay-ui:message key="resources-availability" /></span>
-						</div>
-
-						<div class="calendar-portlet-availability">
-							<div class="toggler-content-collapsed" id="<portlet:namespace />schedulerContainer">
-								<div id="<portlet:namespace />message"></div>
-
-								<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
-									<liferay-util:param name="activeView" value="<%= activeView %>" />
-									<liferay-util:param name="date" value="<%= String.valueOf(startTime) %>" />
-									<liferay-util:param name="filterCalendarBookings" value='<%= "window." + renderResponse.getNamespace() + "filterCalendarBookings" %>' />
-									<liferay-util:param name="hideAgendaView" value="<%= Boolean.TRUE.toString() %>" />
-									<liferay-util:param name="hideMonthView" value="<%= Boolean.TRUE.toString() %>" />
-									<liferay-util:param name="preventPersistence" value="<%= Boolean.TRUE.toString() %>" />
-									<liferay-util:param name="readOnly" value="<%= Boolean.TRUE.toString() %>" />
-								</liferay-util:include>
-							</div>
-						</div>
-					</aui:column>
 				</aui:layout>
 			</liferay-ui:panel>
 
 			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingReminderPanel" persistState="<%= true %>" title="reminders">
 				<div class="calendar-booking-reminders" id="<portlet:namespace />reminders"></div>
-			</liferay-ui:panel>
-
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingCategorizationPanel" persistState="<%= true %>" title="categorization">
-				<aui:input classPK="<%= calendarBookingId %>" name="categories" type="assetCategories" />
-
-				<aui:input classPK="<%= calendarBookingId %>" name="tags" type="assetTags" />
 			</liferay-ui:panel>
 
 			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingAssetLinksPanel" persistState="<%= true %>" title="related-assets">
@@ -291,8 +272,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			</liferay-ui:panel>
 		</liferay-ui:panel-container>
 	</aui:fieldset>
-
-	<%@ include file="/calendar_booking_recurrence_container.jspf" %>
 
 	<aui:button-row>
 		<aui:button type="submit" />

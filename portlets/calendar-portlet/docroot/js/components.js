@@ -101,7 +101,7 @@
 							A.Event.defineOutside('touchend');
 
 							var contentBox = instance.get('contentBox');
-
+							
 							contentBox.delegate('click', instance._onClickItems, STR_DOT + CSS_SIMPLE_MENU_ITEM, instance);
 
 							contentBox.on('touchendoutside', instance._closeMenu, instance);
@@ -373,7 +373,7 @@
 							instance.on('scheduler-calendar:colorChange', instance._onCalendarColorChange, instance);
 							instance.on('scheduler-calendar:visibleChange', instance._onCalendarVisibleChange, instance);
 							instance.on('simple-menu:visibleChange', instance._onSimpleMenuVisibleChange, instance);
-
+							
 							contentBox.delegate('click', instance._onClick, STR_DOT + CSS_CALENDAR_LIST_ITEM, instance);
 
 							contentBox.delegate(
@@ -718,7 +718,7 @@
 							var instance = this;
 
 							var contentBox = instance.get('contentBox');
-
+							
 							contentBox.delegate('click', instance._onClickColor, STR_DOT + CSS_SIMPLE_COLOR_PICKER_ITEM, instance);
 						},
 
@@ -846,7 +846,7 @@
 							var instance = this;
 
 							var boundingBox = instance.get('boundingBox');
-
+							
 							boundingBox.delegate('change', instance._onChangeCheckbox, '.calendar-portlet-reminder-check', instance);
 						},
 

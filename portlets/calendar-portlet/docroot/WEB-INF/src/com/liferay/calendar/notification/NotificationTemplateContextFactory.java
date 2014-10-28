@@ -100,7 +100,7 @@ public class NotificationTemplateContextFactory {
 		attributes.put("endTime", endTime);
 
 		attributes.put("location", calendarBooking.getLocation());
-
+		
 		Group group = user.getGroup();
 
 		String portalURL = _getPortalURL(
@@ -125,6 +125,16 @@ public class NotificationTemplateContextFactory {
 			user, calendarBooking.getCalendarBookingId());
 
 		attributes.put("url", calendarBookingURL);
+		
+		java.util.Calendar calendar2 = java.util.Calendar.getInstance();
+		calendar2.setTimeInMillis(calendarBooking.getStartTime());
+		attributes.put("startDate",  calendar2);
+		
+		calendar2 = java.util.Calendar.getInstance();
+		calendar2.setTimeInMillis(calendarBooking.getEndTime());
+		attributes.put("endDate",  calendar2);
+		
+		attributes.put("calendarBookingId", calendarBooking.getCalendarBookingId());
 
 		notificationTemplateContext.setAttributes(attributes);
 

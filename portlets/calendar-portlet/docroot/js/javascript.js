@@ -211,45 +211,47 @@ AUI.add(
 
 			createCalendarsAutoComplete: function(resourceURL, input, afterSelectFn) {
 				var instance = this;
-
-				input.plug(
-					A.Plugin.AutoComplete,
-					{
-						activateFirstItem: true,
-						after: {
-							select: afterSelectFn
-						},
-						maxResults: 20,
-						requestTemplate: '&' + instance.PORTLET_NAMESPACE + 'keywords={query}',
-						resultFilters: function(query, results) {
-							return AArray.filter(
-								results,
-								function(item, index) {
-									return !instance.availableCalendars[item.raw.calendarId];
-								}
-							);
-						},
-						resultFormatter: function(query, results) {
-							return AArray.map(
-								results,
-								function(result) {
-									var calendar = result.raw;
-									var name = calendar.name;
-									var calendarResourceName = calendar.calendarResourceName;
-
-									if (name !== calendarResourceName) {
-										name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+				
+				if (input != null || input != undefined ) {
+					input.plug(
+						A.Plugin.AutoComplete,
+						{
+							activateFirstItem: true,
+							after: {
+								select: afterSelectFn
+							},
+							maxResults: 20,
+							requestTemplate: '&' + instance.PORTLET_NAMESPACE + 'keywords={query}',
+							resultFilters: function(query, results) {
+								return AArray.filter(
+									results,
+									function(item, index) {
+										return !instance.availableCalendars[item.raw.calendarId];
 									}
-
-									return A.Highlight.words(name, query);
-								}
-							);
-						},
-						resultHighlighter: 'wordMatch',
-						resultTextLocator: 'calendarResourceName',
-						source: resourceURL
-					}
-				);
+								);
+							},
+							resultFormatter: function(query, results) {
+								return AArray.map(
+									results,
+									function(result) {
+										var calendar = result.raw;
+										var name = calendar.name;
+										var calendarResourceName = calendar.calendarResourceName;
+	
+										if (name !== calendarResourceName) {
+											name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+										}
+	
+										return A.Highlight.words(name, query);
+									}
+								);
+							},
+							resultHighlighter: 'wordMatch',
+							resultTextLocator: 'calendarResourceName',
+							source: resourceURL
+						}
+					);
+				}
 			},
 
 			createSchedulerEvent: function(calendarBooking) {
@@ -1221,7 +1223,6 @@ AUI.add(
 							if (filterCalendarBookings) {
 								calendarBookings = AArray.filter(calendarBookings, filterCalendarBookings);
 							}
-
 							callback(null, calendarBookings);
 						}
 					);
@@ -1786,7 +1787,7 @@ AUI.add(
 						var instance = this;
 
 						var popoverBB = instance.popover.get('boundingBox');
-
+						
 						popoverBB.delegate('click', instance._handleEventAnswer, '.calendar-event-answer', instance);
 					},
 
@@ -2169,7 +2170,7 @@ AUI.add(
 						var popoverBB = instance.popover.get('boundingBox');
 
 						SchedulerEventRecorder.superclass._renderPopOver.apply(this, arguments);
-
+						
 						popoverBB.delegate(
 							['change', 'keypress'],
 							function(event) {

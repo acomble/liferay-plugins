@@ -24,15 +24,20 @@ PortletURL portletURL = renderResponse.createRenderURL();
 portletURL.setParameter("tabs1", tabs1);
 %>
 
+<span class="aqua">
+	<h1 class="portlet-title-spec">Mes rendez-vous</h1>
+	<span class="tgl"></span>
+</span> 
 <div class="alert alert-success hide" id="<portlet:namespace />alert">
 	<button class="close" data-dismiss="alert" type="button">&times;</button>
 
 	<span class="message-placeholder"></span>
 </div>
 
+
 <c:if test="<%= themeDisplay.isSignedIn() %>">
 	<liferay-ui:tabs
-		names="calendar,resources"
+		names="calendar"
 		url="<%= portletURL.toString() %>"
 	/>
 </c:if>

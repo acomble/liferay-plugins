@@ -14,6 +14,14 @@
 
 package com.liferay.calendar.notification;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.Serializable;
+import java.net.URI;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Map;
+
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarNotificationTemplate;
 import com.liferay.calendar.model.CalendarNotificationTemplateConstants;
@@ -25,85 +33,172 @@ import com.liferay.portal.model.User;
 
 import javax.mail.internet.InternetAddress;
 
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Organizer;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.util.UidGenerator;
+
 /**
  * @author Eduardo Lundgren
  */
 public class EmailNotificationSender implements NotificationSender {
 
 	@Override
-	public void sendNotification(
-			NotificationRecipient notificationRecipient,
-			NotificationTemplateContext notificationTemplateContext)
-		throws NotificationSenderException {
+	public void sendNotification(NotificationRecipient notificationRecipient, NotificationTemplateContext notificationTemplateContext) throws NotificationSenderException {
+
+		System.out.println("1sendNotification");
 
 		try {
-			CalendarNotificationTemplate calendarNotificationTemplate =
-				notificationTemplateContext.getCalendarNotificationTemplate();
+			CalendarNotificationTemplate calendarNotificationTemplate = notificationTemplateContext.getCalendarNotificationTemplate();
 
-			Calendar calendar = CalendarLocalServiceUtil.getCalendar(
-				notificationTemplateContext.getCalendarId());
+			Calendar calendar = CalendarLocalServiceUtil.getCalendar(notificationTemplateContext.getCalendarId());
 
-			User defaultSenderUser = NotificationUtil.getDefaultSenderUser(
-				calendar);
+			System.out.println("calendar: " + calendar.getName());
 
-			String fromAddress = NotificationUtil.getTemplatePropertyValue(
-				calendarNotificationTemplate,
-				CalendarNotificationTemplateConstants.PROPERTY_FROM_ADDRESS,
-				defaultSenderUser.getEmailAddress());
-			String fromName = NotificationUtil.getTemplatePropertyValue(
-				calendarNotificationTemplate,
-				CalendarNotificationTemplateConstants.PROPERTY_FROM_NAME,
-				defaultSenderUser.getFullName());
+			User defaultSenderUser = NotificationUtil.getDefaultSenderUser(calendar);
+
+			String fromAddress = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_ADDRESS,
+					defaultSenderUser.getEmailAddress());
+			String fromName = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_NAME, defaultSenderUser.getFullName());
 
 			notificationTemplateContext.setFromAddress(fromAddress);
 			notificationTemplateContext.setFromName(fromName);
-			notificationTemplateContext.setToAddress(
-				notificationRecipient.getEmailAddress());
-			notificationTemplateContext.setToName(
-				notificationRecipient.getName());
+			notificationTemplateContext.setToAddress(notificationRecipient.getEmailAddress());
+			notificationTemplateContext.setToName(notificationRecipient.getName());
 
-			String subject = NotificationTemplateRenderer.render(
-				notificationTemplateContext, NotificationField.SUBJECT);
-			String body = NotificationTemplateRenderer.render(
-				notificationTemplateContext, NotificationField.BODY);
+			final Map<String, Serializable> attributes = notificationTemplateContext.getAttributes();
+			for (Map.Entry<String, Serializable> attribute : attributes.entrySet()) {
+				System.out.println("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
+			}
 
-			sendNotification(
-				notificationTemplateContext.getFromAddress(),
-				notificationTemplateContext.getFromName(),
-				notificationRecipient, subject, body);
-		}
-		catch (Exception e) {
+			String subject = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.SUBJECT);
+			String body = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.BODY);
+
+			File file = createCalEntry((Long) attributes.get("calendarBookingId"), (java.util.Calendar) attributes.get("startDate"), (java.util.Calendar) attributes.get("endDate"),
+					(String) attributes.get("title"));
+
+			sendNotification(notificationTemplateContext.getFromAddress(), notificationTemplateContext.getFromName(), notificationRecipient, subject, body);
+			
+			System.out.println("End sendNotification");
+			
+			file.delete();
+		} catch (Exception e) {
 			throw new NotificationSenderException(e);
 		}
 	}
 
 	@Override
-	public void sendNotification(
-			String fromAddress, String fromName,
-			NotificationRecipient notificationRecipient, String subject,
-			String notificationMessage)
-		throws NotificationSenderException {
+	public void sendNotification(String fromAddress, String fromName, NotificationRecipient notificationRecipient, String subject, String notificationMessage) throws NotificationSenderException {
+
+		System.out.println("2sendNotification");
 
 		try {
-			InternetAddress fromInternetAddress = new InternetAddress(
-				fromAddress, fromName);
+			InternetAddress fromInternetAddress = new InternetAddress(fromAddress, fromName);
 
-			MailMessage mailMessage = new MailMessage(
-				fromInternetAddress, subject, notificationMessage, true);
+			MailMessage mailMessage = new MailMessage(fromInternetAddress, subject, notificationMessage, true);
 
 			mailMessage.setHTMLFormat(notificationRecipient.isHTMLFormat());
 
-			InternetAddress toInternetAddress = new InternetAddress(
-				notificationRecipient.getEmailAddress());
+			InternetAddress toInternetAddress = new InternetAddress(notificationRecipient.getEmailAddress());
 
 			mailMessage.setTo(toInternetAddress);
 
 			MailServiceUtil.sendEmail(mailMessage);
-		}
-		catch (Exception e) {
-			throw new NotificationSenderException(
-				"Unable to send mail message", e);
+		} catch (Exception e) {
+			throw new NotificationSenderException("Unable to send mail message", e);
 		}
 	}
 
+	private static File createCalEntry(long eventId, java.util.Calendar startTime, java.util.Calendar endTime, String title) {
+
+		System.out.println("3 - createCalEntry");
+		
+		// create a calendar object
+		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
+
+		// create a file object
+		File calFile = new File("cristal-union" + eventId + ".ics");
+
+		try {
+
+			// Create a TimeZone
+			TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+			TimeZone timezone = registry.getTimeZone("Europe/Paris");
+			VTimeZone tz = ((net.fortuna.ical4j.model.TimeZone) timezone).getVTimeZone();
+
+			// Start Date
+			java.util.Calendar startDate = new GregorianCalendar();
+			startDate.setTimeZone(timezone);
+			startDate.set(java.util.Calendar.MONTH, java.util.Calendar.OCTOBER);
+			startDate.set(java.util.Calendar.DAY_OF_MONTH, startTime.get(java.util.Calendar.DAY_OF_MONTH));
+			startDate.set(java.util.Calendar.YEAR, startTime.get(java.util.Calendar.YEAR));
+			startDate.set(java.util.Calendar.HOUR_OF_DAY, startTime.get(java.util.Calendar.HOUR_OF_DAY));
+			startDate.set(java.util.Calendar.MINUTE, startTime.get(java.util.Calendar.MINUTE));
+			startDate.set(java.util.Calendar.SECOND, 0);
+
+			// End Date
+			java.util.Calendar endDate = new GregorianCalendar();
+			endDate.setTimeZone(timezone);
+			endDate.set(java.util.Calendar.MONTH, java.util.Calendar.OCTOBER);
+			endDate.set(java.util.Calendar.DAY_OF_MONTH, endDate.get(java.util.Calendar.DAY_OF_MONTH));
+			endDate.set(java.util.Calendar.YEAR, endDate.get(java.util.Calendar.YEAR));
+			endDate.set(java.util.Calendar.HOUR_OF_DAY, endDate.get(java.util.Calendar.HOUR_OF_DAY));
+			endDate.set(java.util.Calendar.MINUTE, endDate.get(java.util.Calendar.MINUTE));
+			endDate.set(java.util.Calendar.SECOND, 0);
+
+			// Create the event props
+			String eventName = title;
+			DateTime start = new DateTime(startDate.getTime());
+			DateTime end = new DateTime(endDate.getTime());
+
+			// Create the event
+			VEvent meeting = new VEvent(start, end, eventName);
+
+			// create Organizer object and add it to vEvent
+			// Organizer organizer = new Organizer(URI.create("mailto:antoine.comble@gmail.com"));
+			// meeting.getProperties().add(organizer);
+
+			// add timezone to vEvent
+			meeting.getProperties().add(tz.getTimeZoneId());
+
+			// generate unique identifier and add it to vEvent
+			UidGenerator ug;
+			ug = new UidGenerator("uidGen");
+			Uid uid = ug.generateUid();
+			meeting.getProperties().add(uid);
+
+			// add attendees..
+			/*
+			 * Attendee dev1 = new Attendee(URI.create("someone@something")); dev1.getParameters().add(Role.REQ_PARTICIPANT); dev1.getParameters().add(new Cn("Developer 1"));
+			 * meeting.getProperties().add(dev1);
+			 */
+
+			// assign props to calendar object
+			icsCalendar.getProperties().add(new ProdId("-//Events Calendar//iCal4j 1.0//EN"));
+			icsCalendar.getProperties().add(CalScale.GREGORIAN);
+
+			// Add the event and print
+			icsCalendar.getComponents().add(meeting);
+
+			CalendarOutputter outputter = new CalendarOutputter();
+			outputter.setValidating(false);
+
+			FileOutputStream fout = new FileOutputStream(calFile);
+			outputter.output(icsCalendar, fout);
+
+			return calFile;
+
+		} catch (Exception e) {
+			System.err.println("Error in method createCalEntry() " + e);
+			return null;
+		}
+	}
 }

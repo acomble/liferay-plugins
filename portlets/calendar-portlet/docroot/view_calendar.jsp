@@ -1,3 +1,4 @@
+
 <%--
 /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
@@ -15,6 +16,9 @@
 --%>
 
 <%@ include file="/init.jsp" %>
+
+<%@ page import="com.liferay.portal.model.User" %>
+<%@ page import="com.liferay.portal.service.UserGroupRoleLocalServiceUtil" %>
 
 <%
 String activeView = ParamUtil.getString(request, "activeView", sessionClicksDefaultView);
@@ -71,8 +75,19 @@ JSONArray groupCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDispl
 JSONArray userCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDisplay, userCalendars);
 JSONArray otherCalendarsJSONArray = CalendarUtil.toCalendarsJSONArray(themeDisplay, otherCalendars);
 
-boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, "calendar-portlet-column-options-visible", "true"));
+User currentUser = PortalUtil.getUser(request);
+long currentUserId = currentUser.getUserId();
+boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+
+boolean columnOptionsVisible = false;
+if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
+	columnOptionsVisible = true;
+}
+
+
 %>
+
+<!-- begin view_calendar.jsp file -->
 
 <aui:container cssClass="calendar-portlet-column-parent">
 	<aui:row>
@@ -80,6 +95,7 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 			<div class="calendar-portlet-mini-calendar" id="<portlet:namespace />miniCalendarContainer"></div>
 
 			<div id="<portlet:namespace />calendarListContainer">
+				<!-- Do not show user calendar -->
 				<c:if test="<%= themeDisplay.isSignedIn() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
@@ -94,6 +110,8 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />myCalendarList"></div>
 				</c:if>
 
+				<!-- Do not show site calendar -->
+				<!-- User cannot switch to another calendar -->
 				<c:if test="<%= groupCalendarResource != null %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
@@ -108,6 +126,7 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />siteCalendarList"></div>
 				</c:if>
 
+				<!-- Do not show add calendars menu -->
 				<c:if test="<%= themeDisplay.isSignedIn() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
@@ -122,12 +141,13 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 			</div>
 
 			<div id="<portlet:namespace />message"></div>
+		
 		</aui:col>
+		
 
 		<aui:col cssClass="calendar-portlet-column-grid" id="columnGrid" span="<%= columnOptionsVisible ? 9 : 12 %>">
-			<div class="calendar-portlet-column-toggler" id="<portlet:namespace />columnToggler">
-				<i class="<%= columnOptionsVisible ? "icon-caret-left" : "icon-caret-right" %>" id="<portlet:namespace />columnTogglerIcon"></i>
-			</div>
+			
+			<!--  include scheduler.jsp -->
 
 			<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
 				<liferay-util:param name="activeView" value="<%= activeView %>" />
@@ -179,10 +199,24 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 
 				<liferay-util:param name="viewCalendarBookingURL" value="<%= viewCalendarBookingURL %>" />
 			</liferay-util:include>
+			
+			<!--  end of include scheduler.jsp -->
+			
+			<div style="margin-top: 10px;">
+				<liferay-portlet:resourceURL id="calendarICS" var="calendarICSLink"></liferay-portlet:resourceURL>
+				
+				<a class="portlet-title-spec" 
+					style="color:#FFF;background:#e85466 !important;text-decoration:none;" 
+					href="<%= calendarICSLink %>">
+					T&eacute;l&eacute;charger le calendrier au format ics
+				</a>
+			</div>
+
 		</aui:col>
 	</aui:row>
 </aui:container>
 
+<!--  include view_calendar_menus.jspf -->
 <%@ include file="/view_calendar_menus.jspf" %>
 
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
@@ -349,22 +383,6 @@ boolean columnOptionsVisible = GetterUtil.getBoolean(SessionClicks.get(request, 
 		);
 	</c:if>
 
-	A.one('#<portlet:namespace />columnToggler').on(
-		'click',
-		function(event) {
-			var columnGrid = A.one('#<portlet:namespace />columnGrid');
-			var columnOptions = A.one('#<portlet:namespace />columnOptions');
-			var columnTogglerIcon = A.one('#<portlet:namespace />columnTogglerIcon');
-
-			Liferay.Store('calendar-portlet-column-options-visible', columnOptions.hasClass('hide'));
-
-			columnGrid.toggleClass('span9').toggleClass('span12');
-
-			columnOptions.toggleClass('hide');
-
-			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
-		}
-	);
 </aui:script>
 
 <aui:script use="aui-base,aui-datatype,calendar">
@@ -479,3 +497,5 @@ protected void updateCalendarsJSONArray(HttpServletRequest request, JSONArray ca
 	}
 }
 %>
+
+<!--  end of view_calendar.jsp file -->

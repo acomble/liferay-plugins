@@ -16,11 +16,15 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@ page import="com.liferay.portal.model.User" %>
+<%@ page import="com.liferay.portal.service.UserGroupRoleLocalServiceUtil" %>
+
 <%
 String activeView = ParamUtil.getString(request, "activeView", sessionClicksDefaultView);
 long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 String editCalendarBookingURL = ParamUtil.getString(request, "editCalendarBookingURL");
 String filterCalendarBookings = ParamUtil.getString(request, "filterCalendarBookings", null);
+
 boolean hideAgendaView = ParamUtil.getBoolean(request, "hideAgendaView");
 boolean hideDayView = ParamUtil.getBoolean(request, "hideDayView");
 boolean hideMonthView = ParamUtil.getBoolean(request, "hideMonthView");
@@ -29,6 +33,24 @@ String permissionsCalendarBookingURL = ParamUtil.getString(request, "permissions
 boolean preventPersistence = ParamUtil.getBoolean(request, "preventPersistence");
 boolean readOnly = ParamUtil.getBoolean(request, "readOnly");
 boolean showAddEventBtn = ParamUtil.getBoolean(request, "showAddEventBtn");
+
+if (themeDisplay.isSignedIn()) {
+	User currentUser = PortalUtil.getUser(request);
+	long currentUserId = currentUser.getUserId();
+	
+	boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
+	boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+	boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
+	
+	if (isGestionnaireSection || isGestionnaireGlobal || isPresidentCUN || permissionChecker.isOmniadmin()) {
+		showAddEventBtn = true;
+	} else {
+		showAddEventBtn = false;
+	}
+} else {
+	showAddEventBtn = false;
+}
+
 String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookingURL");
 %>
 

@@ -113,7 +113,8 @@ page import="java.util.Collections" %><%@
 page import="java.util.Date" %><%@
 page import="java.util.Iterator" %><%@
 page import="java.util.List" %><%@
-page import="java.util.TimeZone" %>
+page import="java.util.TimeZone" %><%@
+page import="java.util.Collection" %>
 
 <%@ page import="javax.portlet.PortletURL" %>
 
