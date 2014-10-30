@@ -27,7 +27,7 @@ public class SurveyUtil {
 			con = DriverManager.getConnection(connectionUrl);
 
 			// Create and execute an SQL statement that returns some data.
-			String SQL = "SELECT id, name, description, status FROM surveys";
+			String SQL = "SELECT id, name, description, status FROM surveys WHERE base = 0";
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(SQL);
 
