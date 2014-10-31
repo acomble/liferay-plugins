@@ -185,7 +185,7 @@ var SchedulerEventRecorder = A.Component.create({
             setter: function(val) {
                 return A.merge({
                         'delete': 'Delete',
-                        'description-hint': 'e.g., Dinner at Brian\'s',
+                        'description-hint': 'Nom de l\'évènement',
                         cancel: 'Cancel',
                         description: 'Description',
                         edit: 'Edit',
@@ -559,6 +559,8 @@ var SchedulerEventRecorder = A.Component.create({
             instance.popover.get(CONTENT_BOX).wrap(instance.formNode);
 
             schedulerBB.on(CLICKOUTSIDE, A.bind(instance._handleClickOutSide, instance));
+            
+            //instance.popover.hide();
         },
 
         _setPopover: function(val) {
@@ -670,6 +672,8 @@ var SchedulerEventRecorder = A.Component.create({
          */
         hidePopover: function() {
             var instance = this;
+            
+            var portletNamespace = instance.get('portletNamespace');
 
             instance.popover.hide();
         },

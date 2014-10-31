@@ -214,7 +214,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 
 		</aui:col>
 		
-		<aui:col id="calendar-portlet-column-details" cssClass='<%= "calendar-portlet-column-details " + (columnOptionsVisible ? StringPool.BLANK : "hide") %>' span="<%= 3 %>">
+		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="calendar-portlet-column-details hide">
 			<div id="event-detail"></div>
 		</aui:col>
 	</aui:row>

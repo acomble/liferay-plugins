@@ -32,6 +32,14 @@
 	</div>
 </script>
 
+<script id="<portlet:namespace />eventRecorderFooterTpl" type="text/x-alloy-template">
+	<div class="calendar-portlet-event-recorder">
+		<div class="scheduler-event-recorder-footer">
+			<div id="<portlet:namespace />toolbarActions"></div>
+		</div>
+	</div>
+</script>
+
 <script id="<portlet:namespace />eventRecorderBodyTpl" type="text/x-alloy-template">
 	<div class="calendar-portlet-event-recorder">
 		<input name="instanceIndex" type="hidden" value="{instanceIndex}" />
@@ -99,7 +107,7 @@
 							<liferay-ui:message key="users" />:
 						</td>
 						<td>
-							<label class="calendar-portlet-invitees"><invitees></label>
+							<div id="<portlet:namespace />invitees" class="calendar-portlet-invitees"></div>
 						</td>
 					</tr>
 					<tr style="display:none;" id="<portlet:namespace />eventRecorderResources">

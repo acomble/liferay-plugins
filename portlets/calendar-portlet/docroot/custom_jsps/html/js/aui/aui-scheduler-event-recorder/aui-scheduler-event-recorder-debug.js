@@ -342,6 +342,8 @@ var SchedulerEventRecorder = A.Component.create({
             scheduler.removeEvents(instance.get(EVENT));
 
             instance.hidePopover();
+            
+            console.error('ici2');
 
             scheduler.syncEventsUI();
         },
@@ -358,7 +360,7 @@ var SchedulerEventRecorder = A.Component.create({
             var scheduler = instance.get(SCHEDULER);
 
             instance.hidePopover();
-
+            
             scheduler.syncEventsUI();
         },
 
@@ -376,7 +378,7 @@ var SchedulerEventRecorder = A.Component.create({
             scheduler.addEvents(event.newSchedulerEvent);
 
             instance.hidePopover();
-
+            
             scheduler.syncEventsUI();
         },
 
@@ -427,6 +429,9 @@ var SchedulerEventRecorder = A.Component.create({
                 event.domEvent.preventDefault();
             }
 
+            var portletNamespace = instance.get('portletNamespace');
+			document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.display = 'none';
+            
             event.preventDefault();
         },
 

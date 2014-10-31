@@ -1851,12 +1851,15 @@ AUI.add(
 						var bodyTemplate = instance.get('bodyTemplate');
 
 						var headerTemplate = instance.get('headerTemplate');
+						
+						var footerTemplate = instance.get('footerTemplate');
 
 						var templateData = instance.getTemplateData();
 
 						if (A.instanceOf(bodyTemplate, A.Template) && A.instanceOf(headerTemplate, A.Template)) {
 							instance.popover.setStdModContent('body', bodyTemplate.parse(templateData));
 							instance.popover.setStdModContent('header', headerTemplate.parse(templateData));
+							//instance.popover.setStdModContent('footer', footerTemplate.parse(templateData));
 
 							instance.popover.addToolbar(instance._getFooterToolbar(), 'footer');
 						}
@@ -1878,42 +1881,19 @@ AUI.add(
 							'header'
 						);
 
-						instance.popover.headerNode.toggleClass('hide', !templateData.permissions.VIEW_BOOKING_DETAILS);
-						
 						// ESPACE ELUS //
-						var portletNamespace = instance.get('portletNamespace');
+						/*var portletNamespace = instance.get('portletNamespace');
+						
+			            var secondCol = document.getElementById(portletNamespace + 'columnGrid');
+						secondCol.style.width = '46%';
+						
 						var schedulerEvent = instance.get('event');
 						var myCol = document.getElementById(portletNamespace + 'calendar-portlet-column-details');
 						myCol.className = "";
-						myCol.innerHTML = "<div data-id=\"body\">" + bodyTemplate.parse(templateData) + "</div><div data-id=\"header\">" + headerTemplate.parse(templateData) + "</div>";
-						// invitees
-						//myCol.innerHTML = myCol.innerHTML.replace('<invitees>', messageHTML);
-						if (schedulerEvent) {
-							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-						if (calendar) {
-								var permissions = calendar.get('permissions');
-	
-								if (permissions.VIEW_BOOKING_DETAILS) {
-									var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
-									var portletNamespace = instance.get('portletNamespace');
-	
-									CalendarUtil.getCalendarBookingInvitees(
-										parentCalendarBookingId,
-										function(data) {
-											var results = AArray.partition(
-													data,
-													function(item) {
-														return item.classNameId === CalendarUtil.USER_CLASS_NAME_ID;
-													}
-											);
-	
-											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderUsers', results.matches);
-											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderResources', results.rejects);
-										}
-									);
-								}
-							}
-						}
+						myCol.style.display = 'block';
+						myCol.style.width = '27%';
+						myCol.innerHTML = instance.popover.get('boundingBox').html();
+						instance.popover.get('boundingBox').toggleClass('hide');*/
 					},
 
 					_afterPopoverVisibleChange: function(event) {
@@ -2274,8 +2254,12 @@ AUI.add(
 						);
 
 						contentNode = A.one(contentNode);
+						
+						/*
 
 						var messageNode = contentNode.one('.calendar-portlet-invitees');
+						
+						*/
 
 						var messageHTML = '&mdash;';
 
@@ -2285,7 +2269,12 @@ AUI.add(
 							messageHTML = values.join(STR_COMMA_SPACE);
 						}
 
+						/*
 						messageNode.html(messageHTML);
+						*/
+						
+						var sc = document.getElementById(instance.get('portletNamespace') + 'invitees');
+						sc.innerHTML = messageHTML;
 					}
 				}
 			}

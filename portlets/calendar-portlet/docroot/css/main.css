@@ -1,14 +1,57 @@
 @import "compass";
 @import "mixins";
 
+/* Added for Espace Elus */
+
+/*.scheduler-event-recorder-popover {
+	display: none !important;
+}*/
+
+.scheduler-event-recorder-form .popover-title .close {
+	display: none !important;
+}
+.scheduler-event-recorder-form .popover-content {
+	padding: 0px !important;
+}
+.scheduler-event-recorder-form .popover-footer {
+	margin-top: 5px !important;
+}
+
 .span7 button[type="button"],
 .span5 button[type="button"],
+.calendar-portlet button[type="button"],
 .span7 .btn:hover, .btn:focus, .btn:active, .btn.active,
-.span5 .btn:hover, .btn:focus, .btn:active, .btn.active {
+.span5 .btn:hover, .btn:focus, .btn:active, .btn.active,
+.calendar-portlet .btn-primary:hover, 
+.calendar-portlet .btn-primary:focus, 
+.calendar-portlet .btn-primary:active, 
+.calendar-portlet .btn-primary.active,
+.calendar-portlet .btn-primary.disabled, 
+.calendar-portlet .btn-primary[disabled],
+.calendar-portlet .btn:hover, .btn:focus, .btn:active, .btn.active {
 	padding: 5px !important;
 	color: #FFF !important;
 	background-color: #FF9966 !important;
 	text-shadow: none !important;
+	border-radius: 10px 10px 10px 10px !important;
+	margin-right: 5px;
+}
+
+.scheduler-base-view-week,
+.scheduler-base-view-day,
+.scheduler-base-icon-prev {
+	margin-right: 5px !important;
+}
+
+.scheduler-view-table-data-col-title-down {
+	border-top: 1px solid #ddd !important;
+}
+
+.scheduler-view-table-data-col-title-today {
+	border-right: 0px !important;
+	border-bottom: 0px !important;
+	border-top: 1px solid #ddd !important;
+	border-left: 1px dotted #ccc !important;
 }
 
 .scheduler-view-day-content .yui3-widget-hd {
@@ -22,6 +65,30 @@
 	margin-top: 0px !important;
 	padding-right: 4px;
 }
+
+.scheduler-view-month-table-data-col-nomonth {
+	font-size: 11px !important;
+}
+
+.scheduler-view-table-data-col {
+	border-left: 0 none;
+	padding: 0px !important;
+}
+
+.scheduler-view-table-row table td,
+.scheduler-view-table-row table th {
+	padding: 0px !important;
+} 
+
+.hasEvent {
+	background-color: #FF0000 !important;
+	color: #FFFFFF !important;
+	padding: 2px !important;
+	text-decoration: none !important;
+	border-radius: 10px 10px 10px 10px !important;
+}
+
+/* End Added for Espace Elus */
 
 .calendar-booking-invitations {
 	min-height: 110px;

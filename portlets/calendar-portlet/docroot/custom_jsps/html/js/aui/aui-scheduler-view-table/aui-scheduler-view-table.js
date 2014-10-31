@@ -140,14 +140,16 @@ var Lang = A.Lang,
         '</table>',
 
     TPL_SVT_MORE = '<a href="javascript:;" class="' + CSS_SVT_MORE + '">{labelPrefix} {count} {labelSuffix}</a>',
+    
+    TPL_SVT_MORE_DAY = '<a href="javascript:;" class="' + CSS_SVT_MORE + ' hasEvent">{day}</a>',
 
-    TPL_SVT_ROW = '<div class="' + CSS_SVT_ROW + '" style="top: {top}%; height: {height}%;"></div>',
+    TPL_SVT_ROW = '<div class="' + CSS_SVT_ROW + '" style="top: {top}%; height: 25px;"></div>',
 
     TPL_SVT_TABLE_DATA = '<table cellspacing="0" cellpadding="0" class="' + CSS_SVT_TABLE_DATA + '">' +
         '<tbody></tbody>' +
         '</table>',
 
-    TPL_SVT_TABLE_GRID = '<table cellspacing="0" cellpadding="0" class="' + CSS_SVT_TABLE_GRID + '">' +
+    TPL_SVT_TABLE_GRID = '<table style="display:none;" cellspacing="0" cellpadding="0" class="' + CSS_SVT_TABLE_GRID + '">' +
         '<tbody>' +
         '<tr></tr>' +
         '</tbody>' +
@@ -157,7 +159,7 @@ var Lang = A.Lang,
     TPL_SVT_EV_ICON_RIGHT = '<span class="' + [CSS_ICON, CSS_ICON_ARROWSTOP_RIGHT].join(_SPACE) + '"></span>',
 
     TPL_SVT_TABLE_DATA_COL = '<td class="' + CSS_SVT_TABLE_DATA_COL + '"><div></div></td>',
-    TPL_SVT_TABLE_DATA_ROW = '<tr></tr>';
+    TPL_SVT_TABLE_DATA_ROW = '<tr style="height:22px;"></tr>';
 
 /**
  * A base class for SchedulerTableView.
@@ -446,6 +448,7 @@ var SchedulerTableView = A.Component.create({
          * @param rowDisplayIndex
          */
         buildEventsRow: function(rowStartDate, rowEndDate, rowDisplayIndex) {
+        	/*
             var instance = this;
             var displayRows = instance.get(DISPLAY_ROWS);
 
@@ -501,6 +504,7 @@ var SchedulerTableView = A.Component.create({
             });
 
             return rowNode;
+            */
         },
 
         /**
@@ -569,9 +573,25 @@ var SchedulerTableView = A.Component.create({
                         CSS_SVT_TABLE_DATA_COL_TITLE_DOWN, !DateMath.isDayOverlap(
                             DateMath.subtract(celDate, DateMath.WEEK, 1), todayDate));
 
-                titleRowNode.append(
-                    colTitleNode.setContent(celDate.getDate())
-                );
+                var events = instance.getIntersectEvents(celDate);
+                
+                if (events.length > 0) {
+                	var customNode = A.Node.create(
+                            Lang.sub(
+                                TPL_SVT_MORE_DAY, {
+                                    day: celDate.getDate()
+                                }
+                            )
+                        );
+                	customNode.setData(EVENTS, events);
+                	titleRowNode.append(
+    	                    colTitleNode.setContent(customNode)
+    	                );
+                } else {
+	                titleRowNode.append(
+	                    colTitleNode.setContent(celDate.getDate())
+	                );
+                }
             });
 
             return titleRowNode;

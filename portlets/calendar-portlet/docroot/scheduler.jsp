@@ -92,7 +92,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 	<c:if test="<%= !hideMonthView %>">
 		window.<portlet:namespace />monthView = new A.SchedulerMonthView(
 			{
-				height: 700,
+				height: 180,
 				isoTime: <%= isoTimeFormat %>,
 				readOnly: <%= readOnly %>
 			}
@@ -117,6 +117,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 
 		window.<portlet:namespace />eventRecorder = new Liferay.SchedulerEventRecorder(
 			{
+				footerTemplate: new A.Template(A.one('#<portlet:namespace />eventRecorderFooterTpl').html()),
 				bodyTemplate: new A.Template(A.one('#<portlet:namespace />eventRecorderBodyTpl').html()),
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 				color: '<%= ColorUtil.toHexString(userDefaultCalendar.getColor()) %>',
