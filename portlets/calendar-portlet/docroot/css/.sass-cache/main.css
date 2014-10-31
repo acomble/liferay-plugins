@@ -1,3 +1,22 @@
+.span7 button[type="button"],
+.span5 button[type="button"],
+.span7 .btn:hover, .btn:focus, .btn:active, .btn.active,
+.span5 .btn:hover, .btn:focus, .btn:active, .btn.active {
+  padding: 5px !important;
+  color: #FFF !important;
+  background-color: #FF9966 !important;
+  text-shadow: none !important; }
+
+.scheduler-view-day-content .yui3-widget-hd {
+  border-bottom: none !important; }
+
+.scheduler-view-day-table-time {
+  border-top: none !important;
+  color: #aba9aa;
+  height: 52px;
+  margin-top: 0px !important;
+  padding-right: 4px; }
+
 .calendar-booking-invitations {
   min-height: 110px; }
   .calendar-booking-invitations .calendar-list-empty-message {
@@ -85,6 +104,7 @@
     margin: 0;
     width: 100%; } }
 .calendar-portlet .calendar-portlet-column-grid {
+  /*max-height: 500px;*/
   position: relative; }
   .calendar-portlet .calendar-portlet-column-grid .calendar-portlet-column-toggler {
     bottom: 0;

@@ -25,7 +25,7 @@ long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 String editCalendarBookingURL = ParamUtil.getString(request, "editCalendarBookingURL");
 String filterCalendarBookings = ParamUtil.getString(request, "filterCalendarBookings", null);
 
-boolean hideAgendaView = ParamUtil.getBoolean(request, "hideAgendaView");
+boolean hideAgendaView = true; //ParamUtil.getBoolean(request, "hideAgendaView", false);
 boolean hideDayView = ParamUtil.getBoolean(request, "hideDayView");
 boolean hideMonthView = ParamUtil.getBoolean(request, "hideMonthView");
 boolean hideWeekView = ParamUtil.getBoolean(request, "hideWeekView");

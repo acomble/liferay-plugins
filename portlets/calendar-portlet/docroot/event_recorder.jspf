@@ -68,7 +68,7 @@
 					</td>
 				</tr>
 
-				<tr class="calendar-portlet-event-recorder-calendar-row">
+				<tr class="calendar-portlet-event-recorder-calendar-row" style="display:none;">
 					<td>
 						<liferay-ui:message key="calendar" />:
 					</td>
@@ -99,10 +99,10 @@
 							<liferay-ui:message key="users" />:
 						</td>
 						<td>
-							<label class="calendar-portlet-invitees"><liferay-ui:message key="loading" /></label>
+							<label class="calendar-portlet-invitees"><invitees></label>
 						</td>
 					</tr>
-					<tr id="<portlet:namespace />eventRecorderResources">
+					<tr style="display:none;" id="<portlet:namespace />eventRecorderResources">
 						<td>
 							<liferay-ui:message key="resources" />:
 						</td>

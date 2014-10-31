@@ -206,12 +206,16 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 				<liferay-portlet:resourceURL id="calendarICS" var="calendarICSLink"></liferay-portlet:resourceURL>
 				
 				<a class="portlet-title-spec" 
-					style="color:#FFF;background:#e85466 !important;text-decoration:none;" 
+					style="color:#FFF;background:#FF9966 !important;text-decoration:none;" 
 					href="<%= calendarICSLink %>">
 					T&eacute;l&eacute;charger le calendrier au format ics
 				</a>
 			</div>
 
+		</aui:col>
+		
+		<aui:col id="calendar-portlet-column-details" cssClass='<%= "calendar-portlet-column-details " + (columnOptionsVisible ? StringPool.BLANK : "hide") %>' span="<%= 3 %>">
+			<div id="event-detail"></div>
 		</aui:col>
 	</aui:row>
 </aui:container>

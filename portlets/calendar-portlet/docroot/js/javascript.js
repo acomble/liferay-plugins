@@ -1879,12 +1879,49 @@ AUI.add(
 						);
 
 						instance.popover.headerNode.toggleClass('hide', !templateData.permissions.VIEW_BOOKING_DETAILS);
+						
+						// ESPACE ELUS //
+						var portletNamespace = instance.get('portletNamespace');
+						var schedulerEvent = instance.get('event');
+						var myCol = document.getElementById(portletNamespace + 'calendar-portlet-column-details');
+						myCol.className = "";
+						myCol.innerHTML = "<div data-id=\"body\">" + bodyTemplate.parse(templateData) + "</div><div data-id=\"header\">" + headerTemplate.parse(templateData) + "</div>";
+						// invitees
+						//myCol.innerHTML = myCol.innerHTML.replace('<invitees>', messageHTML);
+						if (schedulerEvent) {
+							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+						if (calendar) {
+								var permissions = calendar.get('permissions');
+	
+								if (permissions.VIEW_BOOKING_DETAILS) {
+									var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
+									var portletNamespace = instance.get('portletNamespace');
+	
+									CalendarUtil.getCalendarBookingInvitees(
+										parentCalendarBookingId,
+										function(data) {
+											var results = AArray.partition(
+													data,
+													function(item) {
+														return item.classNameId === CalendarUtil.USER_CLASS_NAME_ID;
+													}
+											);
+	
+											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderUsers', results.matches);
+											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderResources', results.rejects);
+										}
+									);
+								}
+							}
+						}
 					},
 
 					_afterPopoverVisibleChange: function(event) {
 						var instance = this;
 
 						var schedulerEvent = instance.get('event');
+						
+						var portletNamespace = instance.get('portletNamespace');
 
 						var popoverBB = instance.popover.get('boundingBox');
 
@@ -1918,8 +1955,6 @@ AUI.add(
 						);
 
 						SchedulerEventRecorder.superclass._afterPopoverVisibleChange.apply(this, arguments);
-
-						var portletNamespace = instance.get('portletNamespace');
 
 						var eventRecorderCalendar = A.one('#' + portletNamespace + 'eventRecorderCalendar');
 
