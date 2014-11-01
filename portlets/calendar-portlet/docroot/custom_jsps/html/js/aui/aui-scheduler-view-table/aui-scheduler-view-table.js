@@ -305,9 +305,9 @@ var SchedulerTableView = A.Component.create({
          */
         strings: {
             value: {
-                close: 'Close',
-                show: 'Show',
-                more: 'more'
+                close: 'Fermer',
+                show: 'Afficher',
+                more: 'Voir plus'
             }
         },
 

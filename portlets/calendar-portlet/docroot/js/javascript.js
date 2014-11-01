@@ -1880,20 +1880,6 @@ AUI.add(
 							],
 							'header'
 						);
-
-						// ESPACE ELUS //
-						/*var portletNamespace = instance.get('portletNamespace');
-						
-			            var secondCol = document.getElementById(portletNamespace + 'columnGrid');
-						secondCol.style.width = '46%';
-						
-						var schedulerEvent = instance.get('event');
-						var myCol = document.getElementById(portletNamespace + 'calendar-portlet-column-details');
-						myCol.className = "";
-						myCol.style.display = 'block';
-						myCol.style.width = '27%';
-						myCol.innerHTML = instance.popover.get('boundingBox').html();
-						instance.popover.get('boundingBox').toggleClass('hide');*/
 					},
 
 					_afterPopoverVisibleChange: function(event) {
@@ -2211,16 +2197,24 @@ AUI.add(
 
 					_syncInvitees: function() {
 						var instance = this;
+						
+						console.error('_syncInvitees');
 
 						var schedulerEvent = instance.get('event');
 
 						if (schedulerEvent) {
+							
+							console.error('schedulerEvent');
+							
 							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
 
 							if (calendar) {
 								var permissions = calendar.get('permissions');
 
 								if (permissions.VIEW_BOOKING_DETAILS) {
+									
+									console.error('permissions');
+									
 									var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
 									var portletNamespace = instance.get('portletNamespace');
 
@@ -2233,6 +2227,8 @@ AUI.add(
 														return item.classNameId === CalendarUtil.USER_CLASS_NAME_ID;
 													}
 											);
+											
+											instance.set('invitees', results.matches);
 
 											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderUsers', results.matches);
 											instance._syncInviteesContent('#' + portletNamespace + 'eventRecorderResources', results.rejects);
@@ -2252,14 +2248,10 @@ AUI.add(
 								return item.name;
 							}
 						);
-
+/*
 						contentNode = A.one(contentNode);
 						
-						/*
-
 						var messageNode = contentNode.one('.calendar-portlet-invitees');
-						
-						*/
 
 						var messageHTML = '&mdash;';
 
@@ -2268,13 +2260,7 @@ AUI.add(
 
 							messageHTML = values.join(STR_COMMA_SPACE);
 						}
-
-						/*
-						messageNode.html(messageHTML);
-						*/
-						
-						var sc = document.getElementById(instance.get('portletNamespace') + 'invitees');
-						sc.innerHTML = messageHTML;
+*/
 					}
 				}
 			}

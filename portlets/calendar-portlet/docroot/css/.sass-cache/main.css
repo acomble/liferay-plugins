@@ -2,6 +2,9 @@
 /*.scheduler-event-recorder-popover {
 	display: none !important;
 }*/
+.scheduler-view-month .scheduler-event-title span {
+  display: block !important; }
+
 .scheduler-event-recorder-form .popover-title .close {
   display: none !important; }
 

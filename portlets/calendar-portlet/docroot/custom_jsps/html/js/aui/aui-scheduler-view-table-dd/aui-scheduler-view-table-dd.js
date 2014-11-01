@@ -520,6 +520,9 @@ A.mix(A.SchedulerTableViewDD.prototype, {
      * @protected
      */
     _onMouseUpGrid: function(event) {
+    	
+    	console.error('_onMouseUpGrid');
+    	
         var instance = this;
         var scheduler = instance.get(SCHEDULER);
         var recorder = scheduler.get(EVENT_RECORDER);

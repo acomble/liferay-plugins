@@ -74,6 +74,8 @@ var Lang = A.Lang,
     TPL_HEADER_CONTENT = '<input class="' + CSS_SCHEDULER_EVENT_RECORDER_CONTENT +
         '" name="content" value="{content}" />';
 
+    var AArray = A.Array;
+    
 /**
  * A base class for SchedulerEventRecorder.
  *
@@ -511,17 +513,55 @@ var SchedulerEventRecorder = A.Component.create({
          * @protected
          */
         _onClickSchedulerEvent: function(event) {
+        	
+        	console.error('_onClickSchedulerEvent');
+        	
             var instance = this;
             var evt = event.currentTarget.getData(SCHEDULER_EVENT);
 
             if (evt) {
+
+            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'block';
+            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = '';
+            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
+            	document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
+            	
+            	console.error('event calendarId : ' + evt.get('calendarId'));
+            	console.error('event content : ' + evt.get('content'));
+            	console.error('event enddate : ' + evt.get('endDate'));
+            	console.error('event startdate : ' + evt.get('startDate'));
+            	console.error('event calendarBookingId : ' + evt.get('calendarBookingId'));
+            	
                 instance.set(EVENT, evt, {
                     silent: true
                 });
+                
+                instance._syncInvitees();
+                
+                var invitees = instance.get('invitees');
+                
+                console.error('invitees : ' + invitees);
+                
+                var inviteesStr;
+                
+                if (invitees) {
+                
+	                var values = AArray.map(
+							instance.get('invitees'),
+							function(item) {
+								return item.name;
+							}
+						);
+	                if (values.length > 0) {
+	                	document.getElementById('event-detail-invitees').innerHTML = values.join(STR_COMMA_SPACE);
+	                }
+                
+                }
 
-                instance.showPopover(event.currentTarget);
-
-                instance.get(NODE).remove();
+                document.getElementById('event-detail-title').innerHTML = evt.get('content');
+                document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT));
+                document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT));
+                
             }
         },
 
@@ -707,6 +747,9 @@ var SchedulerEventRecorder = A.Component.create({
         },
 
         showPopover: function(node) {
+        	
+        	console.error('la');
+        	
             var instance = this,
                 event = instance.get(EVENT);
 
@@ -737,4 +780,4 @@ var SchedulerEventRecorder = A.Component.create({
 A.SchedulerEventRecorder = SchedulerEventRecorder;
 
 
-}, '2.0.0', {"requires": ["querystring", "io-form", "overlay", "aui-scheduler-base", "aui-popover"], "skinnable": true});
+}, '2.0.0', {"requires": [ "querystring", "io-form", "overlay", "aui-scheduler-base", "aui-popover", 'liferay-calendar-message-util', 'liferay-calendar-recurrence-util', 'liferay-node', 'liferay-portlet-url'], "skinnable": true});

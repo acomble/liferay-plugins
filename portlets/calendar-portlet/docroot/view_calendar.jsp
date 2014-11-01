@@ -215,7 +215,28 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 		</aui:col>
 		
 		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="calendar-portlet-column-details hide">
-			<div id="event-detail"></div>
+			<div id="event-detail" style="border:1px solid red;float:left;">
+				<div style="float:left;" id="event-detail-title"></div>
+				<div style="float:left;" id="event-detail-startdate-zone">
+					<span style="float:left;">Du</span>
+					<span style="float:left;width:180px;margin-left:5px;" id="event-detail-startdate"></span>
+				</div>
+				<div style="float:left;" id="event-detail-enddate-zone">
+					<span style="float:left;">Au</span>
+					<span style="float:left;width:180px;margin-left:5px;" id="event-detail-enddate"></span>
+				</div>
+				<div style="float:left;" id="event-detail-invitees-zone">
+					<span style="float:left;width:50px;">Invités</span>
+					<span style="float:left;width:180px;margin-left:5px;" id="event-detail-invitees"></span>
+				</div>
+				<div style="float:left;" id="event-detail-actions">
+					<span style="float: left;width: 130px;padding-top: 5px;" id="event-detail-attend-title">Serez-vous présent ?</span>
+					<span>
+						<button onclick="alert('Vous serez présent');" class="btn" name="event-detail-accept" value="Oui">Oui</button>
+						<button onclick="alert('Vous serez absent');" class="btn" name="event-detail-reject" value="Non">Non</button>
+					</span>
+				</div>
+			</div>
 		</aui:col>
 	</aui:row>
 </aui:container>
