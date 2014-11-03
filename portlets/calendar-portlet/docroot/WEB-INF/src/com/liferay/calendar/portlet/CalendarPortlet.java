@@ -219,49 +219,6 @@ public class CalendarPortlet extends MVCPortlet {
 				serveResourceCalendars(resourceRequest, resourceResponse);
 			} else if ("calendarICS".equals(resourceID)) {
 				serveICSCalendar(resourceRequest, resourceResponse);
-			} else if ("serveDay".equals(resourceID)) {
-				final StringBuilder response = new StringBuilder();
-				response.append("{");
-				response.append("\"resourceId\":"+ "\"" + resourceID + "\"");
-				
-				// TODO SERVEDAY
-				java.util.Calendar begin = java.util.Calendar.getInstance();
-				begin.add(java.util.Calendar.DAY_OF_YEAR, -1);
-				java.util.Calendar end = java.util.Calendar.getInstance();
-				end.add(java.util.Calendar.DAY_OF_YEAR, 1);
-				
-				//CalendarBookingLocalServiceUtil.getCalendarBookings(calendarId, begin.getTimeInMillis(), end.getTimeInMillis());
-				
-				response.append("}");
-				// send response to portlet
-				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
-			} else if ("serveWeek".equals(resourceID)) {
-				final StringBuilder response = new StringBuilder();
-				response.append("{");
-				
-				response.append("\"resourceId\":"+ "\"" + resourceID + "\"");
-				
-				response.append("}");
-				// send response to portlet
-				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
-			} else if ("serveMonth".equals(resourceID)) {
-				final StringBuilder response = new StringBuilder();
-				response.append("{");
-				
-				response.append("\"resourceId\":"+ "\"" + resourceID + "\"");
-				
-				response.append("}");
-				// send response to portlet
-				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
-			} else if ("serveYear".equals(resourceID)) {
-				final StringBuilder response = new StringBuilder();
-				response.append("{");
-				
-				response.append("\"resourceId\":"+ "\"" + resourceID + "\"");
-				
-				response.append("}");
-				// send response to portlet
-				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}

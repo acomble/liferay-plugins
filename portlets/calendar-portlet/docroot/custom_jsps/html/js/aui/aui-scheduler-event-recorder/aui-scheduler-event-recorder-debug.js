@@ -343,7 +343,7 @@ var SchedulerEventRecorder = A.Component.create({
 
             instance.hidePopover();
             
-            console.error('ici2');
+            // console.error('ici2');
 
             scheduler.syncEventsUI();
         },

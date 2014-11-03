@@ -7,12 +7,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liferay.portal.kernel.util.InfrastructureUtil;
+
 public class SurveyUtil {
 
 	public static List<Survey> getSurveys() {
-
-		// Create a variable for the connection string.
-		String connectionUrl = "jdbc:sqlserver://slwtcb1:1433;" + "databaseName=administrateur;user=liferay;password=Y2j*Pa0R";
 
 		// Declare the JDBC objects.
 		Connection con = null;
@@ -23,8 +22,7 @@ public class SurveyUtil {
 
 		try {
 			// Establish the connection.
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			con = DriverManager.getConnection(connectionUrl);
+			con = InfrastructureUtil.getDataSource().getConnection();
 
 			// Create and execute an SQL statement that returns some data.
 			String SQL = "SELECT id, name, description, status FROM surveys WHERE base = 0";

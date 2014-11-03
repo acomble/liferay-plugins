@@ -46,7 +46,7 @@ AUI.add(
 
 		var ICON_ADD_EVENT_NODE = 'iconAddEventNode';
 
-		var TPL_ICON_ADD_EVENT_NODE = '<div class="btn-group">' +
+		var TPL_ICON_ADD_EVENT_NODE = '<div class="btn-group" style="display:none;">' +
 										'<button type="button" class="btn btn-primary calendar-add-event-btn">' +
 											Liferay.Language.get('add-calendar-booking') +
 										'</div>' +
@@ -212,7 +212,10 @@ AUI.add(
 			createCalendarsAutoComplete: function(resourceURL, input, afterSelectFn) {
 				var instance = this;
 				
+				console.error('createCalendarsAutoComplete');
+				
 				if (input != null || input != undefined ) {
+					console.error('createCalendarsAutoComplete input : ' + input);
 					input.plug(
 						A.Plugin.AutoComplete,
 						{
@@ -226,6 +229,8 @@ AUI.add(
 								return AArray.filter(
 									results,
 									function(item, index) {
+										console.error('createCalendarsAutoComplete query : ' + query);
+										console.error('createCalendarsAutoComplete results : ' + results);
 										return !instance.availableCalendars[item.raw.calendarId];
 									}
 								);
@@ -433,6 +438,8 @@ AUI.add(
 
 			getDefaultUserCalendar: function() {
 				var instance = this;
+				
+				//console.error('CalendarUtil.DEFAULT_USER_CALENDAR_ID : ' + CalendarUtil.DEFAULT_USER_CALENDAR_ID);
 
 				return instance.availableCalendars[CalendarUtil.DEFAULT_USER_CALENDAR_ID];
 			},

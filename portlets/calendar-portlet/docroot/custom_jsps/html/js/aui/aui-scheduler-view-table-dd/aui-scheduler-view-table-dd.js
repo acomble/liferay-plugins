@@ -521,7 +521,7 @@ A.mix(A.SchedulerTableViewDD.prototype, {
      */
     _onMouseUpGrid: function(event) {
     	
-    	console.error('_onMouseUpGrid');
+    	// console.error('_onMouseUpGrid');
     	
         var instance = this;
         var scheduler = instance.get(SCHEDULER);

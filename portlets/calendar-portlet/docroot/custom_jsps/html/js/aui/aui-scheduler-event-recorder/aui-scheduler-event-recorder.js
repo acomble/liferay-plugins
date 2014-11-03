@@ -38,6 +38,7 @@ var Lang = A.Lang,
     CONTENT = 'content',
     CONTENT_BOX = 'contentBox',
     DATE_FORMAT = 'dateFormat',
+    DATE_FORMAT_FRENCH = 'dateFormatFrench',
     DELETE = 'delete',
     END_DATE = 'endDate',
     EVENT = 'event',
@@ -144,6 +145,18 @@ var SchedulerEventRecorder = A.Component.create({
         dateFormat: {
             validator: isString,
             value: '%a, %B %d'
+        },
+        
+        /**
+         * TODO. Wanna help? Please send a Pull Request.
+         *
+         * @attribute dateFormat
+         * @default '%a, %B %d,'
+         * @type String
+         */
+        dateFormatFrench: {
+            validator: isString,
+            value: '%a %d %B %H:%M'
         },
 
         /**
@@ -313,6 +326,7 @@ var SchedulerEventRecorder = A.Component.create({
 
             schedulerBB.delegate(CLICK, A.bind(instance._onClickSchedulerEvent, instance), _DOT +
                 CSS_SCHEDULER_EVENT);
+            
         },
 
         /**
@@ -514,7 +528,7 @@ var SchedulerEventRecorder = A.Component.create({
          */
         _onClickSchedulerEvent: function(event) {
         	
-        	console.error('_onClickSchedulerEvent');
+        	// console.error('_onClickSchedulerEvent');
         	
             var instance = this;
             var evt = event.currentTarget.getData(SCHEDULER_EVENT);
@@ -526,21 +540,34 @@ var SchedulerEventRecorder = A.Component.create({
             	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
             	document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
             	
-            	console.error('event calendarId : ' + evt.get('calendarId'));
-            	console.error('event content : ' + evt.get('content'));
-            	console.error('event enddate : ' + evt.get('endDate'));
-            	console.error('event startdate : ' + evt.get('startDate'));
-            	console.error('event calendarBookingId : ' + evt.get('calendarBookingId'));
+            	// console.error('event calendarId : ' + evt.get('calendarId'));
+            	// console.error('event content : ' + evt.get('content'));
+            	// console.error('event enddate : ' + evt.get('endDate'));
+            	// console.error('event startdate : ' + evt.get('startDate'));
+            	// console.error('event calendarBookingId : ' + evt.get('calendarBookingId'));
             	
                 instance.set(EVENT, evt, {
                     silent: true
                 });
                 
+                // TODO Chercher comment fermer popup après clic sur event
+                /* NE FONCTIONNE PAS */
+                /*
+                var scheduler = evt.get('scheduler');
+                var recorder = scheduler.get('eventRecorder');
+                recorder.hidePopover(instance.lasso);
+                */
+                /* NE FONCTIONNE PAS */
+                // instance.get('eventRecorder').hidePopover();
+                /* NE FONCTIONNE PAS */
+                // instance.removeLasso();
+                // instance.fire('cancel');
+                
                 instance._syncInvitees();
                 
                 var invitees = instance.get('invitees');
                 
-                console.error('invitees : ' + invitees);
+                // console.error('invitees : ' + invitees);
                 
                 var inviteesStr;
                 
@@ -559,8 +586,8 @@ var SchedulerEventRecorder = A.Component.create({
                 }
 
                 document.getElementById('event-detail-title').innerHTML = evt.get('content');
-                document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT));
-                document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT));
+                document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH));
+                document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
                 
             }
         },
@@ -747,7 +774,7 @@ var SchedulerEventRecorder = A.Component.create({
         },
 
         showPopover: function(node) {
-        	
+        	/*
         	console.error('la');
         	
             var instance = this,
@@ -773,6 +800,7 @@ var SchedulerEventRecorder = A.Component.create({
             instance.popover.set('align.node', node);
 
             instance.popover.show();
+            */
         }
     }
 });

@@ -16,12 +16,16 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@ page import="com.liferay.portal.model.User" %>
+<%@ page import="com.liferay.portal.service.UserGroupRoleLocalServiceUtil" %>
+
 <%
 String activeView = ParamUtil.getString(request, "activeView", sessionClicksDefaultView);
 long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 String editCalendarBookingURL = ParamUtil.getString(request, "editCalendarBookingURL");
 String filterCalendarBookings = ParamUtil.getString(request, "filterCalendarBookings", null);
-boolean hideAgendaView = ParamUtil.getBoolean(request, "hideAgendaView");
+
+boolean hideAgendaView = true; //ParamUtil.getBoolean(request, "hideAgendaView", false);
 boolean hideDayView = ParamUtil.getBoolean(request, "hideDayView");
 boolean hideMonthView = ParamUtil.getBoolean(request, "hideMonthView");
 boolean hideWeekView = ParamUtil.getBoolean(request, "hideWeekView");
@@ -29,6 +33,24 @@ String permissionsCalendarBookingURL = ParamUtil.getString(request, "permissions
 boolean preventPersistence = ParamUtil.getBoolean(request, "preventPersistence");
 boolean readOnly = ParamUtil.getBoolean(request, "readOnly");
 boolean showAddEventBtn = ParamUtil.getBoolean(request, "showAddEventBtn");
+
+if (themeDisplay.isSignedIn()) {
+	User currentUser = PortalUtil.getUser(request);
+	long currentUserId = currentUser.getUserId();
+	
+	boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
+	boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+	boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
+	
+	if (isGestionnaireSection || isGestionnaireGlobal || isPresidentCUN || permissionChecker.isOmniadmin()) {
+		showAddEventBtn = true;
+	} else {
+		showAddEventBtn = false;
+	}
+} else {
+	showAddEventBtn = false;
+}
+
 String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookingURL");
 %>
 
@@ -70,7 +92,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 	<c:if test="<%= !hideMonthView %>">
 		window.<portlet:namespace />monthView = new A.SchedulerMonthView(
 			{
-				height: 700,
+				height: 180,
 				isoTime: <%= isoTimeFormat %>,
 				readOnly: <%= readOnly %>
 			}
@@ -95,6 +117,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 
 		window.<portlet:namespace />eventRecorder = new Liferay.SchedulerEventRecorder(
 			{
+				footerTemplate: new A.Template(A.one('#<portlet:namespace />eventRecorderFooterTpl').html()),
 				bodyTemplate: new A.Template(A.one('#<portlet:namespace />eventRecorderBodyTpl').html()),
 				calendarId: <%= userDefaultCalendar.getCalendarId() %>,
 				color: '<%= ColorUtil.toHexString(userDefaultCalendar.getColor()) %>',

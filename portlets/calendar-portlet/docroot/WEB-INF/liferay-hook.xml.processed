@@ -48,4 +48,5 @@
 	<language-properties>content/Language_vi.properties</language-properties>
 	<language-properties>content/Language_zh_CN.properties</language-properties>
 	<language-properties>content/Language_zh_TW.properties</language-properties>
+	<custom-jsp-dir>/custom_jsps</custom-jsp-dir>
 </hook>
