@@ -573,6 +573,8 @@ var SchedulerEventRecorder = A.Component.create({
                 
                 var inviteesStr;
                 
+                document.getElementById('event-detail-invitees').innerHTML = '';
+                
                 if (invitees) {
                 
 	                var values = AArray.map(

@@ -212,10 +212,10 @@ AUI.add(
 			createCalendarsAutoComplete: function(resourceURL, input, afterSelectFn) {
 				var instance = this;
 				
-				console.error('createCalendarsAutoComplete');
+				//console.error('createCalendarsAutoComplete');
 				
 				if (input != null || input != undefined ) {
-					console.error('createCalendarsAutoComplete input : ' + input);
+					//console.error('createCalendarsAutoComplete input : ' + input);
 					input.plug(
 						A.Plugin.AutoComplete,
 						{
@@ -229,8 +229,8 @@ AUI.add(
 								return AArray.filter(
 									results,
 									function(item, index) {
-										console.error('createCalendarsAutoComplete query : ' + query);
-										console.error('createCalendarsAutoComplete results : ' + results);
+										//console.error('createCalendarsAutoComplete query : ' + query);
+										//console.error('createCalendarsAutoComplete results : ' + results);
 										return !instance.availableCalendars[item.raw.calendarId];
 									}
 								);
@@ -2205,13 +2205,13 @@ AUI.add(
 					_syncInvitees: function() {
 						var instance = this;
 						
-						console.error('_syncInvitees');
+						//console.error('_syncInvitees');
 
 						var schedulerEvent = instance.get('event');
 
 						if (schedulerEvent) {
 							
-							console.error('schedulerEvent');
+							//console.error('schedulerEvent');
 							
 							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
 
@@ -2220,7 +2220,7 @@ AUI.add(
 
 								if (permissions.VIEW_BOOKING_DETAILS) {
 									
-									console.error('permissions');
+									//console.error('permissions');
 									
 									var parentCalendarBookingId = schedulerEvent.get('parentCalendarBookingId');
 									var portletNamespace = instance.get('portletNamespace');

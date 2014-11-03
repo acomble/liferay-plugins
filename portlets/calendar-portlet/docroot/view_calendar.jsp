@@ -226,11 +226,11 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2">Au</span>
 					<span class="fLeft pT2 event-detail-detail" id="event-detail-enddate"></span>
 				</div>
-				<div class="fLeft h30" id="event-detail-invitees-zone">
+				<div class="fLeft h35" id="event-detail-invitees-zone">
 					<span class="fLeft pT2" style="width:50px;">Invités confirmés</span>
-					<span class="fLeft pT2 event-detail-detail" id="event-detail-invitees"></span>
+					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<div class="fLeft h30" id="event-detail-actions">
+				<div class="fLeft h30 mT25" id="event-detail-actions">
 					<span class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</span>
 					<span>
 						<button onclick="alert('Vous serez présent');" class="presence" name="event-detail-accept" value="Oui">Oui</button>

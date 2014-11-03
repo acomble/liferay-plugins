@@ -159,30 +159,34 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:model-context bean="<%= calendarBooking %>" model="<%= CalendarBooking.class %>" />
 
 	<aui:fieldset>
-		<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="title" />
-
-		<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />startDateContainer">
-			<aui:input ignoreRequestValue="<%= true %>" label="start-date" name="startTime" value="<%= startTimeJCalendar %>" />
-		</div>
-
-		<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />endDateContainer">
-			<aui:input ignoreRequestValue="<%= true %>" label="end-date" name="endTime" value="<%= endTimeJCalendar %>" />
-		</div>
-
-		<aui:input checked="<%= allDay %>" name="allDay" />
-
-		<aui:field-wrapper cssClass="calendar-portlet-recurrence-container hide" inlineField="<%= true %>" label="">
-			<aui:input checked="<%= recurring %>" name="repeat" type="checkbox" />
-
-			<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
-		</aui:field-wrapper>
-
-		<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingInfoPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingInfoPanel" persistState="<%= true %>" title="Informations générales">
+				<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="title" />
+		
+				<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />startDateContainer">
+					<aui:input ignoreRequestValue="<%= true %>" label="start-date" name="startTime" value="<%= startTimeJCalendar %>" />
+				</div>
+		
+				<div class="<%= allDay ? "allday-class-active" : "" %>" id="<portlet:namespace />endDateContainer">
+					<aui:input ignoreRequestValue="<%= true %>" label="end-date" name="endTime" value="<%= endTimeJCalendar %>" />
+				</div>
+		
+				<div class="hide"><aui:input cssClass="hide" checked="<%= allDay %>" name="allDay" /></div>
+		
+				<aui:field-wrapper cssClass="calendar-portlet-recurrence-container hide" inlineField="<%= true %>" label="">
+					<aui:input checked="<%= recurring %>" name="repeat" type="checkbox" />
+		
+					<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
+				</aui:field-wrapper>
+		
+				<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
 	</aui:fieldset>
 	
 	<aui:fieldset>
 		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingQuestionnairesPanelContainer" persistState="<%= true %>">
-			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="questionnaire">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="Questionnaire associé">
 				<aui:select label="Sélectionner le questionnaire" name="questionnaireId">
 					<%
 					for (final Survey survey : surveys) {
@@ -242,7 +246,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				</liferay-ui:panel>
 			</div>
 
-			<liferay-ui:panel collapsible="<%= true %>" defaultState='<%= BrowserSnifferUtil.isMobile(request) ? "closed" : "open" %>' extended="<%= false %>" id="calendarBookingInvitationPanel" persistState="<%= true %>" title="invitations">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState='closed' extended="<%= true %>" id="calendarBookingInvitationPanel" persistState="<%= true %>" title="Participants">
 				<c:if test="<%= invitable %>">
 					<aui:input inputCssClass="calendar-portlet-invite-resources-input" label="" name="inviteResource" placeholder="add-people-groups-rooms" type="text" />
 

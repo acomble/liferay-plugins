@@ -62,8 +62,18 @@
 	margin-left: 5px !important;
 }
 
+.invitees-zone {
+	height: 35px !important;
+	max-height: 50px !important;
+	overflow-y: scroll !important;
+}
+
 .h30 {
 	height: 30px !important
+}
+
+.mT25 {
+	margin-top: 25px !important;
 }
 
 #event-detail .event-detail-attend-title {
