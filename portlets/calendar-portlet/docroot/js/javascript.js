@@ -37,6 +37,8 @@ AUI.add(
 		var TPL_CALENDAR_BOOKINGS_URL = '{calendarBookingsURL}&{portletNamespace}calendarIds={calendarIds}&{portletNamespace}startTime={startTime}&{portletNamespace}endTime={endTime}&{portletNamespace}statuses={statuses}';
 
 		var TPL_INVITEES_URL = '{inviteesURL}&{portletNamespace}parentCalendarBookingId={calendarBookingId}';
+		
+		var TPL_QUESTIONNAIRE_URL = '{questionnaireURL}&{portletNamespace}calendarBookingId={calendarBookingId}';
 
 		var TPL_RENDERING_RULES_URL = '{renderingRulesURL}&{portletNamespace}calendarIds={calendarIds}&{portletNamespace}startTime={startTime}&{portletNamespace}endTime={endTime}&{portletNamespace}ruleName={ruleName}';
 
@@ -368,6 +370,8 @@ AUI.add(
 						portletNamespace: instance.PORTLET_NAMESPACE
 					}
 				);
+				
+				console.error('instance.INVITEES_URL : ' + instance.INVITEES_URL);
 
 				A.io.request(
 					inviteesURL,
@@ -377,7 +381,38 @@ AUI.add(
 							success: function() {
 								callback(this.get('responseData'));
 							}
-						}
+						},
+						sync: true
+					}
+				);
+			},
+			
+			getCalendarBookingQuestionnaire: function(calendarBookingId, callback) {
+				var instance = this;
+
+				var questionnaireURL = Lang.sub(
+					TPL_QUESTIONNAIRE_URL,
+					{
+						calendarBookingId: calendarBookingId,
+						questionnaireURL: instance.INVITEES_URL,
+						portletNamespace: instance.PORTLET_NAMESPACE
+					}
+				);
+				
+				questionnaireURL = questionnaireURL.replace('calendarBookingInvitees', 'calendarBookingQuestionnaire');
+				
+				console.error('questionnaireURL : ' + questionnaireURL);
+
+				A.io.request(
+					questionnaireURL,
+					{
+						dataType: 'JSON',
+						on: {
+							success: function() {
+								callback(this.get('responseData'));
+							}
+						},
+						sync: true
 					}
 				);
 			},
@@ -2200,6 +2235,24 @@ AUI.add(
 							},
 							'#' + instance.get('portletNamespace') + 'eventRecorderCalendar'
 						);
+					},
+					
+					_syncQuestionnaire: function() {
+						var instance = this;
+						var schedulerEvent = instance.get('event');
+						if (schedulerEvent) {
+							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+							if (calendar) {
+								var calendarBookingId = schedulerEvent.get('calendarBookingId');
+								var portletNamespace = instance.get('portletNamespace');
+								CalendarUtil.getCalendarBookingQuestionnaire(
+									calendarBookingId,
+									function(data) {
+										instance.set('questionnaireId', data.surveyId);
+									}
+								);
+							}
+						}
 					},
 
 					_syncInvitees: function() {

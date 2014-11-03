@@ -569,6 +569,8 @@ var SchedulerEventRecorder = A.Component.create({
                 
                 var invitees = instance.get('invitees');
                 
+                instance._syncQuestionnaire();
+                
                 // console.error('invitees : ' + invitees);
                 
                 var inviteesStr;
@@ -590,7 +592,8 @@ var SchedulerEventRecorder = A.Component.create({
                 }
 
                 document.getElementById('event-detail-title').innerHTML = evt.get('content');
-                document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH));
+                document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH)); 
+                // + 'surveyId : ' + instance.get('questionnaireId');
                 document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
                 
             }

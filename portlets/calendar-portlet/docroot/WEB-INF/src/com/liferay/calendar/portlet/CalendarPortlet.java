@@ -219,6 +219,19 @@ public class CalendarPortlet extends MVCPortlet {
 				serveResourceCalendars(resourceRequest, resourceResponse);
 			} else if ("calendarICS".equals(resourceID)) {
 				serveICSCalendar(resourceRequest, resourceResponse);
+			} else if ("calendarBookingQuestionnaire".equals(resourceID)) {
+				long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
+				CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
+				// write as json
+				StringBuilder response = new StringBuilder();
+				// Open JSON flux
+				response.append("{");
+				
+				response.append("\"surveyId\" : \"" + calendarBooking.getExpandoBridge().getAttribute("surveyId") + "\"");
+				
+				// Close JSON flux
+				response.append("}");
+				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
