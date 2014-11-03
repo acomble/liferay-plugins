@@ -6,6 +6,8 @@ YUI.add('aui-scheduler-event-recorder', function (A, NAME) {
  * @module aui-scheduler
  * @submodule aui-scheduler-event-recorder
  */
+	
+var STR_COMMA_SPACE = ', ';
 
 var Lang = A.Lang,
     isObject = Lang.isObject,

@@ -18,10 +18,21 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@ page import="com.liferay.calendar.util.SurveyUtil" %>
+<%@ page import="com.liferay.calendar.util.Survey" %>
+
 <%
+List<Survey> surveys = SurveyUtil.getSurveys();
+
+
 String activeView = ParamUtil.getString(request, "activeView", defaultView);
 
 CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
+
+String surveyId = null;
+if (calendarBooking != null) {
+	surveyId = (String) calendarBooking.getExpandoBridge().getAttribute("surveyId");
+}
 
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
@@ -160,7 +171,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 		<aui:input checked="<%= allDay %>" name="allDay" />
 
-		<aui:field-wrapper cssClass="calendar-portlet-recurrence-container" inlineField="<%= true %>" label="">
+		<aui:field-wrapper cssClass="calendar-portlet-recurrence-container hide" inlineField="<%= true %>" label="">
 			<aui:input checked="<%= recurring %>" name="repeat" type="checkbox" />
 
 			<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
@@ -168,46 +179,68 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 		<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
 	</aui:fieldset>
-
+	
 	<aui:fieldset>
-		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingDetailsPanelContainer" persistState="<%= true %>">
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingDetailsPanel" persistState="<%= true %>" title="details">
-				<aui:select label="calendar" name="calendarId">
-
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingQuestionnairesPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="questionnaire">
+				<aui:select label="Sélectionner le questionnaire" name="questionnaireId">
 					<%
-					for (Calendar curCalendar : manageableCalendars) {
-						if ((calendarBooking != null) && (curCalendar.getCalendarId() != calendarId) && (CalendarBookingLocalServiceUtil.getCalendarBookingsCount(curCalendar.getCalendarId(), calendarBooking.getParentCalendarBookingId()) > 0)) {
-							continue;
-						}
+					for (final Survey survey : surveys) {
 					%>
-
-						<aui:option selected="<%= curCalendar.getCalendarId() == calendarId %>" value="<%= curCalendar.getCalendarId() %>"><%= HtmlUtil.escape(curCalendar.getName(locale)) %></aui:option>
-
+		
+						<aui:option selected="<%= (surveyId != null && Long.parseLong(surveyId) == survey.getId()) ? true : false %>" value="<%= survey.getId() %>">
+							<%= HtmlUtil.escape(survey.getName()) + " - " + HtmlUtil.escape(survey.getDescription()) %>
+						</aui:option>
+		
 					<%
 					}
 					%>
-
 				</aui:select>
-
-				<aui:input name="location" />
-
-				<liferay-ui:custom-attributes-available className="<%= CalendarBooking.class.getName() %>">
-					<liferay-ui:custom-attribute-list
-						className="<%= CalendarBooking.class.getName() %>"
-						classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>"
-						editable="<%= true %>"
-						label="<%= true %>"
-					/>
-				</liferay-ui:custom-attributes-available>
-
-				<c:if test="<%= calendarBooking == null %>">
-					<aui:field-wrapper label="permissions">
-						<liferay-ui:input-permissions
-							modelName="<%= CalendarBooking.class.getName() %>"
-						/>
-					</aui:field-wrapper>
-				</c:if>
 			</liferay-ui:panel>
+		</liferay-ui:panel-container>
+	</aui:fieldset>
+
+	<aui:fieldset>
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingDetailsPanelContainer" persistState="<%= true %>">
+			<div class="hide">
+				<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingDetailsPanel" persistState="<%= true %>" title="details">
+					<aui:select cssClass="hide" label="calendar" name="calendarId">
+	
+						<%
+						for (Calendar curCalendar : manageableCalendars) {
+							if ((calendarBooking != null) && (curCalendar.getCalendarId() != calendarId) && (CalendarBookingLocalServiceUtil.getCalendarBookingsCount(curCalendar.getCalendarId(), calendarBooking.getParentCalendarBookingId()) > 0)) {
+								continue;
+							}
+						%>
+	
+							<aui:option selected="<%= curCalendar.getCalendarId() == calendarId %>" value="<%= curCalendar.getCalendarId() %>"><%= HtmlUtil.escape(curCalendar.getName(locale)) %></aui:option>
+	
+						<%
+						}
+						%>
+	
+					</aui:select>
+	
+					<aui:input name="location" cssClass="hide" />
+	
+					<liferay-ui:custom-attributes-available className="<%= CalendarBooking.class.getName() %>">
+						<liferay-ui:custom-attribute-list
+							className="<%= CalendarBooking.class.getName() %>"
+							classPK="<%= (calendarBooking != null) ? calendarBooking.getCalendarBookingId() : 0 %>"
+							editable="<%= true %>"
+							label="<%= true %>"
+						/>
+					</liferay-ui:custom-attributes-available>
+	
+					<c:if test="<%= calendarBooking == null %>">
+						<aui:field-wrapper cssClass="hide" label="permissions">
+							<liferay-ui:input-permissions
+								modelName="<%= CalendarBooking.class.getName() %>"
+							/>
+						</aui:field-wrapper>
+					</c:if>
+				</liferay-ui:panel>
+			</div>
 
 			<liferay-ui:panel collapsible="<%= true %>" defaultState='<%= BrowserSnifferUtil.isMobile(request) ? "closed" : "open" %>' extended="<%= false %>" id="calendarBookingInvitationPanel" persistState="<%= true %>" title="invitations">
 				<c:if test="<%= invitable %>">
@@ -249,7 +282,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 						</aui:column>
 					</c:if>
 
-					<aui:column columnWidth="100">
+					<aui:column cssClass="hide" columnWidth="100">
 						<div class="calendar-portlet-list-header toggler-header-collapsed" id="<portlet:namespace />checkAvailability">
 							<span class="calendar-portlet-list-arrow"></span>
 

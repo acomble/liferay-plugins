@@ -42,6 +42,8 @@
 	text-shadow: none !important;
 	border-radius: 10px 10px 10px 10px !important;
 	margin-right: 5px;
+	background-image: none !important;
+	border: none !important;
 }
 
 .presence {
