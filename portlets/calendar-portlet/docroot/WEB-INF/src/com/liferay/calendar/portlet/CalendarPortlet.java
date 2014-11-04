@@ -199,7 +199,7 @@ public class CalendarPortlet extends MVCPortlet {
 	public void serveResource(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws PortletException {
 
 		try {
-			String resourceID = resourceRequest.getResourceID();
+			final String resourceID = resourceRequest.getResourceID();
 
 			if ("calendarBookingInvitees".equals(resourceID)) {
 				serveCalendarBookingInvitees(resourceRequest, resourceResponse);
@@ -220,13 +220,17 @@ public class CalendarPortlet extends MVCPortlet {
 			} else if ("calendarICS".equals(resourceID)) {
 				serveICSCalendar(resourceRequest, resourceResponse);
 			} else if ("calendarBookingQuestionnaire".equals(resourceID)) {
+				// ///////////////////////////////
+				// USER CLIQUE SUR UN EVENEMENT //
+				// ///////////////////////////////
+				
+				// TODO Récupérer le questionnaire, les questions et les réponses associées
 				
 				
-				
-				long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
-				CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
+				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
+				final CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
 				// write as json
-				StringBuilder response = new StringBuilder();
+				final StringBuilder response = new StringBuilder();
 				// Open JSON flux
 				response.append("{");
 				
@@ -235,10 +239,25 @@ public class CalendarPortlet extends MVCPortlet {
 				// Close JSON flux
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
+				
+				// ///////////////////////////////////
+				// END USER CLIQUE SUR UN EVENEMENT //
+				// ///////////////////////////////////
+			} else if ("calendarBookingQuestionnaireValid".equals(resourceID)) {
+				// ////////////////////////////
+				// USER VALIDE QUESTIONNAIRE //
+				// ////////////////////////////
+				
+				final long surveyId = ParamUtil.getLong(resourceRequest, "surveyId");
+				_log.error("surveyId : " + surveyId);
+				
+				// ////////////////////////////////
+				// END USER VALIDE QUESTIONNAIRE //
+				// ////////////////////////////////
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new PortletException(e);
 		}
 	}

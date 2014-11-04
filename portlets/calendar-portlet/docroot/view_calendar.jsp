@@ -230,7 +230,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2" style="width:50px;">Invités confirmés</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<div class="fLeft h30 mT25" id="event-detail-actions">
+				<div class="fLeft h30 mT25 hide" id="event-detail-actions">
 					<span class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</span>
 					<span>
 						<button onclick="alert('Vous serez présent');" class="presence" name="event-detail-accept" value="Oui">Oui</button>
@@ -240,6 +240,26 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 						</c:if>
 					</span>
 				</div>
+			</div>
+			<div id="event-questionnaire" class="fLeft">
+				<div class="fLeft event-questionnaire-title" id="event-questionnaire-title"></div>
+				
+				<portlet:resourceURL var="questionnaireURL" id="calendarBookingQuestionnaireValid">
+					<portlet:param name="questionnaire" value="questionnaire"/>
+				</portlet:resourceURL>
+				
+				<div class="fLeft">
+					<iframe name="hiddenFrame" class="hide"></iframe>
+					<form name="event-questionnaire-form" action="<%= questionnaireURL %>" method="post" target="hiddenFrame">
+						<input type="hidden" name="<portlet:namespace />surveyId" id="surveyId" value="" />
+						
+						<!-- insert questions here -->
+						<div id="event-questionnaire-questions" style="width: 100%;"></div>	
+						
+						<input type="submit" class="btn" name="valider" value="Valider mes réponses" />
+					</form>		
+				</div>
+				
 			</div>
 		</aui:col>
 	</aui:row>

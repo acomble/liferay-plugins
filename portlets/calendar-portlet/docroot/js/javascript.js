@@ -371,7 +371,7 @@ AUI.add(
 					}
 				);
 				
-				console.error('instance.INVITEES_URL : ' + instance.INVITEES_URL);
+				//console.error('instance.INVITEES_URL : ' + instance.INVITEES_URL);
 
 				A.io.request(
 					inviteesURL,
@@ -401,7 +401,7 @@ AUI.add(
 				
 				questionnaireURL = questionnaireURL.replace('calendarBookingInvitees', 'calendarBookingQuestionnaire');
 				
-				console.error('questionnaireURL : ' + questionnaireURL);
+				//console.error('questionnaireURL : ' + questionnaireURL);
 
 				A.io.request(
 					questionnaireURL,
