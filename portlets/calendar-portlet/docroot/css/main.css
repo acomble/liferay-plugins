@@ -136,6 +136,14 @@
 	border-radius: 10px 10px 10px 10px !important;
 }
 
+.scheduler-view-table {
+	display: none !important;
+}
+
+.scheduler-view-month {
+	display: block !important;
+}
+
 /* End Added for Espace Elus */
 
 .calendar-booking-invitations {

@@ -220,6 +220,9 @@ public class CalendarPortlet extends MVCPortlet {
 			} else if ("calendarICS".equals(resourceID)) {
 				serveICSCalendar(resourceRequest, resourceResponse);
 			} else if ("calendarBookingQuestionnaire".equals(resourceID)) {
+				
+				
+				
 				long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
 				// write as json
