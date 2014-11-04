@@ -51,10 +51,21 @@
 	margin-right: 5px !important;
 }
 
-#event-detail .event-detail-title {
+#event-detail .event-detail-title,
+#event-questionnaire .event-questionnaire-title {
 	font-weight: bold ! important;
 	font-size: 14px !important;
 	width: 260px !important;
+}
+
+#event-questionnaire .event-questionnaire-title {
+	border-top: 5px outset !important;
+	padding-top: 5px !important;
+	margin-top: 5px !important;
+}
+
+#event-questionnaire .event-questionnaire-question {
+	font-weight: bold ! important;
 }
 
 #event-detail .event-detail-detail {
@@ -74,6 +85,18 @@
 
 .mT25 {
 	margin-top: 25px !important;
+}
+
+.mL2 {
+	margin-left: 2px !important;
+}
+
+.pT5 {
+	padding-top: 5px !important;
+}
+
+.width100 {
+	width: 100% !important;
 }
 
 #event-detail .event-detail-attend-title {

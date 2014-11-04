@@ -596,14 +596,14 @@ var SchedulerEventRecorder = A.Component.create({
                 document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
                 
                 // Set surveyId in input hidden
-                document.getElementById('surveyId').value = instance.get('questionnaireId');
+                //document.getElementById('surveyId').value = instance.get('questionnaireId');
                 
                 // Call Take a survey portlet to display questions (without form and buttons : only questions and associated answers)
                 var url = Liferay.PortletURL.createRenderURL();    
 			    url.setPortletId('igiTakeSurvey_WAR_QuestionnairePortlet');  
 			    url.setWindowState('exclusive'); 
 			    url.setParameter('surveyID', instance.get('questionnaireId'));
-			    url.setParameter('action', 'showQuestionForUserForm');
+			    url.setParameter('action', 'showQuestionsForUserForm');
 			    
 			    var ajaxUrl = url.toString();
 			    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
