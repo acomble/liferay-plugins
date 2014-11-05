@@ -626,7 +626,15 @@ var SchedulerEventRecorder = A.Component.create({
 				instance._afterPopoverVisibleChange(evt);
 				instance.set(EVENT, evt);
 				//instance.set('calendarId', evt.get('calendarId'));
-			    document.getElementById('event-detail-edit').addEventListener('click', A.bind(instance._handleEditEvent, instance));
+				var eventListener = A.bind(instance._handleEditEvent, instance);
+				//var eventDetailEditButton = document.getElementById('event-detail-edit');
+				//eventDetailEditButton.removeEventListener('click', eventListener);
+				
+				var oldElement = document.getElementById('event-detail-edit');
+				var newElement = oldElement.cloneNode(true);
+				oldElement.parentNode.replaceChild(newElement, oldElement);
+				
+				newElement.addEventListener('click', eventListener);
 			    
             }
         },
