@@ -401,7 +401,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 				boolean allFollowing = ParamUtil.getBoolean(actionRequest, "allFollowing");
 
-				calendarBooking = CalendarBookingServiceUtil.updateCalendarBookingInstance(calendarBookingId, instanceIndex, calendarId, childCalendarIds, titleMap, descriptionMap, location,
+				calendarBooking = CalendarBookingServiceUtil.updateCalendarBookingInstance(calendarBookingId, instanceIndex, calendarBooking.getCalendarId(), childCalendarIds, titleMap, descriptionMap, location,
 						startTimeJCalendar.getTimeInMillis(), endTimeJCalendar.getTimeInMillis(), allDay, recurrence, allFollowing, reminders[0], remindersType[0], reminders[1], remindersType[1],
 						status, serviceContext);
 			} else {
@@ -412,7 +412,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 				calendarBooking = CalendarBookingServiceUtil.getNewStartTimeAndDurationCalendarBooking(calendarBookingId, offset, duration);
 
-				calendarBooking = CalendarBookingServiceUtil.updateCalendarBooking(calendarBookingId, calendarId, childCalendarIds, titleMap, descriptionMap, location, calendarBooking.getStartTime(),
+				calendarBooking = CalendarBookingServiceUtil.updateCalendarBooking(calendarBookingId, calendarBooking.getCalendarId(), childCalendarIds, titleMap, descriptionMap, location, calendarBooking.getStartTime(),
 						calendarBooking.getEndTime(), allDay, recurrence, reminders[0], remindersType[0], reminders[1], remindersType[1], status, serviceContext);
 			}
 		}

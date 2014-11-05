@@ -499,6 +499,44 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	var calendarsMenu = {
 		items: [
+			<c:if test="<%= invitable %>">
+				{
+					caption: '<%= UnicodeLanguageUtil.get(pageContext, "remove") %>',
+					fn: function(event) {
+						var instance = this;
+
+						var calendarList = instance.get('host');
+
+						removeCalendarResource(calendarList, calendarList.activeItem, instance);
+					},
+					id: 'remove'
+				}
+			</c:if>
+		],
+		<c:if test="<%= invitable %>">
+			on: {
+				visibleChange: function(event) {
+					var instance = this;
+
+					if (event.newVal) {
+						var calendarList = instance.get('host');
+						var calendar = calendarList.activeItem;
+
+						var hiddenItems = [];
+
+						if (calendar.get('calendarId') === defaultCalendarId) {
+							hiddenItems.push('remove');
+						}
+
+						instance.set('hiddenItems', hiddenItems);
+					}
+				}
+			}
+		</c:if>
+	}
+	
+	var calendarsMenuOriginal = {
+		items: [
 			{
 				caption: '<%= UnicodeLanguageUtil.get(pageContext, "check-availability") %>',
 				fn: function(event) {
@@ -523,6 +561,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				},
 				id: 'check-availability'
 			}
+			
 			<c:if test="<%= invitable %>">
 				,{
 					caption: '<%= UnicodeLanguageUtil.get(pageContext, "remove") %>',

@@ -205,7 +205,6 @@ var SchedulerEventRecorder = A.Component.create({
                         'description-hint': 'Nom de l\'évènement',
                         cancel: 'Cancel',
                         description: 'Description',
-                        edit: 'Edit',
                         save: 'Save',
                         when: 'When'
                     },
@@ -604,25 +603,34 @@ var SchedulerEventRecorder = A.Component.create({
 			    url.setWindowState('exclusive'); 
 			    url.setParameter('surveyID', instance.get('questionnaireId'));
 			    url.setParameter('action', 'showQuestionsForUserForm');
-			    
 			    var ajaxUrl = url.toString();
 			    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
-			    
 			    A.io.request(
-				ajaxUrl,
-				{
-					dataType: 'html',
-					on: {
-						success: function() {
-							document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
-						}
-					},
-					sync: true
-				}
-			);
+					ajaxUrl,
+					{
+						dataType: 'html',
+						on: {
+							success: function() {
+								document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
+							}
+						},
+						sync: true
+					}
+			    );
+			    
+			    // edit event
+			    //instance.set(EVENT, evt);
+			    // TODO : remplir le formulaire avec les infos de l'event
+			    instance._renderPopover();
+				instance.populateForm();
+				instance._afterPopoverVisibleChange(evt);
+				instance.set(EVENT, evt);
+				//instance.set('calendarId', evt.get('calendarId'));
+			    document.getElementById('event-detail-edit').addEventListener('click', A.bind(instance._handleEditEvent, instance));
 			    
             }
         },
+        
 
         /**
          * TODO. Wanna help? Please send a Pull Request.
@@ -806,7 +814,7 @@ var SchedulerEventRecorder = A.Component.create({
         },
 
         showPopover: function(node) {
-        	/*
+        	
         	console.error('la');
         	
             var instance = this,
@@ -832,7 +840,7 @@ var SchedulerEventRecorder = A.Component.create({
             instance.popover.set('align.node', node);
 
             instance.popover.show();
-            */
+            
         }
     }
 });

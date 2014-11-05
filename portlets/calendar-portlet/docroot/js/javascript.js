@@ -1897,6 +1897,8 @@ AUI.add(
 						var footerTemplate = instance.get('footerTemplate');
 
 						var templateData = instance.getTemplateData();
+						
+						//console.error('dans populateForm');
 
 						if (A.instanceOf(bodyTemplate, A.Template) && A.instanceOf(headerTemplate, A.Template)) {
 							instance.popover.setStdModContent('body', bodyTemplate.parse(templateData));

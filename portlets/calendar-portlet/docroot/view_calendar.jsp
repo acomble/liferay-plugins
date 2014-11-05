@@ -209,7 +209,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 				<a class="portlet-title-spec" 
 					style="color:#FFF;background:#FF9966 !important;text-decoration:none;" 
 					href="<%= calendarICSLink %>">
-					T&eacute;l&eacute;charger le calendrier au format ics
+					T&eacute;l&eacute;charger le calendrier <!-- au format ics -->
 				</a>
 			</div>
 
@@ -230,13 +230,13 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2" style="width:50px;">Invités</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<div class="fLeft h30 mT25 hide" id="event-detail-actions">
-					<span class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</span>
+				<div class="fLeft h30 mT25" id="event-detail-actions">
+					<span class="fLeft event-detail-attend-title hide" id="event-detail-attend-title">Serez-vous présent ?</span>
 					<span>
-						<button onclick="alert('Vous serez présent');" class="presence" name="event-detail-accept" value="Oui">Oui</button>
-						<button onclick="alert('Vous serez absent');" class="presence" name="event-detail-reject" value="Non">Non</button>
-						<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection %>">
-							<button onclick="alert('Modifier l\'évènement');" class="presence" name="event-detail-edit" value="edit">Modifier</button>
+						<button onclick="alert('Vous serez présent');" class="presence hide" name="event-detail-accept" value="Oui">Oui</button>
+						<button onclick="alert('Vous serez absent');" class="presence hide" name="event-detail-reject" value="Non">Non</button>
+						<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
+							<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
 						</c:if>
 					</span>
 				</div>
