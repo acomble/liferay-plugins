@@ -434,10 +434,18 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 
 			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
 			
-			if (!eventDetail.hasClass('hide')) {
-				columnGrid.setStyle('width', '70%');
+			if (eventDetail.hasClass('hide')) {
+				if (columnOptions.hasClass('hide')) {
+					columnGrid.setStyle('width', '100%');
+				} else {
+					columnGrid.setStyle('width', '70%');
+				}
 			} else {
-				columnGrid.setStyle('width', '47%');
+				if (columnOptions.hasClass('hide')) {
+					columnGrid.setStyle('width', '70%');
+				} else {
+					columnGrid.setStyle('width', '47%');
+				}
 			}
 		}
 	);
