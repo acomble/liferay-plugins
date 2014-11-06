@@ -632,8 +632,6 @@ var SchedulerEventRecorder = A.Component.create({
 				var newDeleteButton = oldDeleteButton.cloneNode(true);
 				oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
 				newDeleteButton.addEventListener('click', eventDeleteListener);
-				
-				instance[EVENTS_OVERLAY].set(VISIBLE, false);
             }
         },
         
