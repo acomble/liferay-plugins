@@ -26,6 +26,7 @@ var Lang = A.Lang,
     _EMPTY_STR = '',
     _N_DASH = '&ndash;',
     _SPACE = ' ',
+    _LETTER_A = ' &agrave; ';
 
     isModelList = function(val) {
         return val instanceof A.ModelList;
@@ -35,7 +36,7 @@ var Lang = A.Lang,
         return val instanceof A.SchedulerView;
     },
 
-    TITLE_DT_FORMAT_ISO = '%H:%M',
+    TITLE_DT_FORMAT_ISO = '%Hh%M',
     TITLE_DT_FORMAT_US_HOURS = '%l',
     TITLE_DT_FORMAT_US_MINUTES = '%M',
 
@@ -162,6 +163,7 @@ var Lang = A.Lang,
     CSS_SCHEDULER_EVENT_SHORT = getCN(SCHEDULER_EVENT, SHORT),
     CSS_SCHEDULER_EVENT_TITLE = getCN(SCHEDULER_EVENT, TITLE),
 
+    TPL_HTML_OPEN_SPAN_FLOAT_LEFT = '<span class="float:left;">',
     TPL_HTML_OPEN_SPAN = '<span>',
     TPL_HTML_CLOSE_SPAN = '</span>',
     TPL_SCHEDULER_CONTROLS = '<div class="span7 ' + CSS_SCHEDULER_CONTROLS + '"></div>',
@@ -312,29 +314,20 @@ var SchedulerEvent = A.Component.create({
             value: function() {
                 var instance = this,
                     scheduler = instance.get(SCHEDULER),
-                    isoTime = scheduler && scheduler.get(ACTIVE_VIEW).get(ISO_TIME),
 
                     format = {
-                        endDate: TPL_HTML_OPEN_SPAN + _N_DASH + _SPACE + TITLE_DT_FORMAT_ISO + TPL_HTML_CLOSE_SPAN,
+                        endDate: _LETTER_A + TITLE_DT_FORMAT_ISO,
                         startDate: TITLE_DT_FORMAT_ISO
                     };
 
-                if (!isoTime) {
-                    format.endDate = TPL_HTML_OPEN_SPAN + _N_DASH + _SPACE + getUSDateFormat(instance.get(END_DATE)) +
-                        TPL_HTML_CLOSE_SPAN;
-                    format.startDate = getUSDateFormat(instance.get(START_DATE));
-                }
-
-                if (instance.getMinutesDuration() <= 30) {
-                    delete format.endDate;
-                }
-                else if (instance.get(ALL_DAY)) {
+                if (instance.get(ALL_DAY)) {
                     format = {};
                 }
 
                 return format;
             }
         },
+
 
         /**
          * TODO. Wanna help? Please send a Pull Request.
@@ -463,11 +456,14 @@ var SchedulerEvent = A.Component.create({
         COLOR_SATURATION_FACTOR, TITLE_DATE_FORMAT, VISIBLE, DISABLED],
 
     prototype: {
-        EVENT_NODE_TEMPLATE: '<div class="' + CSS_SCHEDULER_EVENT + '">' + '<div class="' + CSS_SCHEDULER_EVENT_TITLE + '"></div>' + '<div class="' + CSS_SCHEDULER_EVENT_CONTENT + '"></div>' + '<div class="' + CSS_SCHEDULER_EVENT_ICONS + '">' + '<span class="' + [
-            CSS_ICON, CSS_SCHEDULER_EVENT_ICON_DISABLED].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
-            CSS_SCHEDULER_EVENT_ICON_MEETING].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
-            CSS_SCHEDULER_EVENT_ICON_REMINDER].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
-            CSS_SCHEDULER_EVENT_ICON_REPEATED].join(_SPACE) + '"></span>' + '</div>' + '</div>',
+        EVENT_NODE_TEMPLATE: '<div class="' + CSS_SCHEDULER_EVENT + '">' + '<div class="' + CSS_SCHEDULER_EVENT_TITLE + '"></div>' + '<div class="' + CSS_SCHEDULER_EVENT_CONTENT + '"></div>',
+        	/**
+        	 * + '<div class="' + CSS_SCHEDULER_EVENT_ICONS + '">' + '<span class="' + [
+             * CSS_ICON, CSS_SCHEDULER_EVENT_ICON_DISABLED].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
+             *  CSS_SCHEDULER_EVENT_ICON_MEETING].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
+             * CSS_SCHEDULER_EVENT_ICON_REMINDER].join(_SPACE) + '"></span>' + '<span class="' + [CSS_ICON,
+             * CSS_SCHEDULER_EVENT_ICON_REPEATED].join(_SPACE) + '"></span>' + '</div>' + '</div>',
+             */
 
         /**
          * Construction logic executed during SchedulerEvent instantiation. Lifecycle.

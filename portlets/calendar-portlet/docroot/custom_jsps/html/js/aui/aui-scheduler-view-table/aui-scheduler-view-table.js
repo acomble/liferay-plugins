@@ -125,7 +125,7 @@ var Lang = A.Lang,
         '</div>',
 
     TPL_SVT_EVENTS_OVERLAY_NODE = '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE + '">' +
-        '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE_BODY + '"></div>' +
+        '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE_BODY + ' pL5"></div>' +
         '<a href="javascript:;" class="' + CSS_SVT_EVENTS_OVERLAY_NODE_CLOSE + '">{label}</a>' +
         '</div>',
 

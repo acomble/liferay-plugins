@@ -317,10 +317,10 @@ var SchedulerEvent = A.Component.create({
 
                     format = {
                         endDate: TPL_HTML_OPEN_SPAN + _N_DASH + _SPACE + TITLE_DT_FORMAT_ISO + TPL_HTML_CLOSE_SPAN,
-                        startDate: TITLE_DT_FORMAT_ISO
+                        startDate: TPL_HTML_OPEN_SPAN + TITLE_DT_FORMAT_ISO + TPL_HTML_CLOSE_SPAN
                     };
 
-                if (!isoTime) {
+                /*if (!isoTime) {
                     format.endDate = TPL_HTML_OPEN_SPAN + _N_DASH + _SPACE + getUSDateFormat(instance.get(END_DATE)) +
                         TPL_HTML_CLOSE_SPAN;
                     format.startDate = getUSDateFormat(instance.get(START_DATE));
@@ -329,7 +329,7 @@ var SchedulerEvent = A.Component.create({
                 if (instance.getMinutesDuration() <= 30) {
                     delete format.endDate;
                 }
-                else if (instance.get(ALL_DAY)) {
+                else*/ if (instance.get(ALL_DAY)) {
                     format = {};
                 }
 
