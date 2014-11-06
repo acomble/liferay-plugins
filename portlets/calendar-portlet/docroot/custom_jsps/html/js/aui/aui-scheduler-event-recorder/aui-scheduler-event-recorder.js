@@ -541,11 +541,10 @@ var SchedulerEventRecorder = A.Component.create({
             	
             	var optionsVisible = document.getElementById(instance.get('portletNamespace') + 'columnToggler').innerHTML.indexOf('icon-caret-right');
             	
+            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
             	if (optionsVisible == -1) {
-            		document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
             		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
             	} else {
-            		document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
             		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '70%';
             	}
             	
