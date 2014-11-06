@@ -538,8 +538,16 @@ var SchedulerEventRecorder = A.Component.create({
 
             	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'block';
             	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = '';
-            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
-            	document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
+            	
+            	var optionsVisible = document.getElementById(instance.get('portletNamespace') + 'columnToggler').innerHTML.indexOf('icon-caret-right');
+            	
+            	if (optionsVisible == -1) {
+            		document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
+            		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
+            	} else {
+            		document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
+            		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '70%';
+            	}
             	
             	// console.error('event calendarId : ' + evt.get('calendarId'));
             	// console.error('event content : ' + evt.get('content'));

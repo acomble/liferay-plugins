@@ -147,8 +147,9 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 		
 
 		<aui:col cssClass="calendar-portlet-column-grid" id="columnGrid" span="<%= columnOptionsVisible ? 9 : 12 %>">
-			
-			<!--  include scheduler.jsp -->
+			<div class="calendar-portlet-column-toggler" id="<portlet:namespace />columnToggler">
+				<i class="<%= columnOptionsVisible ? "icon-caret-left" : "icon-caret-right" %>" id="<portlet:namespace />columnTogglerIcon"></i>
+			</div>
 
 			<liferay-util:include page="/scheduler.jsp" servletContext="<%= application %>">
 				<liferay-util:param name="activeView" value="<%= activeView %>" />
@@ -416,6 +417,27 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 		);
 	</c:if>
 
+	A.one('#<portlet:namespace />columnToggler').on(
+		'click',
+		function(event) {
+			var columnGrid = A.one('#<portlet:namespace />columnGrid');
+			var columnOptions = A.one('#<portlet:namespace />columnOptions');
+			var columnTogglerIcon = A.one('#<portlet:namespace />columnTogglerIcon');
+			var eventDetail = A.one('#<portlet:namespace />calendar-portlet-column-details');
+
+			Liferay.Store('calendar-portlet-column-options-visible', columnOptions.hasClass('hide'));
+
+			columnGrid.toggleClass('span9').toggleClass('span12');
+
+			columnOptions.toggleClass('hide');
+
+			columnTogglerIcon.toggleClass('icon-caret-left').toggleClass('icon-caret-right');
+			
+			if (!eventDetail.hasClass('hide')) {
+				columnGrid.setStyle('width', '70%');
+			}
+		}
+	);
 </aui:script>
 
 <aui:script use="aui-base,aui-datatype,calendar">

@@ -125,8 +125,8 @@ var Lang = A.Lang,
         '</div>',
 
     TPL_SVT_EVENTS_OVERLAY_NODE = '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE + '">' +
-        '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE_BODY + ' pL5"></div>' +
-        '<a href="javascript:;" class="' + CSS_SVT_EVENTS_OVERLAY_NODE_CLOSE + '">{label}</a>' +
+        '<div class="' + CSS_SVT_EVENTS_OVERLAY_NODE_BODY + '"></div>' +
+        '<div class="pL5"><a href="javascript:;" class="' + CSS_SVT_EVENTS_OVERLAY_NODE_CLOSE + '">{label}</a></div>' +
         '</div>',
 
     TPL_SVT_GRID_COLUMN = '<td class="' + CSS_SVT_COLGRID + '">&nbsp;</td>',
