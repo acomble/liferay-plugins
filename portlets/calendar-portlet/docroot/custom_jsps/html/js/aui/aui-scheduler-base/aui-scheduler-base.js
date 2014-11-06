@@ -1623,7 +1623,7 @@ A.mix(SchedulerEventSupport.prototype, {
 
         return instance._events.getByClientId(clientId);
     },
-
+    
     /**
      * TODO. Wanna help? Please send a Pull Request.
      *

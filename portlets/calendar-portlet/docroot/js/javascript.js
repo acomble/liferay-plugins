@@ -1544,6 +1544,7 @@ AUI.add(
 						}
 						else if (schedulerEvent.isMasterBooking() && confirm(Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests-would-you-like-to-delete'))) {
 							CalendarUtil.deleteEvent(schedulerEvent, success);
+							manageEventDetailHide(instance);
 						}
 
 						event.preventDefault();

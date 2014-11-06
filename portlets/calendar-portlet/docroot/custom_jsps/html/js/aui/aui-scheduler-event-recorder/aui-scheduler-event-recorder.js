@@ -536,17 +536,7 @@ var SchedulerEventRecorder = A.Component.create({
 
             if (evt) {
 
-            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'block';
-            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = '';
-            	
-            	var optionsVisible = document.getElementById(instance.get('portletNamespace') + 'columnToggler').innerHTML.indexOf('icon-caret-right');
-            	
-            	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
-            	if (optionsVisible == -1) {
-            		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
-            	} else {
-            		document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '70%';
-            	}
+            	manageEventDetailDisplay(instance);
             	
             	// console.error('event calendarId : ' + evt.get('calendarId'));
             	// console.error('event content : ' + evt.get('content'));
@@ -626,23 +616,24 @@ var SchedulerEventRecorder = A.Component.create({
 			    );
 			    
 			    // edit event
-			    //instance.set(EVENT, evt);
-			    // TODO : remplir le formulaire avec les infos de l'event
 			    instance._renderPopover();
 				instance.populateForm();
 				instance._afterPopoverVisibleChange(evt);
 				instance.set(EVENT, evt);
-				//instance.set('calendarId', evt.get('calendarId'));
-				var eventListener = A.bind(instance._handleEditEvent, instance);
-				//var eventDetailEditButton = document.getElementById('event-detail-edit');
-				//eventDetailEditButton.removeEventListener('click', eventListener);
-				
-				var oldElement = document.getElementById('event-detail-edit');
-				var newElement = oldElement.cloneNode(true);
-				oldElement.parentNode.replaceChild(newElement, oldElement);
-				
-				newElement.addEventListener('click', eventListener);
+				var eventEditListener = A.bind(instance._handleEditEvent, instance);
+				var oldEditButton = document.getElementById('event-detail-edit');
+				var newEditButton = oldEditButton.cloneNode(true);
+				oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
+				newEditButton.addEventListener('click', eventEditListener);
 			    
+				// delete event
+				var eventDeleteListener = A.bind(instance._handleDeleteEvent, instance);
+				var oldDeleteButton = document.getElementById('event-detail-delete');
+				var newDeleteButton = oldDeleteButton.cloneNode(true);
+				oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
+				newDeleteButton.addEventListener('click', eventDeleteListener);
+				
+				instance[EVENTS_OVERLAY].set(VISIBLE, false);
             }
         },
         

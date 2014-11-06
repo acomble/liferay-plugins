@@ -238,6 +238,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 						<button onclick="alert('Vous serez absent');" class="presence hide" name="event-detail-reject" value="Non">Non</button>
 						<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 							<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
+							<button class="presence" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
 						</c:if>
 					</span>
 				</div>
@@ -435,6 +436,8 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 			
 			if (!eventDetail.hasClass('hide')) {
 				columnGrid.setStyle('width', '70%');
+			} else {
+				columnGrid.setStyle('width', '47%');
 			}
 		}
 	);
