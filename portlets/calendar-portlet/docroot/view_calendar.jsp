@@ -231,7 +231,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2" style="width:50px;">Invités</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<div class="fLeft mT25" id="event-detail-attend-zone">
+				<div class="fLeft mT25" id="event-detail-attend-zone hide">
 					<div class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</div>
 					<div class="fLeft">
 						<liferay-portlet:resourceURL id="calendarBookingPresence" var="invokeTransitionURL" />
@@ -246,15 +246,12 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					</div>
 				</div>
 				<div class="fLeft h30 mT25" id="event-detail-actions">
-					<span class="fLeft event-detail-attend-title hide" id="event-detail-attend-title">Serez-vous présent ?</span>
+					<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 					<span>
-						<button onclick="alert('Vous serez présent');" class="presence hide" name="event-detail-accept" value="Oui">Oui</button>
-						<button onclick="alert('Vous serez absent');" class="presence hide" name="event-detail-reject" value="Non">Non</button>
-						<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 							<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
 							<button class="presence" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
-						</c:if>
 					</span>
+					</c:if>
 				</div>
 			</div>
 			<div id="event-questionnaire" class="fLeft">
