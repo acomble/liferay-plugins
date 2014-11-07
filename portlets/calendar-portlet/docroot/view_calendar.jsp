@@ -231,11 +231,11 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2" style="width:50px;">Invités</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<div class="fLeft mT25" id="event-detail-attend-zone hide">
+				<div class="fLeft mT25 hide" id="event-detail-attend-zone">
 					<div class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</div>
 					<div class="fLeft">
 						<liferay-portlet:resourceURL id="calendarBookingPresence" var="invokeTransitionURL" />
-						<aui:form action="javascript:void(0);" method="post" name="fm">
+						<aui:form action="javascript:void(0);" method="post" name="presenceform">
 							<aui:input name="target" type="hidden" value="<%= invokeTransitionURL %>" />
 							<aui:input name="calendarBookingId" type="hidden" value="" />
 							<aui:input name="status" type="hidden" />

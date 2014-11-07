@@ -38,6 +38,20 @@ java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(endTime, userTi
 boolean allDay = BeanParamUtil.getBoolean(calendarBooking, request, "allDay");
 
 AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBooking.getCalendarBookingId());
+
+User currentUser = (User) request.getAttribute("USER");
+
+final long parentCalendarBookingId = calendarBooking.getParentCalendarBookingId();
+final long calendarBookingId = calendarBooking.getCalendarBookingId();
+
+String surveyId = (String) calendarBooking.getExpandoBridge().getAttribute("surveyId");
+
+if (calendarBookingId != parentCalendarBookingId) {
+	final CalendarBooking parentCalendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(parentCalendarBookingId);
+	surveyId = (String) parentCalendarBooking.getExpandoBridge().getAttribute("surveyId");
+}
+
+
 %>
 
 <liferay-ui:header
@@ -170,7 +184,7 @@ AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBookin
 
 <portlet:actionURL name="invokeTransition" var="invokeTransitionURL" />
 
-<aui:form action="<%= invokeTransitionURL %>" method="post" name="fm">
+<aui:form cssClass="hide" action="<%= invokeTransitionURL %>" method="post" name="fm">
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="calendarBookingId" type="hidden" value="<%= calendarBooking.getCalendarBookingId() %>" />
 	<aui:input name="status" type="hidden" />
@@ -197,12 +211,47 @@ AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBookin
 	</aui:fieldset>
 </aui:form>
 
+<div id="event-questionnaire">
+		<liferay-portlet:renderURL windowState="exclusive" portletName="igiTakeSurvey_WAR_QuestionnairePortlet" var="url1">
+			<liferay-portlet:param name="action" value="showQuestionsForUserForm"/>
+			<liferay-portlet:param name="surveyID" value="<%= surveyId %>"/>
+			<liferay-portlet:param name="redirect" value="<%= currentURL %>"/>
+		</liferay-portlet:renderURL>
+	<div id="event-questionnaire-questions" class="fLeft wdith100">
+	</div>
+</div>
+<div style="clear:both;"></div>
+
 <aui:script>
 	function <portlet:namespace />invokeTransition(status) {
 		document.<portlet:namespace />fm.<portlet:namespace />status.value = status;
 
 		submitForm(document.<portlet:namespace />fm);
 	}
+</aui:script>
+
+<aui:script use="aui-io-request">
+	function getQuestionnaire() {
+		//var A = new AUI();
+	    var ajaxUrl = '<%= url1 %>';
+	    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
+	    ajaxUrl = ajaxUrl.replace('/user/<%= currentUser.getScreenName() %>/home', '/accueil-elus');
+	    console.debug('<%= surveyId %>');
+	    A.io.request(
+			ajaxUrl,
+			{
+				dataType: 'html',
+				on: {
+					success: function() {
+						document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
+						document.getElementById('event-questionnaire-questions').form.action 
+					}
+				},
+				sync: true
+			}
+	    );
+	}
+	getQuestionnaire();
 </aui:script>
 
 <c:if test="<%= calendarBooking.isRecurring() %>">

@@ -202,7 +202,7 @@ var SchedulerEventRecorder = A.Component.create({
             setter: function(val) {
                 return A.merge({
                         'delete': 'Delete',
-                        'description-hint': 'Nom de l\'évènement',
+                        'description-hint': 'Nom de l\'ï¿½vï¿½nement',
                         cancel: 'Cancel',
                         description: 'Description',
                         save: 'Save',
@@ -564,6 +564,7 @@ var SchedulerEventRecorder = A.Component.create({
 			    url.setWindowState('exclusive'); 
 			    url.setParameter('surveyID', instance.get('questionnaireId'));
 			    url.setParameter('action', 'showQuestionsForUserForm');
+			    url.setParameter('redirect', window.location.href);
 			    var ajaxUrl = url.toString();
 			    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
 			    A.io.request(
