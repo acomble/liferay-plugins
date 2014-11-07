@@ -231,6 +231,20 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 					<span class="fLeft pT2" style="width:50px;">Invités</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
+				<div class="fLeft mT25" id="event-detail-attend-zone">
+					<div class="fLeft event-detail-attend-title" id="event-detail-attend-title">Serez-vous présent ?</div>
+					<div class="fLeft">
+						<liferay-portlet:resourceURL id="calendarBookingPresence" var="invokeTransitionURL" />
+						<aui:form action="javascript:void(0);" method="post" name="fm">
+							<aui:input name="target" type="hidden" value="<%= invokeTransitionURL %>" />
+							<aui:input name="calendarBookingId" type="hidden" value="" />
+							<aui:input name="status" type="hidden" />
+							<aui:button name="accept" cssClass="btn btn-orange" data-status-accept="0" value="accept" />
+							<aui:button name="maybe" cssClass="btn btn-orange" data-status-maybe="9" value="maybe" />
+							<aui:button name="decline" cssClass="btn btn-orange" data-status-decline="4" value="decline" />
+						</aui:form>
+					</div>
+				</div>
 				<div class="fLeft h30 mT25" id="event-detail-actions">
 					<span class="fLeft event-detail-attend-title hide" id="event-detail-attend-title">Serez-vous présent ?</span>
 					<span>
@@ -255,6 +269,54 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 <%@ include file="/view_calendar_menus.jspf" %>
 
 <aui:script use="aui-toggler,liferay-calendar-list,liferay-scheduler,liferay-store,json">
+
+	var manageCalendarAttendee = function (status) {
+		var calendarBookingId = A.one('#<portlet:namespace />calendarBookingId').val();
+		var url = A.one('#<portlet:namespace />target').val();
+		url += '&<portlet:namespace />calendarBookingId=' + calendarBookingId;
+		url += '&<portlet:namespace />status=' + status;
+		A.io.request(
+			url,
+			{
+				dataType: 'json',
+				on: {
+					success: function() {
+						var status = this.get('responseData').status;
+						if (status == 9 || status == 4 || status == 1) {
+							manageEventAttendAnswers('<portlet:namespace />', status);
+							if (status == 4) {
+								A.one('#portlet:namespace />event-detail-attend-zone').toggleClass('hide');
+							}
+						}
+					}
+				},
+				sync: true
+			}
+	    );
+	};
+
+	A.one('#<portlet:namespace />accept').on(
+		'click',
+		function(event) {
+			var status = A.one('#<portlet:namespace />accept').getData('status-accept');
+			manageCalendarAttendee(status);
+		}
+	);
+	A.one('#<portlet:namespace />maybe').on(
+		'click',
+		function(event) {
+			var status = A.one('#<portlet:namespace />maybe').getData('status-maybe');
+			manageCalendarAttendee(status);
+		}
+	);
+	A.one('#<portlet:namespace />decline').on(
+		'click',
+		function(event) {
+			var status = A.one('#<portlet:namespace />decline').getData('status-decline');
+			manageCalendarAttendee(status);
+		}
+	);
+
 	Liferay.CalendarUtil.USER_CLASS_NAME_ID = <%= PortalUtil.getClassNameId(User.class) %>;
 
 	Liferay.CalendarUtil.INVITEES_URL = '<liferay-portlet:resourceURL copyCurrentRenderParameters="<%= false %>" id="calendarBookingInvitees" />';

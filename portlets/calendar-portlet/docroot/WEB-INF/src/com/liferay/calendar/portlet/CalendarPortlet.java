@@ -224,9 +224,6 @@ public class CalendarPortlet extends MVCPortlet {
 				// USER CLIQUE SUR UN EVENEMENT //
 				// ///////////////////////////////
 				
-				// TODO Récupérer le questionnaire, les questions et les réponses associées
-				
-				
 				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				final CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
 				// write as json
@@ -239,53 +236,31 @@ public class CalendarPortlet extends MVCPortlet {
 				// Close JSON flux
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
+			} else if ("calendarBookingPresence".equals(resourceID)) {
+				_log.error("calendarBookingPresence");
+				// ////////////////////////////////////
+				// USER ACCEPTE/DECLINE L'INVITATION //
+				// ////////////////////////////////////
+				long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
+				int status = ParamUtil.getInteger(resourceRequest, "status");
+				ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarBooking.class.getName(), resourceRequest);
+				CalendarBookingServiceUtil.invokeTransition(calendarBookingId, status, serviceContext);
+				// write as json
+				final StringBuilder response = new StringBuilder();
+				// Open JSON flux
+				response.append("{");
 				
-				// ///////////////////////////////////
-				// END USER CLIQUE SUR UN EVENEMENT //
-				// ///////////////////////////////////
-			} else if ("calendarBookingQuestionnaireValid".equals(resourceID)) {
-				// ////////////////////////////
-				// USER VALIDE QUESTIONNAIRE //
-				// ////////////////////////////
+				response.append("\"status\" : \"" + status + "\"");
 				
-				final long surveyId = ParamUtil.getLong(resourceRequest, "surveyId");
-				_log.error("surveyId : " + surveyId);
-				
-				// ////////////////////////////////
-				// END USER VALIDE QUESTIONNAIRE //
-				// ////////////////////////////////
+				// Close JSON flux
+				response.append("}");
+				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
 		} catch (final Exception e) {
 			throw new PortletException(e);
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private List<CalendarBooking> getCalendarBookingByDay(ResourceRequest resourceRequest, final java.util.Calendar date) throws Exception {
-		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
-		final User user = themeDisplay.getUser();
-		final List<Calendar> calendars = CalendarLocalServiceUtil.getCalendars(QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-		final List<CalendarBooking> userCalendarBookings = new ArrayList<CalendarBooking>();
-		for (final Calendar c : calendars) {
-			final List<CalendarBooking> calendarBookings = CalendarBookingLocalServiceUtil.getCalendarBookings(c.getCalendarId());
-			for (final CalendarBooking cb : calendarBookings) {
-				final List<CalendarBooking> childCalendarBookings = CalendarBookingLocalServiceUtil.getChildCalendarBookings(cb.getCalendarBookingId());
-				final Collection<CalendarResource> calendarResources = CalendarUtil.getCalendarResources(childCalendarBookings);
-				for (final CalendarResource calendarResource : calendarResources) {
-					final Calendar defaultCalendar = calendarResource.getDefaultCalendar();
-					if (calendarResource.isUser() && defaultCalendar.getUserId() == user.getUserId()) {
-						_log.error("user - userId : " + defaultCalendar.getUserId());
-						_log.error("user - userName : " + defaultCalendar.getUserName());
-						userCalendarBookings.add(cb);
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

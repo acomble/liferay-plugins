@@ -528,53 +528,20 @@ var SchedulerEventRecorder = A.Component.create({
          * @protected
          */
         _onClickSchedulerEvent: function(event) {
-        	
-        	// console.error('_onClickSchedulerEvent');
-        	
             var instance = this;
             var evt = event.currentTarget.getData(SCHEDULER_EVENT);
-
             if (evt) {
-
+            	// Manage portlet disposition
             	manageEventDetailDisplay(instance);
-            	
-            	// console.error('event calendarId : ' + evt.get('calendarId'));
-            	// console.error('event content : ' + evt.get('content'));
-            	// console.error('event enddate : ' + evt.get('endDate'));
-            	// console.error('event startdate : ' + evt.get('startDate'));
-            	// console.error('event calendarBookingId : ' + evt.get('calendarBookingId'));
-            	
+            	//
                 instance.set(EVENT, evt, {
                     silent: true
                 });
-                
-                // TODO Chercher comment fermer popup après clic sur event
-                /* NE FONCTIONNE PAS */
-                /*
-                var scheduler = evt.get('scheduler');
-                var recorder = scheduler.get('eventRecorder');
-                recorder.hidePopover(instance.lasso);
-                */
-                /* NE FONCTIONNE PAS */
-                // instance.get('eventRecorder').hidePopover();
-                /* NE FONCTIONNE PAS */
-                // instance.removeLasso();
-                // instance.fire('cancel');
-                
+                // Get Invitees
                 instance._syncInvitees();
-                
                 var invitees = instance.get('invitees');
-                
-                instance._syncQuestionnaire();
-                
-                // console.error('invitees : ' + invitees);
-                
-                var inviteesStr;
-                
                 document.getElementById('event-detail-invitees').innerHTML = '';
-                
                 if (invitees) {
-                
 	                var values = AArray.map(
 							instance.get('invitees'),
 							function(item) {
@@ -584,16 +551,13 @@ var SchedulerEventRecorder = A.Component.create({
 	                if (values.length > 0) {
 	                	document.getElementById('event-detail-invitees').innerHTML = values.join(STR_COMMA_SPACE);
 	                }
-                
                 }
-
+                // Set event detail
                 document.getElementById('event-detail-title').innerHTML = evt.get('content');
                 document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH)); 
                 document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
-                
-                // Set surveyId in input hidden
-                //document.getElementById('surveyId').value = instance.get('questionnaireId');
-                
+                // Get QuestionnaireId
+                instance._syncQuestionnaire();
                 // Call Take a survey portlet to display questions (without form and buttons : only questions and associated answers)
                 var url = Liferay.PortletURL.createRenderURL();    
 			    url.setPortletId('igiTakeSurvey_WAR_QuestionnairePortlet');  
@@ -615,26 +579,53 @@ var SchedulerEventRecorder = A.Component.create({
 					}
 			    );
 			    
-			    // edit event
+			    // Set resourceURL for attend status
+			    document.getElementById(instance.get('portletNamespace') + 'calendarBookingId').value = evt.get('calendarBookingId');
+			    // Display attend button only if user has not answer yet.
+			    var status = evt.get('status');
+			    manageEventAttendAnswers(instance.get('portletNamespace'), status);
+			    
+			    // Set Edit event form and button listener
 			    instance._renderPopover();
 				instance.populateForm();
 				instance._afterPopoverVisibleChange(evt);
 				instance.set(EVENT, evt);
 				var eventEditListener = A.bind(instance._handleEditEvent, instance);
 				var oldEditButton = document.getElementById('event-detail-edit');
-				var newEditButton = oldEditButton.cloneNode(true);
-				oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
-				newEditButton.addEventListener('click', eventEditListener);
-			    
-				// delete event
+				if (oldEditButton) {
+					var newEditButton = oldEditButton.cloneNode(true);
+					oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
+					newEditButton.addEventListener('click', eventEditListener);
+				}
+				// Set delete event button listener
 				var eventDeleteListener = A.bind(instance._handleDeleteEvent, instance);
 				var oldDeleteButton = document.getElementById('event-detail-delete');
-				var newDeleteButton = oldDeleteButton.cloneNode(true);
-				oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
-				newDeleteButton.addEventListener('click', eventDeleteListener);
+				if (oldDeleteButton) {
+					var newDeleteButton = oldDeleteButton.cloneNode(true);
+					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
+					newDeleteButton.addEventListener('click', eventDeleteListener);
+				}
             }
         },
         
+        // ESPACE ELUS TESTS
+        
+        _manageAttendee: function(event, ajaxUrl) {
+        	A.io.request(
+					ajaxUrl,
+					{
+						dataType: 'html',
+						on: {
+							success: function() {
+								alert('success');
+							}
+						},
+						sync: true
+					}
+			    );
+        },
+        
+        // FIN ESPACE ELUS TESTS
 
         /**
          * TODO. Wanna help? Please send a Pull Request.
