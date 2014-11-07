@@ -2,6 +2,9 @@
 /*.scheduler-event-recorder-popover {
 	display: none !important;
 }*/
+#event-detail-attend-zone form {
+  margin: 0px !important; }
+
 .scheduler-view-table-events-overlay-node .scheduler-event-content {
   display: block !important; }
 

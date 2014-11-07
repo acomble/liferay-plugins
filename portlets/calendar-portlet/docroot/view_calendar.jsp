@@ -282,7 +282,7 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 				on: {
 					success: function() {
 						var status = this.get('responseData').status;
-						if (status == 9 || status == 4 || status == 1) {
+						if (status == 9 || status == 4 || status == 0) {
 							manageEventAttendAnswers('<portlet:namespace />', status);
 							if (status == 4) {
 								A.one('#portlet:namespace />event-detail-attend-zone').toggleClass('hide');
