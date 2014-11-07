@@ -237,7 +237,6 @@ public class CalendarPortlet extends MVCPortlet {
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 			} else if ("calendarBookingPresence".equals(resourceID)) {
-				_log.error("calendarBookingPresence");
 				// ////////////////////////////////////
 				// USER ACCEPTE/DECLINE L'INVITATION //
 				// ////////////////////////////////////
