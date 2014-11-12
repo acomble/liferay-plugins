@@ -49,11 +49,9 @@ CalendarResource calendarResource = (CalendarResource)request.getAttribute(WebKe
 
 <c:choose>
 	<c:when test='<%= tabs2.equals("general") %>'>
-		<% System.out.println("edit calendar general") %>
 		<%@ include file="/edit_calendar_general.jspf" %>
 	</c:when>
 	<c:when test='<%= tabs2.equals("notification-templates") %>'>
-		<% System.out.println("edit calendar notification templates") %>
 		<%@ include file="/edit_calendar_notification_templates.jspf" %>
 	</c:when>
 </c:choose>
