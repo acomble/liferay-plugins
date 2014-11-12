@@ -84,8 +84,10 @@ boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(cu
 boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
 
 boolean columnOptionsVisible = false;
+boolean displayOptions = false;
 if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 	columnOptionsVisible = true;
+	displayOptions = true;
 }
 
 //Questionnaire Portlet Id

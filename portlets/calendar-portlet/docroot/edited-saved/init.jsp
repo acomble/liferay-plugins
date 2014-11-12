@@ -166,9 +166,14 @@ Format dateFormatLongDate = FastDateFormatFactoryUtil.getDate(FastDateFormatCons
 Format dateFormatTime = null;
 
 if (isoTimeFormat) {
-	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("HH:mm", locale, timeZone);
+	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("HHhmm", locale, userTimeZone);
 }
 else {
 	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("hh:mm a", locale, timeZone);
 }
+
+dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("HHhmm", locale, userTimeZone);
+
+Format hourFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("HH", locale, utcTimeZone);
+Format minuteFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("mm", locale, utcTimeZone);
 %>

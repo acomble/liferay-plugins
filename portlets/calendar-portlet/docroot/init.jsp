@@ -171,4 +171,7 @@ if (isoTimeFormat) {
 else {
 	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("hh:mm a", locale, timeZone);
 }
+
+Format hourFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("HH", locale);
+Format minuteFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("mm", locale);
 %>

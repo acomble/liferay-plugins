@@ -84,13 +84,13 @@ for (final Layout lay: playouts){
 			<liferay-ui:message key="start-date" />:
 		</dt>
 		<dd>
-			<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + ", " + dateFormatTime.format(startTimeJCalendar.getTime()) %>
+			<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(startTimeJCalendar.getTime()) %>h<%= minuteFormat.format(startTimeJCalendar.getTime()) %>
 		</dd>
 		<dt>
 			<liferay-ui:message key="end-date" />:
 		</dt>
 		<dd>
-			<%= dateFormatLongDate.format(endTimeJCalendar.getTime()) + ", " + dateFormatTime.format(endTimeJCalendar.getTime()) %>
+			<%= dateFormatLongDate.format(endTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(endTimeJCalendar.getTime()) %>h<%= minuteFormat.format(endTimeJCalendar.getTime()) %>
 		</dd>
 
 		<%
@@ -262,7 +262,7 @@ for (final Layout lay: playouts){
 				on: {
 					success: function() {
 						document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
-						document.getElementById('event-questionnaire-questions').form.action 
+						//document.getElementById('event-questionnaire-questions').form.action 
 					}
 				},
 				sync: true
