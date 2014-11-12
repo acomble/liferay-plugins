@@ -566,7 +566,7 @@ var SchedulerEventRecorder = A.Component.create({
 			    url.setParameter('action', 'showQuestionsForUserForm');
 			    url.setParameter('redirect', window.location.href);
 			    var ajaxUrl = url.toString();
-			    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
+			    ajaxUrl = ajaxUrl.replace('/c/portal/layout', document.getElementById('questionnairePortletFriendlyURL').value);
 			    A.io.request(
 					ajaxUrl,
 					{

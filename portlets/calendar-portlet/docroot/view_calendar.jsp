@@ -19,6 +19,9 @@
 
 <%@ page import="com.liferay.portal.model.User" %>
 <%@ page import="com.liferay.portal.service.UserGroupRoleLocalServiceUtil" %>
+<%@ page import="com.liferay.portal.service.LayoutLocalServiceUtil" %>
+<%@ page import="com.liferay.portal.model.LayoutTypePortlet" %>
+<%@ page import="com.liferay.portal.model.Layout" %>
 
 <%
 String activeView = ParamUtil.getString(request, "activeView", sessionClicksDefaultView);
@@ -85,8 +88,24 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 	columnOptionsVisible = true;
 }
 
+//Questionnaire Portlet Id
+final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";
 
+//Get url  to Questionnaire portlet dynamically
+final List<Layout> playouts = LayoutLocalServiceUtil.getLayouts(-1, -1);
+String questionnairePortletFriendlyURL = null;
+for (final Layout lay: playouts){
+	final Layout playout = LayoutLocalServiceUtil.getLayout(lay.getPlid());
+	final LayoutTypePortlet playoutTypePortlet = (LayoutTypePortlet)playout.getLayoutType();
+	final List <String> pallPortletIds = playoutTypePortlet.getPortletIds();
+	if(pallPortletIds.contains(questionnairePortletId)){
+		questionnairePortletFriendlyURL = lay.getFriendlyURL(themeDisplay.getLocale());
+		break;
+	}
+}
 %>
+
+<input type="hidden" id="questionnairePortletFriendlyURL" name="questionnairePortletFriendlyURL" value="<%= questionnairePortletFriendlyURL %>" />
 
 <!-- begin view_calendar.jsp file -->
 

@@ -16,6 +16,11 @@
 
 <%@ include file="/init.jsp" %>
 
+<%@ page import="com.liferay.portal.service.LayoutLocalServiceUtil" %>
+<%@ page import="com.liferay.portal.model.LayoutTypePortlet" %>
+<%@ page import="com.liferay.portal.model.Layout" %>
+
+
 <%
 String backURL = ParamUtil.getString(request, "backURL");
 
@@ -44,14 +49,28 @@ User currentUser = (User) request.getAttribute("USER");
 final long parentCalendarBookingId = calendarBooking.getParentCalendarBookingId();
 final long calendarBookingId = calendarBooking.getCalendarBookingId();
 
+// Get surveyId attached to event
 String surveyId = (String) calendarBooking.getExpandoBridge().getAttribute("surveyId");
-
 if (calendarBookingId != parentCalendarBookingId) {
 	final CalendarBooking parentCalendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(parentCalendarBookingId);
 	surveyId = (String) parentCalendarBooking.getExpandoBridge().getAttribute("surveyId");
 }
 
+// Questionnaire Portlet Id
+final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";
 
+// Get url  to Questionnaire portlet dynamically
+final List<Layout> playouts = LayoutLocalServiceUtil.getLayouts(-1, -1);
+String questionnairePortletFriendlyURL = null;
+for (final Layout lay: playouts){
+	final Layout playout = LayoutLocalServiceUtil.getLayout(lay.getPlid());
+	final LayoutTypePortlet playoutTypePortlet = (LayoutTypePortlet)playout.getLayoutType();
+	final List <String> pallPortletIds = playoutTypePortlet.getPortletIds();
+	if(pallPortletIds.contains(questionnairePortletId)){
+		questionnairePortletFriendlyURL = lay.getFriendlyURL(themeDisplay.getLocale());
+		break;
+	}
+}
 %>
 
 <liferay-ui:header
@@ -212,7 +231,7 @@ if (calendarBookingId != parentCalendarBookingId) {
 </aui:form>
 
 <div id="event-questionnaire">
-		<liferay-portlet:renderURL windowState="exclusive" portletName="igiTakeSurvey_WAR_QuestionnairePortlet" var="url1">
+		<liferay-portlet:renderURL windowState="exclusive" portletName="<%= questionnairePortletId %>" var="url1">
 			<liferay-portlet:param name="action" value="showQuestionsForUserForm"/>
 			<liferay-portlet:param name="surveyID" value="<%= surveyId %>"/>
 			<liferay-portlet:param name="redirect" value="<%= currentURL %>"/>
@@ -234,9 +253,8 @@ if (calendarBookingId != parentCalendarBookingId) {
 	function getQuestionnaire() {
 		//var A = new AUI();
 	    var ajaxUrl = '<%= url1 %>';
-	    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '/accueil-elus');
-	    ajaxUrl = ajaxUrl.replace('/user/<%= currentUser.getScreenName() %>/home', '/accueil-elus');
-	    console.debug('<%= surveyId %>');
+	    ajaxUrl = ajaxUrl.replace('/c/portal/layout', '<%= questionnairePortletFriendlyURL %>');
+	    ajaxUrl = ajaxUrl.replace('/user/<%= currentUser.getScreenName() %>/home', '<%= questionnairePortletFriendlyURL %>');
 	    A.io.request(
 			ajaxUrl,
 			{
