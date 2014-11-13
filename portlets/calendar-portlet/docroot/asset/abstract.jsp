@@ -27,46 +27,25 @@
 		CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
 
 		Calendar calendar = calendarBooking.getCalendar();
+		
+		String location = calendarBooking.getLocation();
+		
 		%>
 		<strong><%= HtmlUtil.escape(calendar.getName(locale)) %></strong>
 	</div>
 
 	<div class="width100">
 		<div class="width100 fLeft">
-			<liferay-ui:icon
-				image="../common/revision"
-				message="start-date"
-				cssClass="fLeft mR5"
-			/>
-			<div class="fLeft pT1">
-				<liferay-ui:message key="start-date" />&nbsp;:&nbsp;
-			</div>
 			<div class="fLeft pT1">
 				<%
 				java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getStartTime(), user.getTimeZone());
 				%>
 				<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + " &agrave; " + hourFormat.format(startTimeJCalendar.getTime()) + "h" + minuteFormat.format(startTimeJCalendar.getTime()) %>
-			</div>
-		</div>
-		
-		<div class="width100 fLeft">
-			<liferay-ui:icon
-				image="../common/revision"
-				message="end-date"
-				cssClass="fLeft mR5"
-			/>
-			<span>
-			<div class="fLeft pT1">
-				<liferay-ui:message key="end-date" />&nbsp;:&nbsp;
-			</div>
-			<div class="fLeft pT1">
-				<%
-				java.util.Calendar endTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getEndTime(), user.getTimeZone());
-				%>
-				<%= dateFormatLongDate.format(endTimeJCalendar.getTime()) + " &agrave; " + hourFormat.format(endTimeJCalendar.getTime()) + "h" + minuteFormat.format(endTimeJCalendar.getTime()) %>
+				<% if (location != null && !location.equals("")) { %>
+					&agrave;
+					<%= location %>
+				<% } %>
 			</div>
 		</div>
 	</div>
 </div>
-
-<br />

@@ -249,11 +249,16 @@ for (final Layout lay: playouts){
 					<span class="fLeft pT2">Au</span>
 					<span class="fLeft pT2 event-detail-detail" id="event-detail-enddate"></span>
 				</div>
+				<div class="fLeft" id="event-detail-location-zone">
+					<span class="fLeft pT2" style="width:75px;">Emplacement&nbsp;:</span>
+					<span class="fLeft pT2 event-detail-detail location-zone" id="event-detail-location"></span>
+				</div>
 				<div class="fLeft hide" id="event-detail-related-asset-zone">
+					<span class="fLeft width100">Document(s) joint(s)&nbsp;:</span>
 					<span class="fLeft pT2" id="event-detail-related-asset"></span>
 				</div>
 				<div class="fLeft h35" id="event-detail-invitees-zone">
-					<span class="fLeft pT2" style="width:50px;">Invités</span>
+					<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
 				</div>
 				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">

@@ -100,6 +100,8 @@ boolean invitable = true;
 Recurrence recurrence = null;
 boolean recurring = false;
 
+String location = "";
+
 Calendar calendar = CalendarServiceUtil.fetchCalendar(calendarId);
 
 if (calendarBooking != null) {
@@ -117,6 +119,8 @@ if (calendarBooking != null) {
 	}
 
 	recurrence = calendarBooking.getRecurrenceObj();
+	
+	location = calendarBooking.getLocation();
 }
 else if (calendar != null) {
 	JSONObject calendarJSONObject = CalendarUtil.toCalendarJSONObject(themeDisplay, calendar);
@@ -180,6 +184,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				</aui:field-wrapper>
 		
 				<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
+				
+				<aui:input name="location" resizable="false" value="<%= location %>" />
 			</liferay-ui:panel>
 		</liferay-ui:panel-container>
 	</aui:fieldset>
