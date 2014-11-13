@@ -145,6 +145,8 @@ import javax.portlet.PortletURL;
 import javax.portlet.PortletMode;
 import com.liferay.portlet.PortletURLFactoryUtil;
 
+import com.liferay.util.portlet.PortletProps;
+
 
 /**
  * @author Eduardo Lundgren
@@ -279,6 +281,9 @@ public class CalendarPortlet extends MVCPortlet {
 				// /////////////////////
 				// GET RELATED ASSETS //
 				// /////////////////////
+				
+				final String mesDocumentsURL = GetterUtil.getString(PortletProps.get("espace.elus.mes.documents.url"));
+				
 				final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
@@ -320,7 +325,7 @@ public class CalendarPortlet extends MVCPortlet {
 						}
 						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
 						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
-						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, "/mes-documents");
+						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
 						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
 						portletURL.setWindowState(WindowState.MAXIMIZED);
 						portletURL.setPortletMode(PortletMode.VIEW);
