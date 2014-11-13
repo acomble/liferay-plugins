@@ -616,7 +616,7 @@ var SchedulerEventRecorder = A.Component.create({
 				var entries = instance.get('assetEntries');
 				if (entries && entries.length > 0) {
 					for (var i = 0; i < entries.length; i++) {
-						var entry = entries[0];
+						var entry = entries[i];
 						var entryId = entry.assetLinkEntry;
 						var entryTitle = entry.assetLinkEntryTitle;
 						var entryURL = entry.assetLinkEntryURL;
@@ -626,11 +626,21 @@ var SchedulerEventRecorder = A.Component.create({
 						entriesHTML += '</a>';
 						entriesHTML += '</span>';
 					}
-					document.getElementById('event-detail-related-asset-zone').className = 'fLeft h30';
+					document.getElementById('event-detail-related-asset-zone').className = 'fLeft';
 					document.getElementById('event-detail-related-asset').innerHTML = entriesHTML;
 				} else {
 					document.getElementById('event-detail-related-asset-zone').className = 'fLeft hide';
 					document.getElementById('event-detail-related-asset').innerHTML = '';
+				}
+				
+				// Location
+				var location = evt.get('location');
+				if (location != '') {
+					document.getElementById('event-detail-location-zone').className = 'fLeft';
+					document.getElementById('event-detail-location').innerHTML = location;
+				} else {
+					document.getElementById('event-detail-location-zone').className = 'fLeft hide';
+					document.getElementById('event-detail-location').innerHTML = '';
 				}
             }
         },
