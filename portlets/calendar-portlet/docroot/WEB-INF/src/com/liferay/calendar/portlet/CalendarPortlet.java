@@ -125,6 +125,27 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
 
+import com.liferay.portlet.asset.model.AssetEntry;
+import com.liferay.portlet.asset.model.AssetLink;
+import com.liferay.portlet.asset.model.AssetRenderer;
+import com.liferay.portlet.asset.model.AssetRendererFactory;
+import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
+import com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil;
+import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+
+import com.liferay.portal.kernel.portlet.LiferayPortletURL;
+import com.liferay.portal.kernel.portlet.LiferayWindowState;
+import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+import javax.portlet.WindowState;
+
+import com.liferay.portal.model.Layout;
+import com.liferay.portal.service.LayoutLocalServiceUtil;
+import javax.portlet.PortletURL;
+import javax.portlet.PortletMode;
+import com.liferay.portlet.PortletURLFactoryUtil;
+
+
 /**
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
@@ -254,6 +275,78 @@ public class CalendarPortlet extends MVCPortlet {
 				// Close JSON flux
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
+			} else if ("calendarBookingRelatedAsset".equals(resourceID)) {
+				// /////////////////////
+				// GET RELATED ASSETS //
+				// /////////////////////
+				final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
+				final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
+				final long assetEntryId = layoutAssetEntry.getEntryId();
+				
+				// write as json
+				final StringBuilder response = new StringBuilder();
+				// Open JSON flux
+				response.append("{");
+				
+				response.append("\"entryId\" : \"" + assetEntryId + "\"");
+
+				//
+				if (assetEntryId > 0) {
+					
+					response.append(",");
+					response.append("\"entries\": [");
+					
+					String urlsAsJSON = "";
+					
+					final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
+					for (final AssetLink assetLink : assetLinks) {
+						AssetEntry assetLinkEntry = null;
+						if (assetLink.getEntryId1() == assetEntryId) {
+							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId2());
+						}
+						else {
+							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
+						}
+						assetLinkEntry = assetLinkEntry.toEscapedModel();
+						final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
+						final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
+						if (Validator.isNull(assetRendererFactory)) {
+							if (_log.isWarnEnabled()) {
+								_log.warn("No asset renderer factory found for class " + className);
+							}
+
+							continue;
+						}
+						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
+						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
+						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, "/mes-documents");
+						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
+						portletURL.setWindowState(WindowState.MAXIMIZED);
+						portletURL.setPortletMode(PortletMode.VIEW);
+						portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
+//						portletURL.setParameter("redirect", currentURL);
+						portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
+						
+						urlsAsJSON += "{";
+						urlsAsJSON += "\"assetLinkEntry\" : " + "\"" + assetLinkEntry.getEntryId()+ "\"" + ",";
+						urlsAsJSON += "\"assetLinkEntryTitle\" : " + "\"" + assetLinkEntry.getTitle(resourceRequest.getLocale()) + "\"" + ","; 
+						urlsAsJSON += "\"assetLinkEntryURL\" : " + "\"" + portletURL.toString() + "\""; 
+						urlsAsJSON += "},";
+					}
+					
+					if (!urlsAsJSON.equals("")) {
+						response.append(urlsAsJSON.substring(0, urlsAsJSON.length() - 1));
+					}
+					
+					response.append("]");
+					
+					// Close JSON flux
+					response.append("}");
+					
+					resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
+				}
+				
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
@@ -355,7 +448,7 @@ public class CalendarPortlet extends MVCPortlet {
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
-		int status = ParamUtil.getInteger(actionRequest, "status");
+		int status = 1; //ParamUtil.getInteger(actionRequest, "status");
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarBooking.class.getName(), actionRequest);
 
@@ -742,22 +835,28 @@ public class CalendarPortlet extends MVCPortlet {
 	protected void serveCalendarBookingInvitees(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
-
+		final User user = themeDisplay.getUser();
+		final Long userId = user.getUserId();
+		
 		long parentCalendarBookingId = ParamUtil.getLong(resourceRequest, "parentCalendarBookingId");
+		
+		final CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(parentCalendarBookingId);
+		if (calendarBooking.getUserId() == userId) {
 
-		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-
-		List<CalendarBooking> childCalendarBookings = CalendarBookingServiceUtil.getChildCalendarBookings(parentCalendarBookingId);
-
-		Collection<CalendarResource> calendarResources = CalendarUtil.getCalendarResources(childCalendarBookings);
-
-		for (CalendarResource calendarResource : calendarResources) {
-			JSONObject jsonObject = CalendarUtil.toCalendarResourceJSONObject(themeDisplay, calendarResource);
-
-			jsonArray.put(jsonObject);
+			JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
+	
+			List<CalendarBooking> childCalendarBookings = CalendarBookingServiceUtil.getChildCalendarBookings(parentCalendarBookingId);
+	
+			Collection<CalendarResource> calendarResources = CalendarUtil.getCalendarResources(childCalendarBookings);
+	
+			for (CalendarResource calendarResource : calendarResources) {
+				JSONObject jsonObject = CalendarUtil.toCalendarResourceJSONObject(themeDisplay, calendarResource);
+	
+				jsonArray.put(jsonObject);
+			}
+	
+			writeJSON(resourceRequest, resourceResponse, jsonArray);
 		}
-
-		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}
 
 	protected void serveCalendarBookings(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {

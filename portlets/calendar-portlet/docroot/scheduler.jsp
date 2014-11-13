@@ -44,7 +44,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 	<c:if test="<%= !hideDayView %>">
 		window.<portlet:namespace />dayView = new A.SchedulerDayView(
 			{
-				height: 250,
+				height: 400,
 				isoTime: <%= isoTimeFormat %>,
 				readOnly: <%= readOnly %>,
 				strings: {
@@ -57,7 +57,7 @@ String viewCalendarBookingURL = ParamUtil.getString(request, "viewCalendarBookin
 	<c:if test="<%= !hideWeekView %>">
 		window.<portlet:namespace />weekView = new A.SchedulerWeekView(
 			{
-				height: 250,
+				height: 400,
 				isoTime: <%= isoTimeFormat %>,
 				readOnly: <%= readOnly %>,
 				strings: {

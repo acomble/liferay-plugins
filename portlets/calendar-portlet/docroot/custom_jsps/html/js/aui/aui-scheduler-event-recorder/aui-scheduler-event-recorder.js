@@ -549,7 +549,10 @@ var SchedulerEventRecorder = A.Component.create({
 							}
 						);
 	                if (values.length > 0) {
+	                	document.getElementById('event-detail-invitees-zone').style.display = 'block';
 	                	document.getElementById('event-detail-invitees').innerHTML = values.join(STR_COMMA_SPACE);
+	                } else {
+	                	document.getElementById('event-detail-invitees-zone').style.display = 'none';
 	                }
                 }
                 // Set event detail
@@ -581,10 +584,10 @@ var SchedulerEventRecorder = A.Component.create({
 			    );
 			    
 			    // Set resourceURL for attend status
-			    document.getElementById(instance.get('portletNamespace') + 'calendarBookingId').value = evt.get('calendarBookingId');
+			    //document.getElementById(instance.get('portletNamespace') + 'calendarBookingId').value = evt.get('calendarBookingId');
 			    // Display attend button only if user has not answer yet.
-			    var status = evt.get('status');
-			    manageEventAttendAnswers(instance.get('portletNamespace'), status);
+			    //var status = evt.get('status');
+			    //manageEventAttendAnswers(instance.get('portletNamespace'), status);
 			    
 			    // Set Edit event form and button listener
 			    instance._renderPopover();
@@ -605,6 +608,29 @@ var SchedulerEventRecorder = A.Component.create({
 					var newDeleteButton = oldDeleteButton.cloneNode(true);
 					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
 					newDeleteButton.addEventListener('click', eventDeleteListener);
+				}
+				
+				// Get Related assets
+				instance._syncRelatedAsset();
+				var entriesHTML = '';
+				var entries = instance.get('assetEntries');
+				if (entries && entries.length > 0) {
+					for (var i = 0; i < entries.length; i++) {
+						var entry = entries[0];
+						var entryId = entry.assetLinkEntry;
+						var entryTitle = entry.assetLinkEntryTitle;
+						var entryURL = entry.assetLinkEntryURL;
+						entriesHTML += '<span class=\'width100 fLeft\'>';
+						entriesHTML += '<a href=\''+ entryURL + '\' target=\'_blank\'>';
+						entriesHTML += entryTitle;
+						entriesHTML += '</a>';
+						entriesHTML += '</span>';
+					}
+					document.getElementById('event-detail-related-asset-zone').className = 'fLeft h30';
+					document.getElementById('event-detail-related-asset').innerHTML = entriesHTML;
+				} else {
+					document.getElementById('event-detail-related-asset-zone').className = 'fLeft hide';
+					document.getElementById('event-detail-related-asset').innerHTML = '';
 				}
             }
         },

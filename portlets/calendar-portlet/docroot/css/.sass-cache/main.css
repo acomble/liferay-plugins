@@ -75,6 +75,9 @@
   max-height: 50px !important;
   overflow-y: scroll !important; }
 
+.mR5 {
+  margin-right: 5px !important; }
+
 .h30 {
   height: 30px !important; }
 
@@ -86,6 +89,9 @@
 
 .pT5 {
   padding-top: 5px !important; }
+
+.pT1 {
+  padding-top: 1px !important; }
 
 .pL5 {
   padding-left: 5px !important; }

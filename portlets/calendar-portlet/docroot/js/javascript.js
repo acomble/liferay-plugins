@@ -39,6 +39,8 @@ AUI.add(
 		var TPL_INVITEES_URL = '{inviteesURL}&{portletNamespace}parentCalendarBookingId={calendarBookingId}';
 		
 		var TPL_QUESTIONNAIRE_URL = '{questionnaireURL}&{portletNamespace}calendarBookingId={calendarBookingId}';
+		
+		var TPL_RELATED_ASSET_URL = '{relatedAssetURL}&{portletNamespace}calendarBookingId={calendarBookingId}';
 
 		var TPL_RENDERING_RULES_URL = '{renderingRulesURL}&{portletNamespace}calendarIds={calendarIds}&{portletNamespace}startTime={startTime}&{portletNamespace}endTime={endTime}&{portletNamespace}ruleName={ruleName}';
 
@@ -405,6 +407,36 @@ AUI.add(
 
 				A.io.request(
 					questionnaireURL,
+					{
+						dataType: 'JSON',
+						on: {
+							success: function() {
+								callback(this.get('responseData'));
+							}
+						},
+						sync: true
+					}
+				);
+			},
+			
+			getCalendarBookingRelatedAsset: function(calendarBookingId, callback) {
+				var instance = this;
+
+				var relatedAssetURL = Lang.sub(
+					TPL_RELATED_ASSET_URL,
+					{
+						calendarBookingId: calendarBookingId,
+						relatedAssetURL: instance.INVITEES_URL,
+						portletNamespace: instance.PORTLET_NAMESPACE
+					}
+				);
+				
+				relatedAssetURL = relatedAssetURL.replace('calendarBookingInvitees', 'calendarBookingRelatedAsset');
+				
+				//console.error('questionnaireURL : ' + questionnaireURL);
+
+				A.io.request(
+					relatedAssetURL,
 					{
 						dataType: 'JSON',
 						on: {
@@ -2238,6 +2270,25 @@ AUI.add(
 							},
 							'#' + instance.get('portletNamespace') + 'eventRecorderCalendar'
 						);
+					},
+					
+					_syncRelatedAsset: function() {
+						var instance = this;
+						var schedulerEvent = instance.get('event');
+						if (schedulerEvent) {
+							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
+							if (calendar) {
+								var calendarBookingId = schedulerEvent.get('calendarBookingId');
+								var portletNamespace = instance.get('portletNamespace');
+								CalendarUtil.getCalendarBookingRelatedAsset(
+									calendarBookingId,
+									function(data) {
+										instance.set('assetEntryId', data.entryId);
+										instance.set('assetEntries', data.entries);
+									}
+								);
+							}
+						}
 					},
 					
 					_syncQuestionnaire: function() {
