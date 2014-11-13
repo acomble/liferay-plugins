@@ -560,12 +560,12 @@ var SchedulerEventRecorder = A.Component.create({
                 document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH)); 
                 document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
                 // Get QuestionnaireId
-                instance._syncQuestionnaire();
+               // instance._syncQuestionnaire();
                 // Call Take a survey portlet to display questions (without form and buttons : only questions and associated answers)
                 var url = Liferay.PortletURL.createRenderURL();    
 			    url.setPortletId('igiTakeSurvey_WAR_QuestionnairePortlet');  
 			    url.setWindowState('exclusive'); 
-			    url.setParameter('surveyID', instance.get('questionnaireId'));
+			    url.setParameter('surveyID', evt.get('questionnaireId'));
 			    url.setParameter('action', 'showQuestionsForUserForm');
 			    url.setParameter('redirect', window.location.href);
 			    var ajaxUrl = url.toString();
@@ -642,6 +642,10 @@ var SchedulerEventRecorder = A.Component.create({
 					document.getElementById('event-detail-location-zone').className = 'fLeft hide';
 					document.getElementById('event-detail-location').innerHTML = '';
 				}
+				
+				// Organizer Email
+				var organizerEmail = evt.get('organizerEmail');
+				document.getElementById('event-detail-more-info').innerHTML = '<a href=\'mailto:' + organizerEmail + '\'>' + organizerEmail + '</a>';
             }
         },
         

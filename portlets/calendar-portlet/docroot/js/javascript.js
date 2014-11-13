@@ -287,7 +287,9 @@ AUI.add(
 						secondReminder: calendarBooking.secondReminder,
 						secondReminderType: calendarBooking.secondReminderType,
 						startDate: startDate.getTime(),
-						status: calendarBooking.status
+						status: calendarBooking.status,
+						questionnaireId: calendarBooking.questionnaireId,
+						organizerEmail: calendarBooking.organizerEmail
 					}
 				);
 
@@ -962,6 +964,16 @@ AUI.add(
 					hasChildCalendarBookings: {
 						validator: isBoolean,
 						value: false
+					},
+					
+					organizerEmail: {
+						setter: String,
+						value: STR_BLANK
+					},
+					
+					questionnaireId: {
+						setter: toInt,
+						value: 0
 					},
 
 					instanceIndex: {

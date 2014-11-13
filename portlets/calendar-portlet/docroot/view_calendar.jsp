@@ -257,6 +257,9 @@ for (final Layout lay: playouts){
 					<span class="fLeft width100">Document(s) joint(s)&nbsp;:</span>
 					<span class="fLeft pT2" id="event-detail-related-asset"></span>
 				</div>
+				<div class="fLeft" id="event-detail-more-zone">
+					En cas de questions compl&eacute;mentaires,<br/>contactez <span id="event-detail-more-info"></span>
+				</div>
 				<div class="fLeft h35" id="event-detail-invitees-zone">
 					<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
 					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
@@ -271,7 +274,6 @@ for (final Layout lay: playouts){
 				</c:if>
 			</div>
 			<div id="event-questionnaire" class="fLeft">
-<!-- 				<div class="fLeft event-questionnaire-title" id="event-questionnaire-title"></div> -->
 				<div id="event-questionnaire-questions" style="width: 100%;"></div>	
 			</div>
 		</aui:col>
