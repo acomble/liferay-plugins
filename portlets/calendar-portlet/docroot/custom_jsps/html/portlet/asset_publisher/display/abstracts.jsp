@@ -16,10 +16,8 @@
 
 <%@ include file="/html/portlet/asset_publisher/init.jsp" %>
 
-<%@ page import="com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil" %>
-<%@ page import="com.liferay.portlet.asset.model.AssetLink" %>
-
 <%
+
 List results = (List)request.getAttribute("view.jsp-results");
 
 int assetEntryIndex = ((Integer)request.getAttribute("view.jsp-assetEntryIndex")).intValue();
@@ -76,7 +74,6 @@ String viewURLMessage = viewInContext ? assetRenderer.getViewInContextMessage() 
 
 viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDisplay);
 
-final String mesDocumentsURL = PropsUtil.get("espace.elus.mes.documents.url");
 %>
 
 <c:if test="<%= show %>">
@@ -84,34 +81,6 @@ final String mesDocumentsURL = PropsUtil.get("espace.elus.mes.documents.url");
 		<!--<liferay-util:include page="/html/portlet/asset_publisher/asset_actions.jsp" />-->
 		
 		<% if ("calendar".equals(assetRendererFactory.getType())) { %>
-		
-			<div class="asset-title fLeft width100">
-				<div class="fLeft"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /></div>
-				<div class="fLeft mL5"><%= HtmlUtil.escape(title) %></div>
-						
-			<% final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntry.getEntryId()); %>
-			<% if (assetLinks != null && assetLinks.size() > 0) { 
-				AssetEntry assetLinkEntry;
-				if (assetLinks.get(0).getEntryId1() == assetEntry.getEntryId()) {
-					assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId2());
-				}
-				else {
-					assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId1());
-				}
-				assetLinkEntry = assetLinkEntry.toEscapedModel();
-				final Layout layout2 = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
-				PortletURL portletURL = PortletURLFactoryUtil.create(request, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout2.getPlid(), PortletRequest.RENDER_PHASE);
-				portletURL.setWindowState(WindowState.MAXIMIZED);
-				portletURL.setPortletMode(PortletMode.VIEW);
-				portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
-				portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
-				portletURL.setParameter("redirect", currentURL);
-			
-			%>
-				<div onclick="javascript:document.location.href='<%= portletURL %>';" class="fLeft picto-file-pdf"></div>
-			<%}%>
-			
-			</div>
 		<%} else { %>
 
 			<h3 class="asset-title">
