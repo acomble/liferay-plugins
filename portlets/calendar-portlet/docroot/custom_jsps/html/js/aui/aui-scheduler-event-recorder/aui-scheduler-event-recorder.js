@@ -549,10 +549,7 @@ var SchedulerEventRecorder = A.Component.create({
 							}
 						);
 	                if (values.length > 0) {
-	                	document.getElementById('event-detail-invitees-zone').style.display = 'block';
 	                	document.getElementById('event-detail-invitees').innerHTML = values.join(STR_COMMA_SPACE);
-	                } else {
-	                	document.getElementById('event-detail-invitees-zone').style.display = 'none';
 	                }
                 }
                 // Set event detail
@@ -560,12 +557,12 @@ var SchedulerEventRecorder = A.Component.create({
                 document.getElementById('event-detail-startdate').innerHTML = evt._formatDate(evt.get('startDate'), instance.get(DATE_FORMAT_FRENCH)); 
                 document.getElementById('event-detail-enddate').innerHTML = evt._formatDate(evt.get('endDate'), instance.get(DATE_FORMAT_FRENCH));
                 // Get QuestionnaireId
-               // instance._syncQuestionnaire();
+                instance._syncQuestionnaire();
                 // Call Take a survey portlet to display questions (without form and buttons : only questions and associated answers)
                 var url = Liferay.PortletURL.createRenderURL();    
 			    url.setPortletId('igiTakeSurvey_WAR_QuestionnairePortlet');  
 			    url.setWindowState('exclusive'); 
-			    url.setParameter('surveyID', evt.get('questionnaireId'));
+			    url.setParameter('surveyID', instance.get('questionnaireId'));
 			    url.setParameter('action', 'showQuestionsForUserForm');
 			    url.setParameter('redirect', window.location.href);
 			    var ajaxUrl = url.toString();
@@ -584,10 +581,10 @@ var SchedulerEventRecorder = A.Component.create({
 			    );
 			    
 			    // Set resourceURL for attend status
-			    //document.getElementById(instance.get('portletNamespace') + 'calendarBookingId').value = evt.get('calendarBookingId');
+			    document.getElementById(instance.get('portletNamespace') + 'calendarBookingId').value = evt.get('calendarBookingId');
 			    // Display attend button only if user has not answer yet.
-			    //var status = evt.get('status');
-			    //manageEventAttendAnswers(instance.get('portletNamespace'), status);
+			    var status = evt.get('status');
+			    manageEventAttendAnswers(instance.get('portletNamespace'), status);
 			    
 			    // Set Edit event form and button listener
 			    instance._renderPopover();
@@ -609,43 +606,6 @@ var SchedulerEventRecorder = A.Component.create({
 					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
 					newDeleteButton.addEventListener('click', eventDeleteListener);
 				}
-				
-				// Get Related assets
-				instance._syncRelatedAsset();
-				var entriesHTML = '';
-				var entries = instance.get('assetEntries');
-				if (entries && entries.length > 0) {
-					for (var i = 0; i < entries.length; i++) {
-						var entry = entries[i];
-						var entryId = entry.assetLinkEntry;
-						var entryTitle = entry.assetLinkEntryTitle;
-						var entryURL = entry.assetLinkEntryURL;
-						entriesHTML += '<span class=\'width100 fLeft\'>';
-						entriesHTML += '<a href=\''+ entryURL + '\' target=\'_blank\'>';
-						entriesHTML += entryTitle;
-						entriesHTML += '</a>';
-						entriesHTML += '</span>';
-					}
-					document.getElementById('event-detail-related-asset-zone').className = 'fLeft';
-					document.getElementById('event-detail-related-asset').innerHTML = entriesHTML;
-				} else {
-					document.getElementById('event-detail-related-asset-zone').className = 'fLeft hide';
-					document.getElementById('event-detail-related-asset').innerHTML = '';
-				}
-				
-				// Location
-				var location = evt.get('location');
-				if (location != '') {
-					document.getElementById('event-detail-location-zone').className = 'fLeft';
-					document.getElementById('event-detail-location').innerHTML = location;
-				} else {
-					document.getElementById('event-detail-location-zone').className = 'fLeft hide';
-					document.getElementById('event-detail-location').innerHTML = '';
-				}
-				
-				// Organizer Email
-				var organizerEmail = evt.get('organizerEmail');
-				document.getElementById('event-detail-more-info').innerHTML = '<a href=\'mailto:' + organizerEmail + '\'>' + organizerEmail + '</a>';
             }
         },
         
