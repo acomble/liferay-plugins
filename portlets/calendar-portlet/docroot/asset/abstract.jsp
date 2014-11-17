@@ -87,7 +87,7 @@
 			portletURL.setParameter("redirect", currentURL);
 		
 		%>
-			<div onclick="javascript:document.location.href='<%= portletURL %>';" class="fLeft picto-file-pdf"></div>
+			<div title="Voir le document joint" onclick="javascript:document.location.href='<%= portletURL %>';" class="fLeft picto-file-pdf"></div>
 		<%}%>
 		
 		<%
@@ -96,9 +96,9 @@
 		if (surveyId != null && !surveyId.isEmpty()) {
 			final boolean allAnswered = SurveyUtil.hasAnsweredAllQuestions(Integer.parseInt(surveyId), currentUserFullName);
 			if (allAnswered) {
-				%><div class="fLeft picto-answered"></div><%
+				%><div title="Vous avez répondu au questionnaire" class="fLeft picto-answered"></div><%
 			} else {
-				%><div class="fLeft picto-nonanswered"></div><%
+				%><div title="Vous n'avez pas répondu au questionnaire" class="fLeft picto-nonanswered"></div><%
 			}
 		%>
 		<%}%>
