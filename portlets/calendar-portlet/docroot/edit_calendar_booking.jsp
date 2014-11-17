@@ -786,6 +786,9 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			'<%= calendarResourcesURL %>',
 			inviteResourcesInput,
 			function(event) {
+			
+				console.log('event.result.raw : ' + event.result.raw);
+			
 				var calendar = event.result.raw;
 
 				calendar.disabled = true;

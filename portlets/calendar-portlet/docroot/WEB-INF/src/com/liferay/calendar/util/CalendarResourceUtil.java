@@ -38,6 +38,9 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
+import com.liferay.portal.model.Team;
+import com.liferay.portal.service.TeamLocalServiceUtil;
+
 /**
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
@@ -60,6 +63,13 @@ public class CalendarResourceUtil {
 
 		if (classNameId == userClassNameId) {
 			return CalendarResourceUtil.getUserCalendarResource(
+				portletRequest, classPK);
+		}
+		
+		long teamClassNameId = PortalUtil.getClassNameId(Team.class);
+
+		if (classNameId == teamClassNameId) {
+			return CalendarResourceUtil.getTeamCalendarResource(
 				portletRequest, classPK);
 		}
 
@@ -208,5 +218,42 @@ public class CalendarResourceUtil {
 
 		return getUserCalendarResource(userId, serviceContext);
 	}
+	
+	public static CalendarResource getTeamCalendarResource(
+			PortletRequest portletRequest, long teamId)
+		throws PortalException, SystemException {
 
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(
+			portletRequest);
+
+		return getTeamCalendarResource(teamId, serviceContext);
+	}
+
+	public static CalendarResource getTeamCalendarResource(
+			long teamId, ServiceContext serviceContext)
+		throws PortalException, SystemException {
+
+		Team team = TeamLocalServiceUtil.getTeam(teamId);
+
+		long classNameId = PortalUtil.getClassNameId(Team.class);
+
+		CalendarResource calendarResource =
+			CalendarResourceLocalServiceUtil.fetchCalendarResource(
+				classNameId, teamId);
+
+		if (calendarResource != null) {
+			return calendarResource;
+		}
+
+		Map<Locale, String> nameMap = new HashMap<Locale, String>();
+
+		nameMap.put(LocaleUtil.getDefault(), team.getName());
+
+		Map<Locale, String> descriptionMap = new HashMap<Locale, String>();
+
+		return CalendarResourceLocalServiceUtil.addCalendarResource(
+			team.getUserId(), teamId,
+			PortalUtil.getClassNameId(Team.class), teamId, null, null,
+			nameMap, descriptionMap, true, serviceContext);
+	}
 }

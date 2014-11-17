@@ -7,6 +7,14 @@
 	display: none !important;
 }*/
 
+.aui .calendar-portlet .aqua .tgl {
+	border-top-color: #77b800 !important;
+}
+
+.aui .calendar-portlet .aqua .portlet-title-spec {
+	background-color: #77b800 !important;
+}
+
 #event-detail-attend-zone form {
 	margin: 0px !important;
 }

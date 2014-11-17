@@ -5726,6 +5726,8 @@ public class CalendarResourcePersistenceImpl extends BasePersistenceImpl<Calenda
 				qPos.add(classNameId);
 
 				qPos.add(classPK);
+				
+				//_log.error("SQL " + sql);
 
 				List<CalendarResource> list = q.list();
 

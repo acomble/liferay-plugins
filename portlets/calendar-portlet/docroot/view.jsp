@@ -24,7 +24,7 @@ PortletURL portletURL = renderResponse.createRenderURL();
 portletURL.setParameter("tabs1", tabs1);
 %>
 
-<span class="aqua">
+<span class="aqua" style="color:#77b800 !important;">
 	<h1 class="portlet-title-spec">Mes rendez-vous</h1>
 	<span class="tgl"></span>
 </span> 

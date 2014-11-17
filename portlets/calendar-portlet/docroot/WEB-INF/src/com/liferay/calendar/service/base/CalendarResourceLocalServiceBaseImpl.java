@@ -23,7 +23,6 @@ import com.liferay.calendar.service.persistence.CalendarNotificationTemplatePers
 import com.liferay.calendar.service.persistence.CalendarPersistence;
 import com.liferay.calendar.service.persistence.CalendarResourceFinder;
 import com.liferay.calendar.service.persistence.CalendarResourcePersistence;
-
 import com.liferay.portal.kernel.bean.BeanReference;
 import com.liferay.portal.kernel.bean.IdentifiableBean;
 import com.liferay.portal.kernel.dao.jdbc.SqlUpdate;
@@ -40,12 +39,11 @@ import com.liferay.portal.model.PersistedModel;
 import com.liferay.portal.service.BaseLocalServiceImpl;
 import com.liferay.portal.service.PersistedModelLocalServiceRegistryUtil;
 import com.liferay.portal.service.persistence.ClassNamePersistence;
+import com.liferay.portal.service.persistence.TeamPersistence;
 import com.liferay.portal.service.persistence.UserPersistence;
-
 import com.liferay.portlet.asset.service.persistence.AssetEntryPersistence;
 
 import java.io.Serializable;
-
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -991,6 +989,8 @@ public abstract class CalendarResourceLocalServiceBaseImpl
 	protected com.liferay.portal.service.UserService userService;
 	@BeanReference(type = UserPersistence.class)
 	protected UserPersistence userPersistence;
+	@BeanReference(type = TeamPersistence.class)
+	protected TeamPersistence teamPersistence;
 	@BeanReference(type = com.liferay.portlet.asset.service.AssetEntryLocalService.class)
 	protected com.liferay.portlet.asset.service.AssetEntryLocalService assetEntryLocalService;
 	@BeanReference(type = com.liferay.portlet.asset.service.AssetEntryService.class)

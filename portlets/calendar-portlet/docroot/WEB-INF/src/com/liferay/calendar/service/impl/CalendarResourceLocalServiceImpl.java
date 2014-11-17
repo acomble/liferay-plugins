@@ -14,7 +14,11 @@
 
 package com.liferay.calendar.service.impl;
 
-import com.liferay.calendar.CalendarResourceCodeException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.liferay.calendar.CalendarResourceNameException;
 import com.liferay.calendar.DuplicateCalendarResourceException;
 import com.liferay.calendar.model.Calendar;
@@ -26,7 +30,6 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
-import com.liferay.portal.kernel.util.CharPool;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
@@ -34,13 +37,9 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.model.ResourceConstants;
 import com.liferay.portal.model.SystemEventConstants;
+import com.liferay.portal.model.Team;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.ServiceContext;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * @author Eduardo Lundgren
@@ -70,6 +69,10 @@ public class CalendarResourceLocalServiceImpl
 				classNameLocalService.getClassNameId(CalendarResource.class)) {
 
 			classPK = calendarResourceId;
+		}
+		
+		if (classNameId == classNameLocalService.getClassNameId(Team.class)) {
+			groupId = teamPersistence.findByPrimaryKey(classPK).getGroupId();
 		}
 
 		if (PortletPropsValues.CALENDAR_RESOURCE_FORCE_AUTOGENERATE_CODE ||
@@ -327,15 +330,15 @@ public class CalendarResourceLocalServiceImpl
 			Map<Locale, String> nameMap)
 		throws PortalException, SystemException {
 
-		validate(nameMap);
-
-		if (Validator.isNull(code) || (code.indexOf(CharPool.SPACE) != -1)) {
-			throw new CalendarResourceCodeException();
-		}
-
-		if (calendarResourcePersistence.countByG_C(groupId, code) > 0) {
-			throw new DuplicateCalendarResourceException();
-		}
+//		validate(nameMap);
+//
+//		if (Validator.isNull(code) || (code.indexOf(CharPool.SPACE) != -1)) {
+//			throw new CalendarResourceCodeException();
+//		}
+//
+//		if (calendarResourcePersistence.countByG_C(groupId, code) > 0) {
+//			throw new DuplicateCalendarResourceException();
+//		}
 
 		CalendarResource calendarResource =
 			calendarResourcePersistence.fetchByC_C(classNameId, classPK);
