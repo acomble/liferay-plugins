@@ -24,7 +24,7 @@
 <%@ page import="com.liferay.portal.model.Layout" %>
 
 <%
-String activeView = ParamUtil.getString(request, "activeView", sessionClicksDefaultView);
+String activeView = ParamUtil.getString(request, "activeView", "week");
 long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 
 List<Calendar> groupCalendars = null;
