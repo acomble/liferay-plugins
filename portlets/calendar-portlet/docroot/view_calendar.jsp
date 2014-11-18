@@ -240,16 +240,16 @@ for (final Layout lay: playouts){
 		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="fLeft calendar-portlet-column-details hide">
 			<div class="hide"><%= currentUserId %></div>
 			<div id="event-detail" class="fLeft">
-				<div class="fLeft event-detail-title" id="event-detail-title"></div>
-				<div class="fLeft h30" id="event-detail-startdate-zone">
+				<div class="fLeft event-detail-title width100" id="event-detail-title"></div>
+				<div class="fLeft h30 width100" id="event-detail-startdate-zone">
 					<span class="fLeft pT2">Du</span>
 					<span class="fLeft pT2 event-detail-detail" id="event-detail-startdate"></span>
 				</div>
-				<div class="fLeft h30" id="event-detail-enddate-zone">
+				<div class="fLeft h30 width100" id="event-detail-enddate-zone">
 					<span class="fLeft pT2">Au</span>
 					<span class="fLeft pT2 event-detail-detail" id="event-detail-enddate"></span>
 				</div>
-				<div class="fLeft" id="event-detail-location-zone">
+				<div class="fLeft h30 width100" id="event-detail-location-zone">
 					<span class="fLeft pT2" style="width:75px;">Emplacement&nbsp;:</span>
 					<span class="fLeft pT2 event-detail-detail location-zone" id="event-detail-location"></span>
 				</div>
@@ -257,15 +257,15 @@ for (final Layout lay: playouts){
 					<span class="fLeft width100">Document(s) joint(s)&nbsp;:</span>
 					<span class="fLeft pT2" id="event-detail-related-asset"></span>
 				</div>
-				<div class="fLeft" id="event-detail-more-zone">
+				<div class="fLeft pT5 width100" id="event-detail-more-zone">
 					En cas de questions compl&eacute;mentaires,<br/>contactez <span id="event-detail-more-info"></span>
 				</div>
-				<div class="fLeft h35" id="event-detail-invitees-zone">
+				<div class="fLeft pT5 h35 width100" id="event-detail-invitees-zone">
 					<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
-					<span class="fLeft pT2 event-detail-detail invitees-zone" id="event-detail-invitees"></span>
+					<span class="fLeft pT2 invitees-zone" id="event-detail-invitees"></span>
 				</div>
 				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
-					<div class="fLeft h30 mT25" id="event-detail-actions">
+					<div class="fLeft h30 mT25 width100" id="event-detail-actions">
 						<span>
 								<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
 								<button class="presence" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
@@ -273,7 +273,7 @@ for (final Layout lay: playouts){
 					</div>
 				</c:if>
 			</div>
-			<div id="event-questionnaire" class="fLeft">
+			<div id="event-questionnaire" class="fLeft width100">
 				<div id="event-questionnaire-questions" style="width: 100%;"></div>	
 			</div>
 		</aui:col>
@@ -471,9 +471,14 @@ for (final Layout lay: playouts){
 				}
 			} else {
 				if (columnOptions.hasClass('hide')) {
-					columnGrid.setStyle('width', '70%');
+					if (_1_WAR_calendarportlet_scheduler.get('activeView').name == 'scheduler-view-day') {
+						columnGrid.setStyle('width', '47%');
+					} else {
+						columnGrid.setStyle('width', '70%');
+					}
 				} else {
 					columnGrid.setStyle('width', '47%');
+					eventDetail.setStyle('width', '25%');
 				}
 			}
 		}
