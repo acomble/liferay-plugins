@@ -258,7 +258,7 @@ for (final Layout lay: playouts){
 					<span class="fLeft pT2" id="event-detail-related-asset"></span>
 				</div>
 				<div class="fLeft pT5 width100" id="event-detail-more-zone">
-					En cas de questions compl&eacute;mentaires,<br/>contactez <span id="event-detail-more-info"></span>
+					En cas de questions compl&eacute;mentaires, contactez <span id="event-detail-more-info"></span>
 				</div>
 				<div class="fLeft pT5 h35 width100" id="event-detail-invitees-zone">
 					<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
