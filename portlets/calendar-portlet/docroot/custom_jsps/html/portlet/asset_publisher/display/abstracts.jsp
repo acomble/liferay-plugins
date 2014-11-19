@@ -77,11 +77,27 @@ viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDis
 %>
 
 <c:if test="<%= show %>">
+	<% if ("calendar".equals(assetRendererFactory.getType())) { %>
+	<%
+		String path = assetRenderer.render(renderRequest, renderResponse, AssetRenderer.TEMPLATE_ABSTRACT);
+
+		request.setAttribute(WebKeys.ASSET_RENDERER, assetRenderer);
+		request.setAttribute(WebKeys.ASSET_PUBLISHER_ABSTRACT_LENGTH, abstractLength);
+		request.setAttribute(WebKeys.ASSET_PUBLISHER_VIEW_URL, viewURL);
+	%>
+
+		<c:choose>
+			<c:when test="<%= path == null %>">
+				<%= HtmlUtil.escape(summary) %>
+			</c:when>
+			<c:otherwise>
+				<liferay-util:include page="<%= path %>" portletId="<%= assetRendererFactory.getPortletId() %>" />
+			</c:otherwise>
+		</c:choose>
+	<%} else { %>
 	<div class="asset-abstract <%= defaultAssetPublisher ? "default-asset-publisher" : StringPool.BLANK %>">
 		<!--<liferay-util:include page="/html/portlet/asset_publisher/asset_actions.jsp" />-->
 		
-		<% if ("calendar".equals(assetRendererFactory.getType())) { %>
-		<%} else { %>
 
 			<h3 class="asset-title">
 				<c:choose>
@@ -96,8 +112,6 @@ viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDis
 				</c:choose>
 			</h3>
 		
-		<%}%>
-
 		<div class="asset-content">
 			<div class="asset-summary">
 
@@ -130,4 +144,5 @@ viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDis
 			<%@ include file="/html/portlet/asset_publisher/asset_metadata.jspf" %>
 		</div>
 	</div>
+	<%}%>
 </c:if>

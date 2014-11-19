@@ -41,9 +41,9 @@
 
 
 
-<div>
-
 	<%
+	int assetEntryIndex = ((Integer)request.getAttribute("view.jsp-assetEntryIndex")).intValue();
+	
 	final User currentUser = PortalUtil.getUser(request);
 	final String currentUserFullName = currentUser.getFullName();
 
@@ -62,71 +62,65 @@
 	final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
 	final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(layoutAssetEntry.getClassPK());
 	
+	java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getStartTime(), user.getTimeZone());
+	
+	boolean allAnswered = false;
+	final String surveyId = (String)calendarBooking.getExpandoBridge().getAttribute("surveyId");
+	if (surveyId != null && !surveyId.isEmpty()) {
+		allAnswered = SurveyUtil.hasAnsweredAllQuestions(Integer.parseInt(surveyId), currentUserFullName);
+	}
+
+	PortletURL portletURL = null;
+	final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
+	if (assetLinks != null && assetLinks.size() > 0) { 
+		AssetEntry assetLinkEntry;
+		if (assetLinks.get(0).getEntryId1() == assetEntryId) {
+			assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId2());
+		}
+		else {
+			assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId1());
+		}
+		assetLinkEntry = assetLinkEntry.toEscapedModel();
+		final Layout layout2 = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
+		portletURL = PortletURLFactoryUtil.create(request, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout2.getPlid(), PortletRequest.RENDER_PHASE);
+		portletURL.setWindowState(WindowState.MAXIMIZED);
+		portletURL.setPortletMode(PortletMode.VIEW);
+		portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
+		portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
+		portletURL.setParameter("redirect", currentURL);
+	
+	}
+	
+	String cssClass = "";
+	if (assetEntryIndex % 2 == 0) {
+		cssClass = "yui-dt-even";
+	}
+	
 	%>
 	
-	<div class="asset-title fLeft width100">
-		<div class="fLeft"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /></div>
-		<div class="fLeft mL5"><%= HtmlUtil.escape(calendarBooking.getTitle(locale)) %></div>			
 	
-		<% final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId); %>
-		<% if (assetLinks != null && assetLinks.size() > 0) { 
-			AssetEntry assetLinkEntry;
-			if (assetLinks.get(0).getEntryId1() == assetEntryId) {
-				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId2());
-			}
-			else {
-				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLinks.get(0).getEntryId1());
-			}
-			assetLinkEntry = assetLinkEntry.toEscapedModel();
-			final Layout layout2 = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
-			final PortletURL portletURL = PortletURLFactoryUtil.create(request, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout2.getPlid(), PortletRequest.RENDER_PHASE);
-			portletURL.setWindowState(WindowState.MAXIMIZED);
-			portletURL.setPortletMode(PortletMode.VIEW);
-			portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
-			portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
-			portletURL.setParameter("redirect", currentURL);
-		
-		%>
-			<div title="Voir le document joint" onclick="javascript:document.location.href='<%= portletURL %>';" class="fLeft picto-file-pdf"></div>
-		<%}%>
-		
-		<%
-		
-		final String surveyId = (String)calendarBooking.getExpandoBridge().getAttribute("surveyId");
-		if (surveyId != null && !surveyId.isEmpty()) {
-			final boolean allAnswered = SurveyUtil.hasAnsweredAllQuestions(Integer.parseInt(surveyId), currentUserFullName);
-			if (allAnswered) {
-				%><div title="Vous avez répondu au questionnaire" class="fLeft picto-answered"></div><%
-			} else {
-				%><div title="Vous n'avez pas répondu au questionnaire" class="fLeft picto-nonanswered"></div><%
-			}
-		%>
-		<%}%>
-	
-	</div>
-	
-	<div class="width100 asset-calendar-zone">
-		<liferay-ui:icon
-			image="../common/user_icon"
-			message=""
-		/>
-
-		<strong><%= HtmlUtil.escape(calendar.getName(locale)) %></strong>
-		
-	</div>
-
-	<div class="width100">
-		<div class="width100 fLeft">
-			<div class="fLeft pT1">
-				<%
-				java.util.Calendar startTimeJCalendar = JCalendarUtil.getJCalendar(calendarBooking.getStartTime(), user.getTimeZone());
-				%>
-				<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + " &agrave; " + hourFormat.format(startTimeJCalendar.getTime()) + "h" + minuteFormat.format(startTimeJCalendar.getTime()) %>
-				<% if (location != null && !location.equals("")) { %>
-					&agrave;
-					<%= location %>
-				<% } %>
-			</div>
-		</div>
-	</div>
-</div>
+	<tr class="<%= cssClass %>" style="border: 1px solid #ccc;border-bottom: 0px;font-weight: bold;">
+		<td data-id="event-picto" style="width: 7% !important;"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /></td>
+		<td data-id="event-title" style="width: 70% !important;text-align: left;"><%= HtmlUtil.escape(calendarBooking.getTitle(locale)) %></td>
+		<td data-id="event-file" style="width: 7% !important;">
+			<% if (portletURL != null) { %>
+			<div title="Voir le document joint" onclick="javascript:document.location.href='<%= portletURL %>';" class="picto-file-pdf"></div>
+			<% } %>
+		</td>
+		<td data-id="event-questionnaire" style="width: 7% !important;">
+			<% if (allAnswered) {%>
+			<div title="Vous avez répondu au questionnaire" class="picto-answered"></div>
+			<% } else { %>
+			<div title="Vous n'avez pas répondu au questionnaire" class="picto-nonanswered"></div>
+			<% } %>
+		</td>
+	</tr>
+	<tr class="<%= cssClass %>" style="border-left: 1px solid #ccc; border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;">
+		<td colspan="4" data-id="event-date" style="padding-left: 10px; text-align: left;">
+			<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) + " &agrave; " + hourFormat.format(startTimeJCalendar.getTime()) + "h" + minuteFormat.format(startTimeJCalendar.getTime()) %>
+			<% if (location != null && !location.equals("")) { %>
+				&agrave;
+				<%= location %>
+			<% } %>
+		</td>
+	</tr>

@@ -214,7 +214,13 @@ if (!portletName.equals(PortletKeys.RELATED_ASSETS) || (assetEntryQuery.getLinke
 						<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, results, contextObjects) %>
 					</c:when>
 					<c:otherwise>
+						<% if (classNameId == 10511) { %>
+						<table><body>
+						<%@ include file="/html/portlet/asset_publisher/view_dynamic_list_asset_calendar.jspf" %>
+						</body></table>
+						<%}else{%>
 						<%@ include file="/html/portlet/asset_publisher/view_dynamic_list_asset.jspf" %>
+						<%}%>
 					</c:otherwise>
 				</c:choose>
 
