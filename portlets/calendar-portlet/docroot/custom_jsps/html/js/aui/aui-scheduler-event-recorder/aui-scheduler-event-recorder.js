@@ -610,6 +610,15 @@ var SchedulerEventRecorder = A.Component.create({
 					newDeleteButton.addEventListener('click', eventDeleteListener);
 				}
 				
+				// Set edit questionnaire button listener
+				var eventEditQuestionnaireListener = A.bind(instance._syncQuestionnaire, instance);
+				var oldEditQuestionnaireButton = document.getElementById('event-questionnaire-edit');
+				if (oldEditQuestionnaireButton) {
+					var newEditQuestionnaireButton = oldEditQuestionnaireButton.cloneNode(true);
+					oldEditQuestionnaireButton.parentNode.replaceChild(newEditQuestionnaireButton, oldEditQuestionnaireButton);
+					newEditQuestionnaireButton.addEventListener('click', eventEditQuestionnaireListener);
+				}
+				
 				// Get Related assets
 				instance._syncRelatedAsset();
 				var entriesHTML = '';
@@ -645,7 +654,7 @@ var SchedulerEventRecorder = A.Component.create({
 				
 				// Organizer Email
 				var organizerEmail = evt.get('organizerEmail');
-				document.getElementById('event-detail-more-info').innerHTML = organizerEmail;
+				document.getElementById('event-detail-more-info').innerHTML = '<a href="mailto:' + organizerEmail + '?subject=Cristal Union Espace Elus - Questions">' + organizerEmail + '</a>';
             }
         },
         

@@ -275,6 +275,7 @@ for (final Layout lay: playouts){
 			</div>
 			<div id="event-questionnaire" class="fLeft width100">
 				<div id="event-questionnaire-questions" style="width: 100%;"></div>	
+				<button class="fLeft presence" id="event-questionnaire-edit" name="event-questionnaire-edit" value="edit-questionnaire">Modifier</button>
 			</div>
 		</aui:col>
 	</aui:row>

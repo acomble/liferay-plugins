@@ -186,6 +186,16 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
 				
 				<aui:input name="location" resizable="false" value="<%= location %>" />
+				
+				<label class="control-label">
+					Nombre de jours précédents l'évènement pour avertir l'utilisateur qu'il faut répondre au questionnaire de façon urgente
+				</label>
+				<liferay-ui:custom-attribute
+					className="<%= CalendarBooking.class.getName() %>"
+					classPK="<%= calendarBooking != null ? calendarBooking.getCalendarBookingId() : 0 %>"
+					editable="<%= true %>"
+					name="NbDaysHurryUp" label="false"
+				/>
 			</liferay-ui:panel>
 		</liferay-ui:panel-container>
 	</aui:fieldset>

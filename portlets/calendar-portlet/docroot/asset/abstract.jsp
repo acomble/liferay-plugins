@@ -69,6 +69,9 @@
 	if (surveyId != null && !surveyId.isEmpty()) {
 		allAnswered = SurveyUtil.hasAnsweredAllQuestions(Integer.parseInt(surveyId), currentUserFullName);
 	}
+	
+	final Integer nbDaysHurryUp =  (Integer)calendarBooking.getExpandoBridge().getAttribute("NbDaysHurryUp");
+	int diffInDays = (int)( (java.util.Calendar.getInstance().getTimeInMillis() - startTimeJCalendar.getTimeInMillis()) / (1000 * 60 * 60 * 24) );
 
 	PortletURL portletURL = null;
 	final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
@@ -98,7 +101,6 @@
 	
 	%>
 	
-	
 	<tr class="<%= cssClass %>" style="border: 1px solid #ccc;border-bottom: 0px;font-weight: bold;">
 		<td data-id="event-picto" style="width: 7% !important;"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /></td>
 		<td data-id="event-title" style="width: 70% !important;text-align: left;"><%= HtmlUtil.escape(calendarBooking.getTitle(locale)) %></td>
@@ -111,7 +113,15 @@
 			<% if (allAnswered) {%>
 			<div title="Vous avez répondu au questionnaire" class="picto-answered"></div>
 			<% } else { %>
-			<div title="Vous n'avez pas répondu au questionnaire" class="picto-nonanswered"></div>
+				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
+				<div title="Vous n'avez pas répondu au questionnaire" class="picto-urgent"></div>
+				<% } %>
+				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
+				<div title="Vous n'avez pas répondu au questionnaire" class="picto-nonanswered"></div>
+				<% } %>
+				<% if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
+					B
+				<% } %>
 			<% } %>
 		</td>
 	</tr>

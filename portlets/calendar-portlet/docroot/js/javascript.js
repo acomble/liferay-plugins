@@ -2297,17 +2297,28 @@ AUI.add(
 						var instance = this;
 						var schedulerEvent = instance.get('event');
 						if (schedulerEvent) {
-							var calendar = CalendarUtil.availableCalendars[schedulerEvent.get('calendarId')];
-							if (calendar) {
-								var calendarBookingId = schedulerEvent.get('calendarBookingId');
-								var portletNamespace = instance.get('portletNamespace');
-								CalendarUtil.getCalendarBookingQuestionnaire(
-									calendarBookingId,
-									function(data) {
-										instance.set('questionnaireId', data.surveyId);
-									}
-								);
-							}
+							var url = Liferay.PortletURL.createRenderURL();    
+						    url.setPortletId('igiTakeSurvey_WAR_QuestionnairePortlet');  
+						    url.setWindowState('exclusive'); 
+						    url.setParameter('surveyID', schedulerEvent.get('questionnaireId'));
+						    url.setParameter('action', 'showQuestionsForUserForm');
+						    url.setParameter('redirect', window.location.href);
+						    url.setParameter('update', 'update');
+						    var ajaxUrl = url.toString();
+						    ajaxUrl = ajaxUrl.replace('/c/portal/layout', document.getElementById('questionnairePortletFriendlyURL').value);
+						    A.io.request(
+								ajaxUrl,
+								{
+									dataType: 'html',
+									on: {
+										success: function() {
+											document.getElementById('event-questionnaire-edit').style.display = 'none';
+											document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
+										}
+									},
+									sync: true
+								}
+						    );
 						}
 					},
 
