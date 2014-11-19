@@ -655,6 +655,13 @@ var SchedulerEventRecorder = A.Component.create({
 				// Organizer Email
 				var organizerEmail = evt.get('organizerEmail');
 				document.getElementById('event-detail-more-info').innerHTML = '<a href="mailto:' + organizerEmail + '?subject=Cristal Union Espace Elus - Questions">' + organizerEmail + '</a>';
+				
+				// Edit questionnaire button
+				if (document.getElementById('event-questionnaire-submit')) {
+					document.getElementById('event-questionnaire-edit').style.display = 'none';
+				} else {
+					document.getElementById('event-questionnaire-edit').style.display = 'block';
+				}
             }
         },
         
