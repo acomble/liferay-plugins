@@ -41,12 +41,17 @@ import javax.portlet.PortletRequest;
 import com.liferay.portal.model.Team;
 import com.liferay.portal.service.TeamLocalServiceUtil;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 /**
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
  * @author Marcellus Tavares
  */
 public class CalendarResourceUtil {
+	
+	protected static Log	_log	= LogFactoryUtil.getLog(CalendarResourceUtil.class);
 
 	public static CalendarResource getCalendarResource(
 			PortletRequest portletRequest, long classNameId, long classPK)
@@ -236,6 +241,9 @@ public class CalendarResourceUtil {
 		Team team = TeamLocalServiceUtil.getTeam(teamId);
 
 		long classNameId = PortalUtil.getClassNameId(Team.class);
+		
+		_log.error("getTeamCalendarResource - teamId : " +  teamId);
+		_log.error("getTeamCalendarResource - classNameId : " +  classNameId);
 
 		CalendarResource calendarResource =
 			CalendarResourceLocalServiceUtil.fetchCalendarResource(

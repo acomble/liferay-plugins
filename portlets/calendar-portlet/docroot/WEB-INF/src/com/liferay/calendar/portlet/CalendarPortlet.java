@@ -388,8 +388,8 @@ public class CalendarPortlet extends MVCPortlet {
 				for (final CalendarResource calendarResource : calendarResources) {
 					final Calendar defaultCalendar = calendarResource.getDefaultCalendar();
 					if (calendarResource.isUser() && defaultCalendar.getUserId() == user.getUserId()) {
-						_log.error("user - userId : " + defaultCalendar.getUserId());
-						_log.error("user - userName : " + defaultCalendar.getUserName());
+						//_log.error("user - userId : " + defaultCalendar.getUserId());
+						//_log.error("user - userName : " + defaultCalendar.getUserName());
 						userCalendarBookings.add(cb);
 					}
 				}
@@ -543,7 +543,7 @@ public class CalendarPortlet extends MVCPortlet {
 		_log.error("name : " + nameMap.get(Locale.FRENCH));
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarResource.class.getName(), actionRequest);
-
+		
 		if (calendarResourceId <= 0) {
 			CalendarResourceServiceUtil.addCalendarResource(serviceContext.getScopeGroupId(), PortalUtil.getClassNameId(CalendarResource.class), 0, PortalUUIDUtil.generate(), code, nameMap,
 					descriptionMap, active, serviceContext);
@@ -963,7 +963,7 @@ public class CalendarPortlet extends MVCPortlet {
 		List<CalendarResource> companyCalendarResources = CalendarResourceServiceUtil.search(themeDisplay.getCompanyId(), new long[] { themeDisplay.getCompanyGroupId() },
 				new long[] { groupClassNameId }, keywords, true, true, 0, SearchContainer.DEFAULT_DELTA, new CalendarResourceNameComparator());
 		
-		_log.error("keywords : " + keywords);
+		//_log.error("keywords : " + keywords);
 
 		for (CalendarResource calendarResource : companyCalendarResources) {
 			addCalendarJSONObject(resourceRequest, jsonArray, calendarResource.getClassNameId(), calendarResource.getClassPK());
@@ -978,7 +978,7 @@ public class CalendarPortlet extends MVCPortlet {
 		List<Group> groups = GroupLocalServiceUtil.search(themeDisplay.getCompanyId(), name, name, params, true, 0, SearchContainer.DEFAULT_DELTA);
 
 		for (Group group : groups) {
-			_log.error("group : " + group.getName());
+			//_log.error("group : " + group.getName());
 			addCalendarJSONObject(resourceRequest, jsonArray, groupClassNameId, group.getGroupId());
 		}
 
@@ -995,9 +995,9 @@ public class CalendarPortlet extends MVCPortlet {
 		long teamClassNameId = PortalUtil.getClassNameId(Team.class);
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
-			_log.error("team : " + team.getTeamId());
+			//_log.error("team : " + team.getTeamId());
 			if (team.getName().toUpperCase().contains(keywords.toUpperCase())) {
-				_log.error("team added : " + team.getTeamId());
+				//_log.error("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}
 		}

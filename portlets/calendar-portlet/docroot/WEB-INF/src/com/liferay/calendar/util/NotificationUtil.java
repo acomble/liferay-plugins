@@ -35,9 +35,11 @@ import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.model.Group;
 import com.liferay.portal.model.Role;
 import com.liferay.portal.model.RoleConstants;
+import com.liferay.portal.model.Team;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionCheckerFactoryUtil;
+import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
@@ -47,124 +49,90 @@ import com.liferay.util.portlet.PortletProps;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 /**
  * @author Eduardo Lundgren
  * @author Marcellus Tavares
  */
 public class NotificationUtil {
 
-	public static User getDefaultSenderUser(Calendar calendar)
-		throws Exception {
+	protected static Log	_log	= LogFactoryUtil.getLog(NotificationUtil.class);
+
+	public static User getDefaultSenderUser(Calendar calendar) throws Exception {
 
 		CalendarResource calendarResource = calendar.getCalendarResource();
 
 		User user = UserLocalServiceUtil.getUser(calendarResource.getUserId());
 
 		if (calendarResource.isGroup()) {
-			Group group = GroupLocalServiceUtil.getGroup(
-				calendarResource.getClassPK());
+			Group group = GroupLocalServiceUtil.getGroup(calendarResource.getClassPK());
 
 			user = UserLocalServiceUtil.getUser(group.getCreatorUserId());
-		}
-		else if (calendarResource.isUser()) {
+		} else if (calendarResource.isUser()) {
 			user = UserLocalServiceUtil.getUser(calendarResource.getClassPK());
 		}
 
 		return user;
 	}
 
-	public static String getDefaultTemplate(
-			NotificationType notificationType,
-			NotificationTemplateType notificationTemplateType,
-			NotificationField notificationField)
-		throws Exception {
+	public static String getDefaultTemplate(NotificationType notificationType, NotificationTemplateType notificationTemplateType, NotificationField notificationField) throws Exception {
 
-		Filter filter = new Filter(
-			notificationType.toString(), notificationTemplateType.toString());
+		Filter filter = new Filter(notificationType.toString(), notificationTemplateType.toString());
 
-		String propertyName =
-			PortletPropsKeys.CALENDAR_NOTIFICATION_PREFIX + StringPool.PERIOD +
-			notificationField.toString();
+		String propertyName = PortletPropsKeys.CALENDAR_NOTIFICATION_PREFIX + StringPool.PERIOD + notificationField.toString();
 
 		String templatePath = PortletProps.get(propertyName, filter);
 
 		return ContentUtil.get(templatePath);
 	}
 
-	public static String getTemplate(
-			CalendarNotificationTemplate calendarNotificationTemplate,
-			NotificationType notificationType,
-			NotificationTemplateType notificationTemplateType,
-			NotificationField notificationField)
-		throws Exception {
+	public static String getTemplate(CalendarNotificationTemplate calendarNotificationTemplate, NotificationType notificationType, NotificationTemplateType notificationTemplateType,
+			NotificationField notificationField) throws Exception {
 
-		String defaultTemplate = getDefaultTemplate(
-			notificationType, notificationTemplateType, notificationField);
+		String defaultTemplate = getDefaultTemplate(notificationType, notificationTemplateType, notificationField);
 
-		return BeanPropertiesUtil.getString(
-			calendarNotificationTemplate, notificationField.toString(),
-			defaultTemplate);
+		return BeanPropertiesUtil.getString(calendarNotificationTemplate, notificationField.toString(), defaultTemplate);
 	}
 
-	public static String getTemplatePropertyValue(
-		CalendarNotificationTemplate calendarNotificationTemplate,
-		String propertyName) {
+	public static String getTemplatePropertyValue(CalendarNotificationTemplate calendarNotificationTemplate, String propertyName) {
 
-		return getTemplatePropertyValue(
-			calendarNotificationTemplate, propertyName, StringPool.BLANK);
+		return getTemplatePropertyValue(calendarNotificationTemplate, propertyName, StringPool.BLANK);
 	}
 
-	public static String getTemplatePropertyValue(
-		CalendarNotificationTemplate calendarNotificationTemplate,
-		String propertyName, String defaultValue) {
+	public static String getTemplatePropertyValue(CalendarNotificationTemplate calendarNotificationTemplate, String propertyName, String defaultValue) {
 
 		if (calendarNotificationTemplate == null) {
 			return defaultValue;
 		}
 
-		UnicodeProperties notificationTypeSettingsProperties =
-			calendarNotificationTemplate.
-				getNotificationTypeSettingsProperties();
+		UnicodeProperties notificationTypeSettingsProperties = calendarNotificationTemplate.getNotificationTypeSettingsProperties();
 
 		return notificationTypeSettingsProperties.get(propertyName);
 	}
 
-	public static void notifyCalendarBookingRecipients(
-			CalendarBooking calendarBooking, NotificationType notificationType,
-			NotificationTemplateType notificationTemplateType)
-		throws Exception {
+	public static void notifyCalendarBookingRecipients(CalendarBooking calendarBooking, NotificationType notificationType, NotificationTemplateType notificationTemplateType) throws Exception {
 
-		NotificationSender notificationSender =
-			NotificationSenderFactory.getNotificationSender(
-				notificationType.toString());
+		NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString());
 
-		List<NotificationRecipient> notificationRecipients =
-			_getNotificationRecipients(calendarBooking);
+		List<NotificationRecipient> notificationRecipients = _getNotificationRecipients(calendarBooking);
 
-		for (NotificationRecipient notificationRecipient :
-				notificationRecipients) {
+		for (NotificationRecipient notificationRecipient : notificationRecipients) {
 
 			User user = notificationRecipient.getUser();
 
-			NotificationTemplateContext notificationTemplateContext =
-				NotificationTemplateContextFactory.getInstance(
-					notificationType, notificationTemplateType, calendarBooking,
-					user);
+			NotificationTemplateContext notificationTemplateContext = NotificationTemplateContextFactory.getInstance(notificationType, notificationTemplateType, calendarBooking, user);
 
-			notificationSender.sendNotification(
-				notificationRecipient, notificationTemplateContext);
+			notificationSender.sendNotification(notificationRecipient, notificationTemplateContext);
 		}
 	}
 
-	public static void notifyCalendarBookingReminders(
-			CalendarBooking calendarBooking, long nowTime)
-		throws Exception {
+	public static void notifyCalendarBookingReminders(CalendarBooking calendarBooking, long nowTime) throws Exception {
 
-		List<NotificationRecipient> notificationRecipients =
-			_getNotificationRecipients(calendarBooking);
+		List<NotificationRecipient> notificationRecipients = _getNotificationRecipients(calendarBooking);
 
-		for (NotificationRecipient notificationRecipient :
-				notificationRecipients) {
+		for (NotificationRecipient notificationRecipient : notificationRecipients) {
 
 			User user = notificationRecipient.getUser();
 
@@ -178,90 +146,79 @@ public class NotificationUtil {
 
 			long deltaTime = startTime - nowTime;
 
-			if (_isInCheckInterval(
-					deltaTime, calendarBooking.getFirstReminder())) {
+			if (_isInCheckInterval(deltaTime, calendarBooking.getFirstReminder())) {
 
-				notificationType =
-					calendarBooking.getFirstReminderNotificationType();
-			}
-			else if (_isInCheckInterval(
-						deltaTime, calendarBooking.getSecondReminder())) {
+				notificationType = calendarBooking.getFirstReminderNotificationType();
+			} else if (_isInCheckInterval(deltaTime, calendarBooking.getSecondReminder())) {
 
-				notificationType =
-					calendarBooking.getSecondReminderNotificationType();
+				notificationType = calendarBooking.getSecondReminderNotificationType();
 			}
 
 			if (notificationType == null) {
 				continue;
 			}
 
-			NotificationSender notificationSender =
-				NotificationSenderFactory.getNotificationSender(
-					notificationType.toString());
+			NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString());
 
-			NotificationTemplateContext notificationTemplateContext =
-				NotificationTemplateContextFactory.getInstance(
-					notificationType, NotificationTemplateType.REMINDER,
-					calendarBooking, user);
+			NotificationTemplateContext notificationTemplateContext = NotificationTemplateContextFactory.getInstance(notificationType, NotificationTemplateType.REMINDER, calendarBooking, user);
 
-			notificationSender.sendNotification(
-				notificationRecipient, notificationTemplateContext);
+			notificationSender.sendNotification(notificationRecipient, notificationTemplateContext);
 		}
 	}
 
-	private static List<NotificationRecipient> _getNotificationRecipients(
-			CalendarBooking calendarBooking)
-		throws Exception {
+	private static List<NotificationRecipient> _getNotificationRecipients(CalendarBooking calendarBooking) throws Exception {
 
 		Calendar calendar = calendarBooking.getCalendar();
 
-		CalendarResource calendarResource =
-			calendarBooking.getCalendarResource();
+		CalendarResource calendarResource = calendarBooking.getCalendarResource();
 
-		List<Role> roles = RoleLocalServiceUtil.getResourceBlockRoles(
-			calendar.getResourceBlockId(), Calendar.class.getName(),
-			ActionKeys.MANAGE_BOOKINGS);
+		List<NotificationRecipient> notificationRecipients = new ArrayList<NotificationRecipient>();
 
-		List<NotificationRecipient> notificationRecipients =
-			new ArrayList<NotificationRecipient>();
+		_log.debug("calendarResource classNameId : " + calendarResource.getClassNameId());
+		_log.debug("calendarResource classPK : " + calendarResource.getClassPK());
 
-		for (Role role : roles) {
-			String name = role.getName();
+		final long teamClassNameId = ClassNameLocalServiceUtil.getClassNameId(Team.class);
 
-			if (name.equals(RoleConstants.OWNER)) {
-				User calendarResourceUser = UserLocalServiceUtil.getUser(
-					calendarResource.getUserId());
+		if (teamClassNameId == calendarResource.getClassNameId()) {
 
-				notificationRecipients.add(
-					new NotificationRecipient(calendarResourceUser));
-
-				User calendarUser = UserLocalServiceUtil.getUser(
-					calendar.getUserId());
-
-				if (calendarResourceUser.getUserId() !=
-						calendarUser.getUserId()) {
-
-					notificationRecipients.add(
-						new NotificationRecipient(calendarUser));
-				}
+			final List<User> teamUsers = UserLocalServiceUtil.getTeamUsers(calendarResource.getClassPK());
+			for (final User user : teamUsers) {
+				_log.debug("user to contact : " + user.getFullName());
+				notificationRecipients.add(new NotificationRecipient(user));
 			}
-			else {
-				List<User> roleUsers = UserLocalServiceUtil.getRoleUsers(
-					role.getRoleId());
+			
+		} else {
 
-				for (User roleUser : roleUsers) {
-					PermissionChecker permissionChecker =
-						PermissionCheckerFactoryUtil.create(roleUser);
+			List<Role> roles = RoleLocalServiceUtil.getResourceBlockRoles(calendar.getResourceBlockId(), Calendar.class.getName(), ActionKeys.MANAGE_BOOKINGS);
 
-					if (!CalendarPermission.contains(
-							permissionChecker, calendar,
-							ActionKeys.MANAGE_BOOKINGS)) {
 
-						continue;
+			for (Role role : roles) {
+				String name = role.getName();
+
+				if (name.equals(RoleConstants.OWNER)) {
+					User calendarResourceUser = UserLocalServiceUtil.getUser(calendarResource.getUserId());
+
+					notificationRecipients.add(new NotificationRecipient(calendarResourceUser));
+
+					User calendarUser = UserLocalServiceUtil.getUser(calendar.getUserId());
+
+					if (calendarResourceUser.getUserId() != calendarUser.getUserId()) {
+
+						notificationRecipients.add(new NotificationRecipient(calendarUser));
 					}
+				} else {
+					List<User> roleUsers = UserLocalServiceUtil.getRoleUsers(role.getRoleId());
 
-					notificationRecipients.add(
-						new NotificationRecipient(roleUser));
+					for (User roleUser : roleUsers) {
+						PermissionChecker permissionChecker = PermissionCheckerFactoryUtil.create(roleUser);
+
+						if (!CalendarPermission.contains(permissionChecker, calendar, ActionKeys.MANAGE_BOOKINGS)) {
+
+							continue;
+						}
+
+						notificationRecipients.add(new NotificationRecipient(roleUser));
+					}
 				}
 			}
 		}
@@ -269,8 +226,7 @@ public class NotificationUtil {
 		return notificationRecipients;
 	}
 
-	private static boolean _isInCheckInterval(
-		long deltaTime, long intervalStart) {
+	private static boolean _isInCheckInterval(long deltaTime, long intervalStart) {
 
 		long intervalEnd = intervalStart + _CHECK_INTERVAL;
 
@@ -281,7 +237,6 @@ public class NotificationUtil {
 		return false;
 	}
 
-	private static final long _CHECK_INTERVAL =
-		PortletPropsValues.CALENDAR_NOTIFICATION_CHECK_INTERVAL * Time.MINUTE;
+	private static final long	_CHECK_INTERVAL	= PortletPropsValues.CALENDAR_NOTIFICATION_CHECK_INTERVAL * Time.MINUTE;
 
 }

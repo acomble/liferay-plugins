@@ -46,22 +46,27 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.util.UidGenerator;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 /**
  * @author Eduardo Lundgren
  */
 public class EmailNotificationSender implements NotificationSender {
+	
+	protected static Log	_log	= LogFactoryUtil.getLog(EmailNotificationSender.class);
 
 	@Override
 	public void sendNotification(NotificationRecipient notificationRecipient, NotificationTemplateContext notificationTemplateContext) throws NotificationSenderException {
 
-		System.out.println("1sendNotification");
+		//_log.error("1sendNotification");
 
 		try {
 			CalendarNotificationTemplate calendarNotificationTemplate = notificationTemplateContext.getCalendarNotificationTemplate();
 
 			Calendar calendar = CalendarLocalServiceUtil.getCalendar(notificationTemplateContext.getCalendarId());
 
-			System.out.println("calendar: " + calendar.getName());
+			//_log.error("calendar: " + calendar.getName());
 
 			User defaultSenderUser = NotificationUtil.getDefaultSenderUser(calendar);
 
@@ -76,18 +81,22 @@ public class EmailNotificationSender implements NotificationSender {
 
 			final Map<String, Serializable> attributes = notificationTemplateContext.getAttributes();
 			for (Map.Entry<String, Serializable> attribute : attributes.entrySet()) {
-				System.out.println("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
+				//_log.error("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
 			}
 
 			String subject = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.SUBJECT);
 			String body = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.BODY);
+			
+			//_log.error("body : " + body);
 
 			File file = createCalEntry((Long) attributes.get("calendarBookingId"), (java.util.Calendar) attributes.get("startDate"), (java.util.Calendar) attributes.get("endDate"),
 					(String) attributes.get("title"));
+			
+			notificationTemplateContext.setAttribute("icsFile", file);
 
 			sendNotification(notificationTemplateContext.getFromAddress(), notificationTemplateContext.getFromName(), notificationRecipient, subject, body);
 			
-			System.out.println("End sendNotification");
+			//_log.error("End sendNotification");
 			
 			file.delete();
 		} catch (Exception e) {
@@ -98,16 +107,18 @@ public class EmailNotificationSender implements NotificationSender {
 	@Override
 	public void sendNotification(String fromAddress, String fromName, NotificationRecipient notificationRecipient, String subject, String notificationMessage) throws NotificationSenderException {
 
-		System.out.println("2sendNotification");
+		//_log.error("2sendNotification");
 
 		try {
 			InternetAddress fromInternetAddress = new InternetAddress(fromAddress, fromName);
 
 			MailMessage mailMessage = new MailMessage(fromInternetAddress, subject, notificationMessage, true);
-
+			
 			mailMessage.setHTMLFormat(notificationRecipient.isHTMLFormat());
 
 			InternetAddress toInternetAddress = new InternetAddress(notificationRecipient.getEmailAddress());
+			
+			_log.error("toInternetAddress : " + toInternetAddress);
 
 			mailMessage.setTo(toInternetAddress);
 
@@ -119,7 +130,7 @@ public class EmailNotificationSender implements NotificationSender {
 
 	private static File createCalEntry(long eventId, java.util.Calendar startTime, java.util.Calendar endTime, String title) {
 
-		System.out.println("3 - createCalEntry");
+		//_log.error("3 - createCalEntry");
 		
 		// create a calendar object
 		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
@@ -197,7 +208,7 @@ public class EmailNotificationSender implements NotificationSender {
 			return calFile;
 
 		} catch (Exception e) {
-			System.err.println("Error in method createCalEntry() " + e);
+			_log.error("Error in method createCalEntry() " + e);
 			return null;
 		}
 	}
