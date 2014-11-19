@@ -1,0 +1,89 @@
+<%--
+/**
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+--%>
+
+<%
+
+PortletPreferences preferences = renderRequest.getPreferences();
+String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Affichage de contenu");
+
+%>
+
+<span class="aqua">
+	<h1 class="portlet-title-spec"><%=portletCustomTitle%></h1>
+	<span class="tgl"></span>
+</span>
+
+<div class="aqua">
+
+<%
+List<AssetEntry> assetEntries = AssetPublisherUtil.getAssetEntries(renderRequest, portletPreferences, permissionChecker, groupIds, allAssetCategoryIds, assetEntryXmls, allAssetTagNames, false, enablePermissions);
+
+searchContainer.setTotal(assetEntries.size());
+
+assetEntries = assetEntries.subList(searchContainer.getStart(), searchContainer.getResultEnd());
+
+searchContainer.setResults(assetEntries);
+
+request.setAttribute("view.jsp-results", assetEntries);
+%>
+
+<c:choose>
+	<c:when test="<%= portletDisplayDDMTemplateId > 0 %>">
+		<%= PortletDisplayTemplateUtil.renderDDMTemplate(pageContext, portletDisplayDDMTemplateId, assetEntries, contextObjects) %>
+	</c:when>
+	<c:otherwise>
+
+		<%
+		for (int assetEntryIndex = 0; assetEntryIndex < assetEntries.size(); assetEntryIndex++) {
+			AssetEntry assetEntry = assetEntries.get(assetEntryIndex);
+
+			AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(assetEntry.getClassName());
+
+			AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetEntry.getClassPK());
+
+			String title = assetRenderer.getTitle(locale);
+
+			boolean show = true;
+			boolean print = false;
+
+			request.setAttribute("view.jsp-assetEntryIndex", new Integer(assetEntryIndex));
+
+			request.setAttribute("view.jsp-assetEntry", assetEntry);
+			request.setAttribute("view.jsp-assetRendererFactory", assetRendererFactory);
+			request.setAttribute("view.jsp-assetRenderer", assetRenderer);
+
+			request.setAttribute("view.jsp-title", title);
+
+			request.setAttribute("view.jsp-show", new Boolean(show));
+			request.setAttribute("view.jsp-print", new Boolean(print));
+
+			try {
+		%>
+
+				<%@ include file="/html/portlet/asset_publisher/view_display.jspf" %>
+
+		<%
+			}
+			catch (Exception e) {
+				_log.error(e.getMessage());
+			}
+		}
+		%>
+
+	</c:otherwise>
+</c:choose>
+
+</div>
