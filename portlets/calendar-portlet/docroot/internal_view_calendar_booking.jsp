@@ -36,27 +36,10 @@ if (calendarBookingId != parentCalendarBookingId) {
 	surveyId = (String) parentCalendarBooking.getExpandoBridge().getAttribute("surveyId");
 }
 
-// Questionnaire Portlet Id
-final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";
-// Get url  to Questionnaire portlet dynamically
-final List<Layout> playouts = LayoutLocalServiceUtil.getLayouts(-1, -1);
-String questionnairePortletFriendlyURL = null;
-for (final Layout lay: playouts){
-	final Layout playout = LayoutLocalServiceUtil.getLayout(lay.getPlid());
-	final LayoutTypePortlet playoutTypePortlet = (LayoutTypePortlet)playout.getLayoutType();
-	final List <String> pallPortletIds = playoutTypePortlet.getPortletIds();
-	if(pallPortletIds.contains(questionnairePortletId)){
-		questionnairePortletFriendlyURL = lay.getFriendlyURL(themeDisplay.getLocale());
-		break;
-	}
-}
-
 // Get associated files
 Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries");
 
 %>
-
-<input type="hidden" id="questionnairePortletFriendlyURL" name="questionnairePortletFriendlyURL" value="<%= questionnairePortletFriendlyURL %>" />
 
 <aui:fieldset>
 
@@ -106,10 +89,10 @@ Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries
 			<span class="fLeft pT2 invitees-zone" id="event-detail-invitees"></span>
 		</div>
 		<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
-			<div class="fLeft h30 mT25 width100 hide" id="event-detail-actions">
+			<div class="fLeft h30 mT25 width100" id="event-detail-actions">
 				<span>
-						<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
-						<button class="presence" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
+						<button class="presence fLeft" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
+						<button class="presence fLeft" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
 				</span>
 			</div>
 		</c:if>
@@ -178,6 +161,12 @@ Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries
 				on: {
 					success: function() {
 						document.getElementById('event-questionnaire-questions').innerHTML = this.get('responseData');
+						// Edit questionnaire button
+						if (document.getElementById('event-questionnaire-submit')) {
+							document.getElementById('event-questionnaire-edit').style.display = 'none';
+						} else {
+							document.getElementById('event-questionnaire-edit').style.display = 'block';
+						}
 					}
 				},
 				sync: true

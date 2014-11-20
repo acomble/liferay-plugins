@@ -123,12 +123,10 @@
 			<% } else { %>
 				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
 				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-urgent"></div>
-				<% } %>
-				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
+				<% } else if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
 				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-nonanswered"></div>
-				<% } %>
-				<% if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
-					B
+				<% } else if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
+					<!-- Rendez vous passé -->
 				<% } %>
 			<% } %>
 		</td>

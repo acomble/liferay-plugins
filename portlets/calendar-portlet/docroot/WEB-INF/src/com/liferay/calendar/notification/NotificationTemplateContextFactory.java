@@ -122,17 +122,17 @@ public class NotificationTemplateContextFactory {
 		attributes.put("title", calendarBooking.getTitle(user.getLocale()));
 
 		String calendarBookingURL = _getCalendarBookingURL(
-			user, calendarBooking.getCalendarBookingId());
+			group, user, calendarBooking.getCalendarBookingId());
 
 		attributes.put("url", calendarBookingURL);
 		
 		java.util.Calendar calendar2 = java.util.Calendar.getInstance();
 		calendar2.setTimeInMillis(calendarBooking.getStartTime());
-		attributes.put("startDate",  calendar2);
+		attributes.put("startDate",  calendar2.getTime());
 		
 		calendar2 = java.util.Calendar.getInstance();
 		calendar2.setTimeInMillis(calendarBooking.getEndTime());
-		attributes.put("endDate",  calendar2);
+		attributes.put("endDate",  calendar2.getTime());
 		
 		attributes.put("calendarBookingId", calendarBooking.getCalendarBookingId());
 
@@ -150,13 +150,15 @@ public class NotificationTemplateContextFactory {
 	}
 
 	private static String _getCalendarBookingURL(
-			User user, long calendarBookingId)
+			Group group, User user, long calendarBookingId)
 		throws PortalException, SystemException {
 
-		Group group = user.getGroup();
+//		Group group = user.getGroup();
+//
+//		Layout layout = LayoutLocalServiceUtil.getLayout(
+//			group.getDefaultPrivatePlid());
 
-		Layout layout = LayoutLocalServiceUtil.getLayout(
-			group.getDefaultPrivatePlid());
+		Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(group.getGroupId(), false, "/mes-rendez-vous");
 
 		String portalURL = _getPortalURL(
 			group.getCompanyId(), group.getGroupId());
@@ -168,7 +170,7 @@ public class NotificationTemplateContextFactory {
 		String namespace = PortalUtil.getPortletNamespace(PortletKeys.CALENDAR);
 
 		url = HttpUtil.addParameter(
-			url, namespace + "mvcPath", "/view_calendar_booking.jsp");
+			url, namespace + "mvcPath", "/view_calendar.jsp");
 		url = HttpUtil.addParameter(url, "p_p_id", PortletKeys.CALENDAR);
 		url = HttpUtil.addParameter(url, "p_p_lifecycle", "0");
 		url = HttpUtil.addParameter(

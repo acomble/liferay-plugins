@@ -242,9 +242,6 @@ public class CalendarResourceUtil {
 
 		long classNameId = PortalUtil.getClassNameId(Team.class);
 		
-		_log.error("getTeamCalendarResource - teamId : " +  teamId);
-		_log.error("getTeamCalendarResource - classNameId : " +  classNameId);
-
 		CalendarResource calendarResource =
 			CalendarResourceLocalServiceUtil.fetchCalendarResource(
 				classNameId, teamId);

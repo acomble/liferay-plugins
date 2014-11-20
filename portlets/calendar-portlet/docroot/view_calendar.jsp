@@ -98,8 +98,24 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 	displayOptions = true;
 }
 
+//Questionnaire Portlet Id
+final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";
+//Get url  to Questionnaire portlet dynamically
+final List<Layout> playouts = LayoutLocalServiceUtil.getLayouts(-1, -1);
+String questionnairePortletFriendlyURL = null;
+for (final Layout lay: playouts){
+	final Layout playout = LayoutLocalServiceUtil.getLayout(lay.getPlid());
+	final LayoutTypePortlet playoutTypePortlet = (LayoutTypePortlet)playout.getLayoutType();
+	final List <String> pallPortletIds = playoutTypePortlet.getPortletIds();
+	if(pallPortletIds.contains(questionnairePortletId)){
+		questionnairePortletFriendlyURL = lay.getFriendlyURL(themeDisplay.getLocale());
+		break;
+	}
+}
+
 %>
 
+<input type="hidden" id="questionnairePortletFriendlyURL" name="questionnairePortletFriendlyURL" value="<%= questionnairePortletFriendlyURL %>" />
 
 
 <!-- begin view_calendar.jsp file -->
@@ -230,11 +246,8 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 
 		</aui:col>
 		
-		<%if (selectedCalendarBooking == null) {%>
+
 		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="fLeft calendar-portlet-column-details hide">
-		<%}else{%>
-		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="fLeft calendar-portlet-column-details">
-		<%}%>
 			<div class="hide"><%= currentUserId %></div>
 			<% if (selectedCalendarBooking == null) { %>
 			<div id="event-detail" class="fLeft">
@@ -269,8 +282,8 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 					<div class="fLeft h30 mT25 width100" id="event-detail-actions">
 						<span>
-								<button class="presence" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
-								<button class="presence" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
+								<button class="presence fLeft" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
+								<button class="presence fLeft" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
 						</span>
 					</div>
 				</c:if>
@@ -607,6 +620,7 @@ protected void updateCalendarsJSONArray(HttpServletRequest request, JSONArray ca
 <% if (selectedCalendarBooking != null) { %>
 <script type="text/javascript">
 manageEventDetailDisplay('<portlet:namespace />', '<%=activeView%>');
+document.getElementById('<portlet:namespace />calendar-portlet-column-details').style.display = 'block';
 </script>
 <% } %>
 
