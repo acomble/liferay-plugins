@@ -532,7 +532,7 @@ var SchedulerEventRecorder = A.Component.create({
             var evt = event.currentTarget.getData(SCHEDULER_EVENT);
             if (evt) {
             	// Manage portlet disposition
-            	manageEventDetailDisplay(instance);
+            	manageEventDetailDisplay(instance.get('portletNamespace'), instance.get('scheduler').get('activeView').name);
             	//
                 instance.set(EVENT, evt, {
                     silent: true
@@ -600,6 +600,7 @@ var SchedulerEventRecorder = A.Component.create({
 					var newEditButton = oldEditButton.cloneNode(true);
 					oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
 					newEditButton.addEventListener('click', eventEditListener);
+					newEditButton.setStyle('display', 'block');
 				}
 				// Set delete event button listener
 				var eventDeleteListener = A.bind(instance._handleDeleteEvent, instance);
@@ -608,6 +609,7 @@ var SchedulerEventRecorder = A.Component.create({
 					var newDeleteButton = oldDeleteButton.cloneNode(true);
 					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
 					newDeleteButton.addEventListener('click', eventDeleteListener);
+					newDeleteButton.setStyle('display', 'block');
 				}
 				
 				// Set edit questionnaire button listener
@@ -650,6 +652,16 @@ var SchedulerEventRecorder = A.Component.create({
 				} else {
 					document.getElementById('event-detail-location-zone').className = 'fLeft hide';
 					document.getElementById('event-detail-location').innerHTML = '';
+				}
+				
+				// Description
+				var description = evt.get('description');
+				if (description != '') {
+					document.getElementById('event-detail-description-zone').className = 'fLeft';
+					document.getElementById('event-detail-description').innerHTML = description;
+				} else {
+					document.getElementById('event-detail-description-zone').className = 'fLeft hide';
+					document.getElementById('event-detail-description').innerHTML = '';
 				}
 				
 				// Organizer Email

@@ -108,6 +108,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.TimeZone;
 import java.io.OutputStream;
 
@@ -291,16 +292,16 @@ public class CalendarPortlet extends MVCPortlet {
 				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
 				final long assetEntryId = layoutAssetEntry.getEntryId();
-				
-				// write as json
-				final StringBuilder response = new StringBuilder();
-				// Open JSON flux
-				response.append("{");
-				
-				response.append("\"entryId\" : \"" + assetEntryId + "\"");
 
 				//
 				if (assetEntryId > 0) {
+					// write as json
+					final StringBuilder response = new StringBuilder();
+					
+					// Open JSON flux
+					response.append("{");
+					
+					response.append("\"entryId\" : \"" + assetEntryId + "\"");
 					
 					response.append(",");
 					response.append("\"entries\": [");
@@ -640,6 +641,8 @@ public class CalendarPortlet extends MVCPortlet {
 		if (portletRequest.getAttribute(WebKeys.CALENDAR_BOOKING) != null) {
 			return;
 		}
+		
+		ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		long calendarBookingId = ParamUtil.getLong(portletRequest, "calendarBookingId");
 
@@ -648,6 +651,48 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		CalendarBooking calendarBooking = CalendarBookingServiceUtil.getCalendarBooking(calendarBookingId);
+		
+		final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
+		final long assetEntryId = layoutAssetEntry.getEntryId();
+		
+		portletRequest.setAttribute("CalendarBookingAssetEntryId", assetEntryId);
+		
+		Map<String, String> entries = new HashMap<String, String>();
+		
+		String mesDocumentsURL = null;
+		
+		final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
+		for (final AssetLink assetLink : assetLinks) {
+			AssetEntry assetLinkEntry = null;
+			if (assetLink.getEntryId1() == assetEntryId) {
+				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId2());
+			}
+			else {
+				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
+			}
+			assetLinkEntry = assetLinkEntry.toEscapedModel();
+			final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
+			final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
+			if (Validator.isNull(assetRendererFactory)) {
+				if (_log.isWarnEnabled()) {
+					_log.warn("No asset renderer factory found for class " + className);
+				}
+
+				continue;
+			}
+			final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
+			final String asseLinktEntryTitle = assetLinkEntry.getTitle(portletRequest.getLocale());
+			Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(10184, false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
+			PortletURL portletURL = PortletURLFactoryUtil.create(portletRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
+			portletURL.setWindowState(WindowState.MAXIMIZED);
+			portletURL.setPortletMode(PortletMode.VIEW);
+			portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
+			portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
+			
+			entries.put(asseLinktEntryTitle, portletURL.toString());
+		}
+		
+		portletRequest.setAttribute("calendarBookingEntries", entries);
 
 		portletRequest.setAttribute(WebKeys.CALENDAR_BOOKING, calendarBooking);
 	}

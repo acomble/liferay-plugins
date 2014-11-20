@@ -42,6 +42,8 @@
 
 
 	<%
+	final Layout calendarLayout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, "/mes-rendez-vous");
+		 
 	int assetEntryIndex = ((Integer)request.getAttribute("view.jsp-assetEntryIndex")).intValue();
 	
 	final User currentUser = PortalUtil.getUser(request);
@@ -50,6 +52,12 @@
 	final String mesDocumentsURL = PropsUtil.get("espace.elus.mes.documents.url");
 	
 	final CalendarBooking calendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
+	
+	final PortletURL calendarPortletURL = PortletURLFactoryUtil.create(request, "1_WAR_calendarportlet", calendarLayout.getPlid(), PortletRequest.RENDER_PHASE);
+	calendarPortletURL.setWindowState(WindowState.MAXIMIZED);
+	calendarPortletURL.setPortletMode(PortletMode.VIEW);
+	calendarPortletURL.setParameter("calendarBookingId", "" + calendarBooking.getCalendarBookingId());
+	calendarPortletURL.setParameter("mvcPath", "/view_calendar.jsp");
 
 	final Calendar calendar = calendarBooking.getCalendar();
 	
@@ -111,13 +119,13 @@
 		</td>
 		<td data-id="event-questionnaire" style="width: 7% !important;">
 			<% if (allAnswered) {%>
-			<div title="Vous avez répondu au questionnaire" class="picto-answered"></div>
+			<div title="Vous avez répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-answered"></div>
 			<% } else { %>
 				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
-				<div title="Vous n'avez pas répondu au questionnaire" class="picto-urgent"></div>
+				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-urgent"></div>
 				<% } %>
 				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
-				<div title="Vous n'avez pas répondu au questionnaire" class="picto-nonanswered"></div>
+				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-nonanswered"></div>
 				<% } %>
 				<% if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
 					B

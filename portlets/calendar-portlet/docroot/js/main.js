@@ -1,27 +1,3 @@
-function manageEventDetailDisplay(instance) {
-	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'block';
-	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = '';
-	
-	var optionsVisible = document.getElementById(instance.get('portletNamespace') + 'columnToggler').innerHTML.indexOf('icon-caret-right');
-	
-	if (instance.get('scheduler').get('activeView').name == "scheduler-view-day") {
-		if (optionsVisible == -1) {
-			document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
-			document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
-		} else {
-			document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='47%';
-			document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
-		}
-	} else {
-		if (optionsVisible == -1) {
-			document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '47%';
-		} else {
-			document.getElementById(instance.get('portletNamespace') + 'columnGrid').style.width = '70%';
-		}
-		document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.width='25%';
-	}
-}
-
 function manageEventDetailHide(instance) {
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'none';
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = 'hide';
@@ -53,4 +29,28 @@ function manageEventAttendAnswers(portletNamespace, status) {
     	// user has declined the invitation
     	// the buttons are not displayed
     }
+}
+
+function manageEventDetailDisplay(portletNamespace, activeView) {
+	document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.display = 'block';
+	document.getElementById(portletNamespace + 'calendar-portlet-column-details').className = '';
+	
+	var optionsVisible = document.getElementById(portletNamespace + 'columnToggler').innerHTML.indexOf('icon-caret-right');
+	
+	if (activeView == "scheduler-view-day") {
+		if (optionsVisible == -1) {
+			document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.width='25%';
+			document.getElementById(portletNamespace + 'columnGrid').style.width = '47%';
+		} else {
+			document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.width='47%';
+			document.getElementById(portletNamespace + 'columnGrid').style.width = '47%';
+		}
+	} else {
+		if (optionsVisible == -1) {
+			document.getElementById(portletNamespace + 'columnGrid').style.width = '47%';
+		} else {
+			document.getElementById(portletNamespace + 'columnGrid').style.width = '70%';
+		}
+		document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.width='25%';
+	}
 }

@@ -24,7 +24,15 @@
 <%@ page import="com.liferay.portal.model.Layout" %>
 
 <%
+
+CalendarBooking selectedCalendarBooking = (CalendarBooking)request.getAttribute(WebKeys.CALENDAR_BOOKING);
+
 String activeView = ParamUtil.getString(request, "activeView", "week");
+		 
+if (selectedCalendarBooking != null) {
+	activeView = "week";
+}
+		 
 long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 
 List<Calendar> groupCalendars = null;
@@ -90,24 +98,9 @@ if (isGestionnaireGlobal || permissionChecker.isOmniadmin()) {
 	displayOptions = true;
 }
 
-//Questionnaire Portlet Id
-final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";
-
-//Get url  to Questionnaire portlet dynamically
-final List<Layout> playouts = LayoutLocalServiceUtil.getLayouts(-1, -1);
-String questionnairePortletFriendlyURL = null;
-for (final Layout lay: playouts){
-	final Layout playout = LayoutLocalServiceUtil.getLayout(lay.getPlid());
-	final LayoutTypePortlet playoutTypePortlet = (LayoutTypePortlet)playout.getLayoutType();
-	final List <String> pallPortletIds = playoutTypePortlet.getPortletIds();
-	if(pallPortletIds.contains(questionnairePortletId)){
-		questionnairePortletFriendlyURL = lay.getFriendlyURL(themeDisplay.getLocale());
-		break;
-	}
-}
 %>
 
-<input type="hidden" id="questionnairePortletFriendlyURL" name="questionnairePortletFriendlyURL" value="<%= questionnairePortletFriendlyURL %>" />
+
 
 <!-- begin view_calendar.jsp file -->
 
@@ -237,8 +230,13 @@ for (final Layout lay: playouts){
 
 		</aui:col>
 		
+		<%if (selectedCalendarBooking == null) {%>
 		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="fLeft calendar-portlet-column-details hide">
+		<%}else{%>
+		<aui:col id="calendar-portlet-column-details" style="margin-left: 10px;float: left;" cssClass="fLeft calendar-portlet-column-details">
+		<%}%>
 			<div class="hide"><%= currentUserId %></div>
+			<% if (selectedCalendarBooking == null) { %>
 			<div id="event-detail" class="fLeft">
 				<div class="fLeft event-detail-title width100" id="event-detail-title"></div>
 				<div class="fLeft h30 width100" id="event-detail-startdate-zone">
@@ -249,9 +247,13 @@ for (final Layout lay: playouts){
 					<span class="fLeft pT2">Au</span>
 					<span class="fLeft pT2 event-detail-detail" id="event-detail-enddate"></span>
 				</div>
-				<div class="fLeft h30 width100" id="event-detail-location-zone">
+				<div class="fLeft width100" id="event-detail-location-zone">
 					<span class="fLeft pT2" style="width:75px;">Emplacement&nbsp;:</span>
 					<span class="fLeft pT2 event-detail-detail location-zone" id="event-detail-location"></span>
+				</div>
+				<div class="fLeft width100" id="event-detail-description-zone">
+					<span class="fLeft pT2">Description&nbsp;:</span>
+					<span class="fLeft pT2 event-detail-detail description-zone" id="event-detail-description"></span>
 				</div>
 				<div class="fLeft hide" id="event-detail-related-asset-zone">
 					<span class="fLeft width100">Document(s) joint(s)&nbsp;:</span>
@@ -277,6 +279,9 @@ for (final Layout lay: playouts){
 				<div id="event-questionnaire-questions" style="width: 100%;"></div>	
 				<button class="fLeft presence" id="event-questionnaire-edit" name="event-questionnaire-edit" value="edit-questionnaire">Modifier</button>
 			</div>
+			<% } else { %>
+				<%@ include file="./internal_view_calendar_booking.jsp" %>
+			<% } %>
 		</aui:col>
 	</aui:row>
 </aui:container>
@@ -598,5 +603,11 @@ protected void updateCalendarsJSONArray(HttpServletRequest request, JSONArray ca
 	}
 }
 %>
+
+<% if (selectedCalendarBooking != null) { %>
+<script type="text/javascript">
+manageEventDetailDisplay('<portlet:namespace />', '<%=activeView%>');
+</script>
+<% } %>
 
 <!--  end of view_calendar.jsp file -->
