@@ -410,7 +410,10 @@
   background: url(@theme_image_path@/common/rss.png) 8px center no-repeat; }
 
 .dialog-iframe-popup .calendar-portlet .fieldset {
-  margin-bottom: 2em; }
+  margin-bottom: 0px; }
+
+.dialog-iframe-popup .calendar-portlet .accordion {
+  margin-bottom: 5px !important; }
 
 .ie6 .yui3-skin-sam .yui3-calendar-day.lfr-busy-day, .ie7 .yui3-skin-sam .yui3-calendar-day.lfr-busy-day, .ie8 .yui3-skin-sam .yui3-calendar-day.lfr-busy-day {
   background: transparent url(../images/lfr-busy-day-arrow.png) right top no-repeat; }

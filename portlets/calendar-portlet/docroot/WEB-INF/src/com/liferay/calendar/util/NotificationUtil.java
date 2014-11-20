@@ -114,18 +114,28 @@ public class NotificationUtil {
 
 	public static void notifyCalendarBookingRecipients(CalendarBooking calendarBooking, NotificationType notificationType, NotificationTemplateType notificationTemplateType) throws Exception {
 
+		_log.debug("notifyCalendarBookingRecipients begin");
+		
 		NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString());
+		
+		_log.debug("notifyCalendarBookingRecipients getNotificationSender");
 
 		List<NotificationRecipient> notificationRecipients = _getNotificationRecipients(calendarBooking);
+		
+		_log.debug("notifyCalendarBookingRecipients _getNotificationRecipients");
 
 		for (NotificationRecipient notificationRecipient : notificationRecipients) {
 
 			User user = notificationRecipient.getUser();
+			
+			_log.debug("notifyCalendarBookingRecipients notificationRecipient loop : " + user.getUserId());
 
 			NotificationTemplateContext notificationTemplateContext = NotificationTemplateContextFactory.getInstance(notificationType, notificationTemplateType, calendarBooking, user);
 
 			notificationSender.sendNotification(notificationRecipient, notificationTemplateContext);
 		}
+		
+		_log.debug("notifyCalendarBookingRecipients end");
 	}
 
 	public static void notifyCalendarBookingReminders(CalendarBooking calendarBooking, long nowTime) throws Exception {

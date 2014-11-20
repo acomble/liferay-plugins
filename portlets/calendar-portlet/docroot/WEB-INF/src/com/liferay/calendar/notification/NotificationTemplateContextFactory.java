@@ -44,19 +44,28 @@ import java.util.TimeZone;
 import javax.portlet.PortletConfig;
 import javax.portlet.WindowState;
 
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
+
 /**
  * @author Eduardo Lundgren
  */
 public class NotificationTemplateContextFactory {
+	
+	protected static Log	_log	= LogFactoryUtil.getLog(NotificationTemplateContextFactory.class);
 
 	public static NotificationTemplateContext getInstance(
 			NotificationType notificationType,
 			NotificationTemplateType notificationTemplateType,
 			CalendarBooking calendarBooking, User user)
 		throws Exception {
+		
+		_log.debug("NotificationTemplateContextFactory.getInstance");
 
 		CalendarBooking parentCalendarBooking =
 			calendarBooking.getParentCalendarBooking();
+		
+		_log.debug("before parentCalendarBooking");
 
 		Calendar calendar = parentCalendarBooking.getCalendar();
 
@@ -68,6 +77,8 @@ public class NotificationTemplateContextFactory {
 				fetchCalendarNotificationTemplate(
 					calendar.getCalendarId(), notificationType,
 					notificationTemplateType);
+		
+		_log.debug("before calendarNotificationTemplate");
 
 		notificationTemplateContext.setCalendarNotificationTemplate(
 			calendarNotificationTemplate);
@@ -79,6 +90,8 @@ public class NotificationTemplateContextFactory {
 		notificationTemplateContext.setNotificationTemplateType(
 			notificationTemplateType);
 		notificationTemplateContext.setNotificationType(notificationType);
+		
+		_log.debug("before Attributes");
 
 		// Attributes
 
@@ -120,9 +133,12 @@ public class NotificationTemplateContextFactory {
 		attributes.put("startTime", startTime);
 
 		attributes.put("title", calendarBooking.getTitle(user.getLocale()));
+		
+		_log.debug("before calendarBookingURL");
 
-		String calendarBookingURL = _getCalendarBookingURL(
-			group, user, calendarBooking.getCalendarBookingId());
+		String calendarBookingURL = _getCalendarBookingURL(parentCalendarBooking.getGroupId(), group.getCompanyId(), user, calendarBooking.getCalendarBookingId());
+		
+		_log.debug("calendarBookingURL : " + calendarBookingURL);
 
 		attributes.put("url", calendarBookingURL);
 		
@@ -150,18 +166,26 @@ public class NotificationTemplateContextFactory {
 	}
 
 	private static String _getCalendarBookingURL(
-			Group group, User user, long calendarBookingId)
+			Long calendarBookingGroupId, Long companyId, User user, long calendarBookingId)
 		throws PortalException, SystemException {
+		
+		_log.debug("_getCalendarBookingURL");
 
 //		Group group = user.getGroup();
 //
 //		Layout layout = LayoutLocalServiceUtil.getLayout(
 //			group.getDefaultPrivatePlid());
+		
+		_log.debug("calendarBookingGroupId : " + calendarBookingGroupId);
 
-		Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(group.getGroupId(), false, "/mes-rendez-vous");
+		Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(calendarBookingGroupId, false, "/mes-rendez-vous");
+		
+		_log.debug("_getCalendarBookingURL layout : " + layout);
 
 		String portalURL = _getPortalURL(
-			group.getCompanyId(), group.getGroupId());
+			companyId, calendarBookingGroupId);
+		
+		_log.debug("_getCalendarBookingURL portalURL : " + portalURL);
 
 		String layoutActualURL = PortalUtil.getLayoutActualURL(layout);
 
@@ -177,6 +201,8 @@ public class NotificationTemplateContextFactory {
 			url, "p_p_state", WindowState.MAXIMIZED.toString());
 		url = HttpUtil.addParameter(
 			url, namespace + "calendarBookingId", calendarBookingId);
+		
+		_log.debug("_getCalendarBookingURL url : " + url);
 
 		return url;
 	}

@@ -59,14 +59,14 @@ public class EmailNotificationSender implements NotificationSender {
 	@Override
 	public void sendNotification(NotificationRecipient notificationRecipient, NotificationTemplateContext notificationTemplateContext) throws NotificationSenderException {
 
-		//_log.error("1sendNotification");
+		//_log.debug("1sendNotification");
 
 		try {
 			CalendarNotificationTemplate calendarNotificationTemplate = notificationTemplateContext.getCalendarNotificationTemplate();
 
 			Calendar calendar = CalendarLocalServiceUtil.getCalendar(notificationTemplateContext.getCalendarId());
 
-			//_log.error("calendar: " + calendar.getName());
+			//_log.debug("calendar: " + calendar.getName());
 
 			User defaultSenderUser = NotificationUtil.getDefaultSenderUser(calendar);
 
@@ -78,27 +78,30 @@ public class EmailNotificationSender implements NotificationSender {
 			notificationTemplateContext.setFromName(fromName);
 			notificationTemplateContext.setToAddress(notificationRecipient.getEmailAddress());
 			notificationTemplateContext.setToName(notificationRecipient.getName());
+			
+			_log.debug("notificationRecipient.getEmailAddress() : " + notificationRecipient.getEmailAddress());
+			_log.debug("notificationRecipient.getName() : " + notificationRecipient.getName());
 
 			final Map<String, Serializable> attributes = notificationTemplateContext.getAttributes();
 			for (Map.Entry<String, Serializable> attribute : attributes.entrySet()) {
-				//_log.error("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
+				_log.debug("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
 			}
 
 			String subject = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.SUBJECT);
 			String body = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.BODY);
 			
-			//_log.error("body : " + body);
+			_log.debug("body : " + body);
 
-			File file = createCalEntry((Long) attributes.get("calendarBookingId"), (java.util.Calendar) attributes.get("startDate"), (java.util.Calendar) attributes.get("endDate"),
-					(String) attributes.get("title"));
-			
-			notificationTemplateContext.setAttribute("icsFile", file);
+//			File file = createCalEntry((Long) attributes.get("calendarBookingId"), (java.util.Calendar) attributes.get("startDate"), (java.util.Calendar) attributes.get("endDate"),
+//					(String) attributes.get("title"));
+//			
+//			notificationTemplateContext.setAttribute("icsFile", file);
 
 			sendNotification(notificationTemplateContext.getFromAddress(), notificationTemplateContext.getFromName(), notificationRecipient, subject, body);
 			
-			//_log.error("End sendNotification");
+			_log.debug("End sendNotification");
 			
-			file.delete();
+//			file.delete();
 		} catch (Exception e) {
 			throw new NotificationSenderException(e);
 		}
@@ -107,7 +110,7 @@ public class EmailNotificationSender implements NotificationSender {
 	@Override
 	public void sendNotification(String fromAddress, String fromName, NotificationRecipient notificationRecipient, String subject, String notificationMessage) throws NotificationSenderException {
 
-		//_log.error("2sendNotification");
+		_log.debug("2sendNotification");
 
 		try {
 			InternetAddress fromInternetAddress = new InternetAddress(fromAddress, fromName);
@@ -118,7 +121,7 @@ public class EmailNotificationSender implements NotificationSender {
 
 			InternetAddress toInternetAddress = new InternetAddress(notificationRecipient.getEmailAddress());
 			
-			_log.error("toInternetAddress : " + toInternetAddress);
+			_log.debug("toInternetAddress : " + toInternetAddress);
 
 			mailMessage.setTo(toInternetAddress);
 
@@ -130,7 +133,7 @@ public class EmailNotificationSender implements NotificationSender {
 
 	private static File createCalEntry(long eventId, java.util.Calendar startTime, java.util.Calendar endTime, String title) {
 
-		//_log.error("3 - createCalEntry");
+		//_log.debug("3 - createCalEntry");
 		
 		// create a calendar object
 		net.fortuna.ical4j.model.Calendar icsCalendar = new net.fortuna.ical4j.model.Calendar();
