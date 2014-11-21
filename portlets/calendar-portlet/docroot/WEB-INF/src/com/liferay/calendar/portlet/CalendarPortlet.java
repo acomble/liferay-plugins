@@ -151,6 +151,7 @@ import com.liferay.util.portlet.PortletProps;
 import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.model.Team;
 
+import com.liferay.calendar.util.CalendarBookingComparator;
 
 /**
  * @author Eduardo Lundgren
@@ -355,7 +356,8 @@ public class CalendarPortlet extends MVCPortlet {
 					
 					resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 				}
-				
+			} else if ("serveCalendarBookingsAsset".equals(resourceID)) {
+				serveCalendarBookingsAsset(resourceRequest, resourceResponse);
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
@@ -457,7 +459,7 @@ public class CalendarPortlet extends MVCPortlet {
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
-		int status = 1; //ParamUtil.getInteger(actionRequest, "status");
+		int status = 0; //ParamUtil.getInteger(actionRequest, "status");
 		
 		for (long childCalendarId : childCalendarIds) {
 			_log.error("childCalendarId : " + childCalendarId);
@@ -498,7 +500,13 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 		
 		calendarBooking.getExpandoBridge().setAttribute("surveyId", questionnaireId);
-
+		
+		final AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(PortalUtil.getClassName(10511L), calendarBooking.getCalendarBookingId());
+		assetEntry.setVisible(true);
+		AssetEntryLocalServiceUtil.updateAssetEntry(assetEntry);
+		
+		_log.error("assetEntryId : " + assetEntry.getEntryId());
+		
 		actionRequest.setAttribute(WebKeys.CALENDAR_BOOKING, calendarBooking);
 
 		String redirect = getRedirect(actionRequest, actionResponse);
@@ -919,6 +927,20 @@ public class CalendarPortlet extends MVCPortlet {
 	
 			writeJSON(resourceRequest, resourceResponse, jsonArray);
 		}
+	}
+	
+	protected void serveCalendarBookingsAsset(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {
+
+		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+
+		long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
+
+		List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, -1, -1, true, null,
+				QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarBookingComparator());
+
+		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookings, getTimeZone(resourceRequest));
+
+		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}
 
 	protected void serveCalendarBookings(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {

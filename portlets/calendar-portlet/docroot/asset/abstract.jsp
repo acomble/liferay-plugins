@@ -108,27 +108,36 @@
 	}
 	
 	%>
-	
+		
 	<tr class="<%= cssClass %>" style="border: 1px solid #ccc;border-bottom: 0px;font-weight: bold;">
 		<td data-id="event-picto" style="width: 7% !important;"><img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /></td>
-		<td data-id="event-title" style="width: 70% !important;text-align: left;"><%= HtmlUtil.escape(calendarBooking.getTitle(locale)) %></td>
+		<td data-id="event-title" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" style="cursor: pointer;width: 70% !important;text-align: left;"><%= HtmlUtil.escape(calendarBooking.getTitle(locale)) %></td>
 		<td data-id="event-file" style="width: 7% !important;">
 			<% if (portletURL != null) { %>
 			<div title="Voir le document joint" onclick="javascript:document.location.href='<%= portletURL %>';" class="picto-file-pdf"></div>
 			<% } %>
 		</td>
 		<td data-id="event-questionnaire" style="width: 7% !important;">
-			<% if (allAnswered) {%>
-			<div title="Vous avez répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-answered"></div>
-			<% } else { %>
-				<% if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
-				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-urgent"></div>
-				<% } else if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) { %>
-				<div title="Vous n'avez pas répondu au questionnaire" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="picto-nonanswered"></div>
-				<% } else if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
-					<!-- Rendez vous passé -->
-				<% } %>
-			<% } %>
+			<% 
+				String pictoCssClass = "";
+				String pictoTitle = "";
+				if (allAnswered) {
+					pictoCssClass = "picto-answered";
+					pictoTitle = "Vous avez répondu au questionnaire";
+				} else {
+					if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays <= nbDaysHurryUp) {
+						pictoCssClass = "picto-urgent";
+						pictoTitle = "Vous n'avez pas encore répondu au questionnaire";
+					} else if (java.util.Calendar.getInstance().before(startTimeJCalendar) && diffInDays > nbDaysHurryUp) {
+						pictoCssClass = "picto-nonanswered";
+						pictoTitle = "Vous n'avez pas répondu au questionnaire";
+					} else if (java.util.Calendar.getInstance().after(startTimeJCalendar)) {
+						pictoCssClass = "picto-nonanswered";
+						pictoTitle = "L'évènement est passé. Vous n'avez pas répondu au questionnaire";
+					}
+				}
+			%>
+			<div title="<%= pictoTitle %>" onclick="javascript:document.location.href='<%= calendarPortletURL %>';" class="<%= pictoCssClass %>"></div>
 		</td>
 	</tr>
 	<tr class="<%= cssClass %>" style="border-left: 1px solid #ccc; border-right: 1px solid #ccc;border-bottom: 1px solid #ccc;">
