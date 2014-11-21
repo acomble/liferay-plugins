@@ -125,7 +125,6 @@ import javax.portlet.ResourceResponse;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.PropsUtil;
-
 import com.liferay.portlet.asset.model.AssetEntry;
 import com.liferay.portlet.asset.model.AssetLink;
 import com.liferay.portlet.asset.model.AssetRenderer;
@@ -133,24 +132,23 @@ import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
-
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+
 import javax.portlet.WindowState;
 
 import com.liferay.portal.model.Layout;
 import com.liferay.portal.service.LayoutLocalServiceUtil;
+
 import javax.portlet.PortletURL;
 import javax.portlet.PortletMode;
+
 import com.liferay.portlet.PortletURLFactoryUtil;
-
 import com.liferay.util.portlet.PortletProps;
-
 import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.model.Team;
-
 import com.liferay.calendar.util.CalendarBookingComparator;
 
 /**
@@ -931,14 +929,36 @@ public class CalendarPortlet extends MVCPortlet {
 	
 	protected void serveCalendarBookingsAsset(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		
+		final String calendarIdsAsStr = ParamUtil.getString(resourceRequest, "calendarIds");
+		_log.error(calendarIdsAsStr);
+		final String[] split = calendarIdsAsStr.split(",");
+		final long[] calendarIds = new long[split.length-1];
+		int i = 0;
+		for (final String s : split) {
+			if (s != null && !s.isEmpty()) {
+				calendarIds[i] = Long.valueOf(s);
+				i++;
+			}
+		}
+		
+		final int[] statuses = new int[4];
+		statuses[0] = 0;
+		statuses[1] = 1;
+		statuses[2] = 9;
+		statuses[3] = 4;
+		
+		final java.util.Calendar startCalendar = java.util.Calendar.getInstance();
+		startCalendar.add(java.util.Calendar.YEAR, -1);
+		
+		final java.util.Calendar endCalendar = java.util.Calendar.getInstance();
+		endCalendar.add(java.util.Calendar.YEAR, 1);
+		
+		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startCalendar.getTimeInMillis(), endCalendar.getTimeInMillis(), true, statuses,
+				0, 5, new CalendarBookingComparator());
 
-		long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
-
-		List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, -1, -1, true, null,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarBookingComparator());
-
-		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookings, getTimeZone(resourceRequest));
+		final JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookings, getTimeZone(resourceRequest));
 
 		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}

@@ -14,6 +14,19 @@
 
 package com.liferay.calendar.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
+
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
@@ -28,23 +41,20 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.OrderByComparator;
+import com.liferay.portal.kernel.util.PropsUtil;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.model.Layout;
+import com.liferay.portal.model.User;
 import com.liferay.portal.security.permission.PermissionChecker;
-import com.liferay.portal.theme.ThemeDisplay;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
+import com.liferay.portal.service.LayoutLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.PortletURLFactoryUtil;
+
+import javax.portlet.PortletMode;
+import javax.portlet.WindowState;
 
 /**
  * @author Eduardo Lundgren
@@ -198,7 +208,7 @@ public class CalendarUtil {
 		return StringUtil.split(StringUtil.merge(keywordsSet));
 	}
 
-	public static JSONObject toCalendarBookingJSONObject(ThemeDisplay themeDisplay, CalendarBooking calendarBooking, TimeZone timeZone) throws SystemException, PortalException {
+	public static JSONObject toCalendarBookingJSONObject(ThemeDisplay themeDisplay, CalendarBooking calendarBooking, TimeZone timeZone) throws Exception {
 
 		JSONObject jsonObject = JSONFactoryUtil.createJSONObject();
 
@@ -239,6 +249,31 @@ public class CalendarUtil {
 		jsonObject.put("organizerEmail", UserLocalServiceUtil.getUser(calendarBooking.getUserId()).getEmailAddress());
 
 		jsonObject.put("questionnaireId", (String) calendarBooking.getExpandoBridge().getAttribute("surveyId"));
+		
+		final Layout calendarLayout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, "/mes-rendez-vous");
+		 
+		final User currentUser = themeDisplay.getUser();
+		final String currentUserFullName = currentUser.getFullName();
+
+		final String mesDocumentsURL = PropsUtil.get("espace.elus.mes.documents.url");
+		
+		final PortletURL calendarPortletURL = PortletURLFactoryUtil.create(themeDisplay.getRequest(), "1_WAR_calendarportlet", calendarLayout.getPlid(), PortletRequest.RENDER_PHASE);
+		calendarPortletURL.setWindowState(WindowState.MAXIMIZED);
+		calendarPortletURL.setPortletMode(PortletMode.VIEW);
+		calendarPortletURL.setParameter("calendarBookingId", "" + calendarBooking.getCalendarBookingId());
+		calendarPortletURL.setParameter("mvcPath", "/view_calendar.jsp");
+		
+		jsonObject.put("calendarBookingURL", calendarPortletURL.toString());
+		
+		boolean allAnswered = false;
+		final String surveyId = (String)calendarBooking.getExpandoBridge().getAttribute("surveyId");
+		if (surveyId != null && !surveyId.isEmpty()) {
+			allAnswered = SurveyUtil.hasAnsweredAllQuestions(Integer.parseInt(surveyId), currentUserFullName);
+		}
+		jsonObject.put("allAnswered", allAnswered);
+		
+		final Integer nbDaysHurryUp =  (Integer)calendarBooking.getExpandoBridge().getAttribute("NbDaysHurryUp");
+		jsonObject.put("nbDaysHurryUp", nbDaysHurryUp);
 
 		return jsonObject;
 	}
@@ -260,7 +295,7 @@ public class CalendarUtil {
 		return jsonArray;
 	}
 
-	public static JSONArray toCalendarBookingsJSONArray(ThemeDisplay themeDisplay, List<CalendarBooking> calendarBookings, TimeZone timeZone) throws PortalException, SystemException {
+	public static JSONArray toCalendarBookingsJSONArray(ThemeDisplay themeDisplay, List<CalendarBooking> calendarBookings, TimeZone timeZone) throws Exception {
 
 		JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
 
