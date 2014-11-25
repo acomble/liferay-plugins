@@ -10,6 +10,19 @@ function getQueryVariable(variable) {
 	return null;
 }
 
+function manageAnchor() {
+	if(window.location.href.indexOf("#scheduler") == -1)
+    {
+    	var anchor = getQueryVariable("goToAnchor");
+    	if (anchor != null) {
+    		window.location.href = window.location.href + "#scheduler" + anchor;
+    	} else {
+    		window.location.href = window.location.href + "#scheduler10";            
+    		window.location.href = window.location.href.replace( "#scheduler10", "#scheduler6");
+    	}
+    }
+}
+
 function manageEventDetailHide(instance) {
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'none';
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = 'hide';

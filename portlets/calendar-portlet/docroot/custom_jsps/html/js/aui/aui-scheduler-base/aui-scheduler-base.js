@@ -2355,6 +2355,8 @@ var SchedulerBase = A.Component.create({
             instance.set(ACTIVE_VIEW, instance.getViewByName(viewName));
 
             event.preventDefault();
+            
+            manageAnchor();
         },
 
         /**
