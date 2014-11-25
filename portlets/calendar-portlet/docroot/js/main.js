@@ -1,3 +1,15 @@
+function getQueryVariable(variable) {
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i=0;i<vars.length;i++) {
+		var pair = vars[i].split("=");
+		if (pair[0].indexOf(variable) > 0) {
+			return pair[1];
+		}
+	}
+	return null;
+}
+
 function manageEventDetailHide(instance) {
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').style.display = 'none';
 	document.getElementById(instance.get('portletNamespace') + 'calendar-portlet-column-details').className = 'hide';

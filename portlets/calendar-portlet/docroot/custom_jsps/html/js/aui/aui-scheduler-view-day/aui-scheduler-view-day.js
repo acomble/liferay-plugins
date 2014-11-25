@@ -219,7 +219,7 @@ var Lang = A.Lang,
         '<div class="' + CSS_SCHEDULER_VIEW_DAY_TABLE_COL_SHIM + '">&nbsp;</div>' +
         '</td>',
 
-    TPL_SCHEDULER_VIEW_DAY_TABLE_TIME = '<div class="' + CSS_SCHEDULER_VIEW_DAY_TABLE_TIME + '">{hour}</div>',
+    TPL_SCHEDULER_VIEW_DAY_TABLE_TIME = '<div id="scheduler{hours}" class="' + CSS_SCHEDULER_VIEW_DAY_TABLE_TIME + '">{hour}</div>',
 
     TPL_SCHEDULER_VIEW_DAY_HEADER_TABLE = '<table cellspacing="0" cellpadding="0" class="' +
         CSS_SCHEDULER_VIEW_DAY_HEADER_TABLE + '">' +
@@ -664,6 +664,18 @@ var SchedulerDayView = A.Component.create({
             instance[GRID_CONTAINER].attr(COLSPAN, instance.get(DAYS));
 
             instance._setupDragDrop();
+            
+            if(window.location.href.indexOf("#scheduler") == -1)
+            {
+            	var anchor = getQueryVariable("goToAnchor");
+            	if (anchor != null) {
+            		window.location.href = window.location.href + "#scheduler" + anchor;
+            	} else {
+            		window.location.href = window.location.href + "#scheduler10";            
+            		window.location.href = window.location.href.replace( "#scheduler10", "#scheduler6");
+            	}
+            }
+            
         },
 
         /**
@@ -1635,7 +1647,7 @@ var SchedulerDayView = A.Component.create({
                     Lang.sub(
                         TPL_SCHEDULER_VIEW_DAY_TABLE_TIME, {
                             hour: isoTime ? DateMath.toIsoTimeString(hour) : DateMath.toUsTimeString(hour, false,
-                                true)
+                                true), hours: hour
                         }
                     )
                 );
