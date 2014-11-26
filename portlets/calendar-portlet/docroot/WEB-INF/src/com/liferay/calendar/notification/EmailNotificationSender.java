@@ -65,15 +65,13 @@ public class EmailNotificationSender implements NotificationSender {
 			CalendarNotificationTemplate calendarNotificationTemplate = notificationTemplateContext.getCalendarNotificationTemplate();
 
 			Calendar calendar = CalendarLocalServiceUtil.getCalendar(notificationTemplateContext.getCalendarId());
+			
+			final Map<String, Serializable> attributes = notificationTemplateContext.getAttributes();
 
-			//_log.debug("calendar: " + calendar.getName());
-
-			User defaultSenderUser = NotificationUtil.getDefaultSenderUser(calendar);
-
-			String fromAddress = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_ADDRESS,
-					defaultSenderUser.getEmailAddress());
-			String fromName = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_NAME, defaultSenderUser.getFullName());
-
+			final String fromAddress = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_ADDRESS,
+					(String) attributes.get("organizerEmail"));
+			final String fromName = NotificationUtil.getTemplatePropertyValue(calendarNotificationTemplate, CalendarNotificationTemplateConstants.PROPERTY_FROM_NAME, (String) attributes.get("organizerFullName"));
+			
 			notificationTemplateContext.setFromAddress(fromAddress);
 			notificationTemplateContext.setFromName(fromName);
 			notificationTemplateContext.setToAddress(notificationRecipient.getEmailAddress());
@@ -81,11 +79,6 @@ public class EmailNotificationSender implements NotificationSender {
 			
 			_log.debug("notificationRecipient.getEmailAddress() : " + notificationRecipient.getEmailAddress());
 			_log.debug("notificationRecipient.getName() : " + notificationRecipient.getName());
-
-			final Map<String, Serializable> attributes = notificationTemplateContext.getAttributes();
-			for (Map.Entry<String, Serializable> attribute : attributes.entrySet()) {
-				_log.debug("Attribut : " + attribute.getKey() + " = " + attribute.getValue());
-			}
 
 			String subject = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.SUBJECT);
 			String body = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.BODY);
