@@ -127,7 +127,7 @@ for (final Layout lay: playouts){
 
 			<div id="<portlet:namespace />calendarListContainer">
 				<!-- Do not show user calendar -->
-				<c:if test="<%= themeDisplay.isSignedIn() %>">
+				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 
@@ -158,7 +158,7 @@ for (final Layout lay: playouts){
 				</c:if>
 
 				<!-- Do not show add calendars menu -->
-				<c:if test="<%= themeDisplay.isSignedIn() %>">
+				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 
@@ -416,6 +416,16 @@ for (final Layout lay: playouts){
 				simpleMenu: window.<portlet:namespace />calendarsMenu
 			}
 		).render();
+		
+		<c:if test="<%= !isGestionnaireGlobal && !permissionChecker.isOmniadmin() && !isGestionnaireSection %>">
+			var x = document.getElementsByClassName("calendar-list-item-arrow");
+			var i;
+			for (i = 0; i < x.length; i++) {
+				if (x[i].parentNode.className.indexOf('calendar-list-item') > -1) {
+					x[i].className = x[i].className + ' hide';
+				}
+			}
+		</c:if>
 
 		window.<portlet:namespace />calendarLists['<%= groupCalendarResource.getCalendarResourceId() %>'] = window.<portlet:namespace />siteCalendarList;
 	</c:if>

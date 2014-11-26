@@ -1012,8 +1012,19 @@ public class CalendarPortlet extends MVCPortlet {
 
 		List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true, statuses,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+		
+		final List<CalendarBooking> calendarBookingsViewable = new ArrayList<CalendarBooking>();
+		for (final CalendarBooking calendarBooking : calendarBookings) {
+			final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
+			for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
+				if (childCalendarBooking.getCalendarResource().getClassPK() == themeDisplay.getUserId()) {
+					calendarBookingsViewable.add(calendarBooking);
+					break;
+				}
+			}
+		}
 
-		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookings, getTimeZone(resourceRequest));
+		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookingsViewable, getTimeZone(resourceRequest));
 
 		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}
