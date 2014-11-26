@@ -1009,6 +1009,8 @@ public class CalendarPortlet extends MVCPortlet {
 		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
 		long startTime = ParamUtil.getLong(resourceRequest, "startTime");
 		int[] statuses = ParamUtil.getIntegerValues(resourceRequest, "statuses");
+		
+		PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
 		List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true, statuses,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
@@ -1017,7 +1019,7 @@ public class CalendarPortlet extends MVCPortlet {
 		for (final CalendarBooking calendarBooking : calendarBookings) {
 			final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
 			for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
-				if (childCalendarBooking.getCalendarResource().getClassPK() == themeDisplay.getUserId()) {
+				if (childCalendarBooking.getCalendarResource().getClassPK() == themeDisplay.getUserId() || permissionChecker.isOmniadmin()) {
 					calendarBookingsViewable.add(calendarBooking);
 					break;
 				}
