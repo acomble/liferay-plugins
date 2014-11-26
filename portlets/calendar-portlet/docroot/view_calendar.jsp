@@ -158,7 +158,7 @@ for (final Layout lay: playouts){
 				</c:if>
 
 				<!-- Do not show add calendars menu -->
-				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
+				<c:if test="<%= isGestionnaireGlobal || permissionChecker.isOmniadmin() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 

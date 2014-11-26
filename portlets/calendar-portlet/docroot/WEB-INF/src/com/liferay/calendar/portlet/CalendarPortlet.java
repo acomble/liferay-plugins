@@ -151,6 +151,8 @@ import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.model.Team;
 import com.liferay.calendar.util.CalendarBookingComparator;
 
+import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
+
 /**
  * @author Eduardo Lundgren
  * @author Fabio Pezzutto
@@ -249,16 +251,16 @@ public class CalendarPortlet extends MVCPortlet {
 				// ///////////////////////////////
 				// USER CLIQUE SUR UN EVENEMENT //
 				// ///////////////////////////////
-				
+
 				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				final CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBookingId);
 				// write as json
 				final StringBuilder response = new StringBuilder();
 				// Open JSON flux
 				response.append("{");
-				
+
 				response.append("\"surveyId\" : \"" + calendarBooking.getExpandoBridge().getAttribute("surveyId") + "\"");
-				
+
 				// Close JSON flux
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
@@ -274,9 +276,9 @@ public class CalendarPortlet extends MVCPortlet {
 				final StringBuilder response = new StringBuilder();
 				// Open JSON flux
 				response.append("{");
-				
+
 				response.append("\"status\" : \"" + status + "\"");
-				
+
 				// Close JSON flux
 				response.append("}");
 				resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
@@ -284,9 +286,9 @@ public class CalendarPortlet extends MVCPortlet {
 				// /////////////////////
 				// GET RELATED ASSETS //
 				// /////////////////////
-				
+
 				final String mesDocumentsURL = GetterUtil.getString(PortletProps.get("espace.elus.mes.documents.url"));
-				
+
 				final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 				final long calendarBookingId = ParamUtil.getLong(resourceRequest, "calendarBookingId");
 				final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
@@ -296,24 +298,23 @@ public class CalendarPortlet extends MVCPortlet {
 				if (assetEntryId > 0) {
 					// write as json
 					final StringBuilder response = new StringBuilder();
-					
+
 					// Open JSON flux
 					response.append("{");
-					
+
 					response.append("\"entryId\" : \"" + assetEntryId + "\"");
-					
+
 					response.append(",");
 					response.append("\"entries\": [");
-					
+
 					String urlsAsJSON = "";
-					
+
 					final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
 					for (final AssetLink assetLink : assetLinks) {
 						AssetEntry assetLinkEntry = null;
 						if (assetLink.getEntryId1() == assetEntryId) {
 							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId2());
-						}
-						else {
+						} else {
 							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
 						}
 						assetLinkEntry = assetLinkEntry.toEscapedModel();
@@ -328,30 +329,31 @@ public class CalendarPortlet extends MVCPortlet {
 						}
 						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
 						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
-						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false, (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
+						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false,
+								(mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
 						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
 						portletURL.setWindowState(WindowState.MAXIMIZED);
 						portletURL.setPortletMode(PortletMode.VIEW);
 						portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
-//						portletURL.setParameter("redirect", currentURL);
+						// portletURL.setParameter("redirect", currentURL);
 						portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
-						
+
 						urlsAsJSON += "{";
-						urlsAsJSON += "\"assetLinkEntry\" : " + "\"" + assetLinkEntry.getEntryId()+ "\"" + ",";
-						urlsAsJSON += "\"assetLinkEntryTitle\" : " + "\"" + assetLinkEntry.getTitle(resourceRequest.getLocale()) + "\"" + ","; 
-						urlsAsJSON += "\"assetLinkEntryURL\" : " + "\"" + portletURL.toString() + "\""; 
+						urlsAsJSON += "\"assetLinkEntry\" : " + "\"" + assetLinkEntry.getEntryId() + "\"" + ",";
+						urlsAsJSON += "\"assetLinkEntryTitle\" : " + "\"" + assetLinkEntry.getTitle(resourceRequest.getLocale()) + "\"" + ",";
+						urlsAsJSON += "\"assetLinkEntryURL\" : " + "\"" + portletURL.toString() + "\"";
 						urlsAsJSON += "},";
 					}
-					
+
 					if (!urlsAsJSON.equals("")) {
 						response.append(urlsAsJSON.substring(0, urlsAsJSON.length() - 1));
 					}
-					
+
 					response.append("]");
-					
+
 					// Close JSON flux
 					response.append("}");
-					
+
 					resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
 				}
 			} else if ("serveCalendarBookingsAsset".equals(resourceID)) {
@@ -389,8 +391,8 @@ public class CalendarPortlet extends MVCPortlet {
 				for (final CalendarResource calendarResource : calendarResources) {
 					final Calendar defaultCalendar = calendarResource.getDefaultCalendar();
 					if (calendarResource.isUser() && defaultCalendar.getUserId() == user.getUserId()) {
-						//_log.error("user - userId : " + defaultCalendar.getUserId());
-						//_log.error("user - userName : " + defaultCalendar.getUserName());
+						// _log.error("user - userId : " + defaultCalendar.getUserId());
+						// _log.error("user - userName : " + defaultCalendar.getUserName());
 						userCalendarBookings.add(cb);
 					}
 				}
@@ -442,16 +444,16 @@ public class CalendarPortlet extends MVCPortlet {
 	public void updateCalendarBooking(ActionRequest actionRequest, ActionResponse actionResponse) throws Exception {
 
 		final String questionnaireId = ParamUtil.getString(actionRequest, "questionnaireId");
-		
+
 		//
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarBooking.class.getName(), actionRequest);
 
 		long calendarBookingId = ParamUtil.getLong(actionRequest, "calendarBookingId");
 
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
-		
+
 		final Calendar calendar = CalendarLocalServiceUtil.getCalendar(calendarId);
-		
+
 		long[] childCalendarIds = ParamUtil.getLongValues(actionRequest, "childCalendarIds");
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(actionRequest, "title");
 		Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(actionRequest, "description");
@@ -462,8 +464,8 @@ public class CalendarPortlet extends MVCPortlet {
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
-		final int status = 0; //ParamUtil.getInteger(actionRequest, "status");
-		
+		final int status = 0; // ParamUtil.getInteger(actionRequest, "status");
+
 		final List<Calendar> userCalendarIds = new ArrayList<Calendar>();
 		for (final long childCalendarId : childCalendarIds) {
 			final Calendar childCalendar = CalendarLocalServiceUtil.getCalendar(childCalendarId);
@@ -472,13 +474,14 @@ public class CalendarPortlet extends MVCPortlet {
 				for (final User user : users) {
 					final CalendarResource userCalendarResource = CalendarResourceUtil.getUserCalendarResource(user.getUserId(), serviceContext);
 					if (userCalendarResource != null) {
-						final List<Calendar> userCalendars = CalendarServiceUtil.search(calendar.getCompanyId(), null, new long[] {userCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+						final List<Calendar> userCalendars = CalendarServiceUtil.search(calendar.getCompanyId(), null, new long[] { userCalendarResource.getCalendarResourceId() }, null, true,
+								QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 						userCalendarIds.addAll(userCalendars);
 					}
 				}
 			}
 		}
-		
+
 		final long[] newChildCalendarIds = new long[userCalendarIds.size() + childCalendarIds.length];
 		int index = 0;
 		for (final long childCalendarId : childCalendarIds) {
@@ -513,9 +516,9 @@ public class CalendarPortlet extends MVCPortlet {
 
 				boolean allFollowing = ParamUtil.getBoolean(actionRequest, "allFollowing");
 
-				calendarBooking = CalendarBookingServiceUtil.updateCalendarBookingInstance(calendarBookingId, instanceIndex, calendarBooking.getCalendarId(), childCalendarIds, titleMap, descriptionMap, location,
-						startTimeJCalendar.getTimeInMillis(), endTimeJCalendar.getTimeInMillis(), allDay, recurrence, allFollowing, reminders[0], remindersType[0], reminders[1], remindersType[1],
-						status, serviceContext);
+				calendarBooking = CalendarBookingServiceUtil.updateCalendarBookingInstance(calendarBookingId, instanceIndex, calendarBooking.getCalendarId(), childCalendarIds, titleMap,
+						descriptionMap, location, startTimeJCalendar.getTimeInMillis(), endTimeJCalendar.getTimeInMillis(), allDay, recurrence, allFollowing, reminders[0], remindersType[0],
+						reminders[1], remindersType[1], status, serviceContext);
 			} else {
 				calendarBooking = CalendarBookingServiceUtil.getCalendarBookingInstance(calendarBookingId, instanceIndex);
 
@@ -524,17 +527,17 @@ public class CalendarPortlet extends MVCPortlet {
 
 				calendarBooking = CalendarBookingServiceUtil.getNewStartTimeAndDurationCalendarBooking(calendarBookingId, offset, duration);
 
-				calendarBooking = CalendarBookingServiceUtil.updateCalendarBooking(calendarBookingId, calendarBooking.getCalendarId(), childCalendarIds, titleMap, descriptionMap, location, calendarBooking.getStartTime(),
-						calendarBooking.getEndTime(), allDay, recurrence, reminders[0], remindersType[0], reminders[1], remindersType[1], status, serviceContext);
+				calendarBooking = CalendarBookingServiceUtil.updateCalendarBooking(calendarBookingId, calendarBooking.getCalendarId(), childCalendarIds, titleMap, descriptionMap, location,
+						calendarBooking.getStartTime(), calendarBooking.getEndTime(), allDay, recurrence, reminders[0], remindersType[0], reminders[1], remindersType[1], status, serviceContext);
 			}
 		}
-		
+
 		calendarBooking.getExpandoBridge().setAttribute("surveyId", questionnaireId);
-		
+
 		final AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(PortalUtil.getClassName(10511L), calendarBooking.getCalendarBookingId());
 		assetEntry.setVisible(true);
 		AssetEntryLocalServiceUtil.updateAssetEntry(assetEntry);
-		
+
 		actionRequest.setAttribute(WebKeys.CALENDAR_BOOKING, calendarBooking);
 
 		String redirect = getRedirect(actionRequest, actionResponse);
@@ -574,13 +577,13 @@ public class CalendarPortlet extends MVCPortlet {
 		Map<Locale, String> nameMap = LocalizationUtil.getLocalizationMap(actionRequest, "name");
 		Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(actionRequest, "description");
 		boolean active = ParamUtil.getBoolean(actionRequest, "active");
-		
-		_log.error("calendarResourceId : " +  calendarResourceId);
+
+		_log.error("calendarResourceId : " + calendarResourceId);
 		_log.error("code : " + code);
 		_log.error("name : " + nameMap.get(Locale.FRENCH));
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarResource.class.getName(), actionRequest);
-		
+
 		if (calendarResourceId <= 0) {
 			CalendarResourceServiceUtil.addCalendarResource(serviceContext.getScopeGroupId(), PortalUtil.getClassNameId(CalendarResource.class), 0, PortalUUIDUtil.generate(), code, nameMap,
 					descriptionMap, active, serviceContext);
@@ -677,7 +680,7 @@ public class CalendarPortlet extends MVCPortlet {
 		if (portletRequest.getAttribute(WebKeys.CALENDAR_BOOKING) != null) {
 			return;
 		}
-		
+
 		ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		long calendarBookingId = ParamUtil.getLong(portletRequest, "calendarBookingId");
@@ -687,23 +690,22 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		CalendarBooking calendarBooking = CalendarBookingServiceUtil.getCalendarBooking(calendarBookingId);
-		
+
 		final AssetEntry layoutAssetEntry = AssetEntryLocalServiceUtil.getEntry(CalendarBooking.class.getName(), calendarBookingId);
 		final long assetEntryId = layoutAssetEntry.getEntryId();
-		
+
 		portletRequest.setAttribute("CalendarBookingAssetEntryId", assetEntryId);
-		
+
 		Map<String, String> entries = new HashMap<String, String>();
-		
+
 		String mesDocumentsURL = null;
-		
+
 		final List<AssetLink> assetLinks = AssetLinkLocalServiceUtil.getDirectLinks(assetEntryId);
 		for (final AssetLink assetLink : assetLinks) {
 			AssetEntry assetLinkEntry = null;
 			if (assetLink.getEntryId1() == assetEntryId) {
 				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId2());
-			}
-			else {
+			} else {
 				assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
 			}
 			assetLinkEntry = assetLinkEntry.toEscapedModel();
@@ -724,24 +726,24 @@ public class CalendarPortlet extends MVCPortlet {
 			portletURL.setPortletMode(PortletMode.VIEW);
 			portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
 			portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
-			
+
 			entries.put(asseLinktEntryTitle, portletURL.toString());
 		}
-		
+
 		portletRequest.setAttribute("calendarBookingEntries", entries);
 
 		portletRequest.setAttribute(WebKeys.CALENDAR_BOOKING, calendarBooking);
 	}
 
 	protected void getCalendarResource(PortletRequest portletRequest) throws Exception {
-		
+
 		_log.error("begin method getCalendarResource");
 
 		long calendarResourceId = ParamUtil.getLong(portletRequest, "calendarResourceId");
 
 		long classNameId = ParamUtil.getLong(portletRequest, "classNameId");
 		long classPK = ParamUtil.getLong(portletRequest, "classPK");
-		
+
 		_log.error("calendarResourceId : " + calendarResourceId);
 		_log.error("classNameId : " + classNameId);
 		_log.error("classPK : " + classPK);
@@ -755,7 +757,7 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		portletRequest.setAttribute(WebKeys.CALENDAR_RESOURCE, calendarResource);
-		
+
 		_log.error("end method getCalendarResource");
 	}
 
@@ -943,36 +945,36 @@ public class CalendarPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		final User user = themeDisplay.getUser();
 		final Long userId = user.getUserId();
-		
+
 		long parentCalendarBookingId = ParamUtil.getLong(resourceRequest, "parentCalendarBookingId");
-		
+
 		final CalendarBooking calendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(parentCalendarBookingId);
 		if (calendarBooking.getUserId() == userId) {
 
 			JSONArray jsonArray = JSONFactoryUtil.createJSONArray();
-	
+
 			List<CalendarBooking> childCalendarBookings = CalendarBookingServiceUtil.getChildCalendarBookings(parentCalendarBookingId);
-	
+
 			Collection<CalendarResource> calendarResources = CalendarUtil.getCalendarResources(childCalendarBookings);
-	
+
 			for (CalendarResource calendarResource : calendarResources) {
 				JSONObject jsonObject = CalendarUtil.toCalendarResourceJSONObject(themeDisplay, calendarResource);
-	
+
 				jsonArray.put(jsonObject);
 			}
-	
+
 			writeJSON(resourceRequest, resourceResponse, jsonArray);
 		}
 	}
-	
+
 	protected void serveCalendarBookingsAsset(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
-		
+
 		final String calendarIdsAsStr = ParamUtil.getString(resourceRequest, "calendarIds");
 		_log.error(calendarIdsAsStr);
 		final String[] split = calendarIdsAsStr.split(",");
-		final long[] calendarIds = new long[split.length-1];
+		final long[] calendarIds = new long[split.length - 1];
 		int i = 0;
 		for (final String s : split) {
 			if (s != null && !s.isEmpty()) {
@@ -980,21 +982,21 @@ public class CalendarPortlet extends MVCPortlet {
 				i++;
 			}
 		}
-		
+
 		final int[] statuses = new int[4];
 		statuses[0] = 0;
 		statuses[1] = 1;
 		statuses[2] = 9;
 		statuses[3] = 4;
-		
+
 		final java.util.Calendar startCalendar = java.util.Calendar.getInstance();
 		startCalendar.add(java.util.Calendar.YEAR, -1);
-		
+
 		final java.util.Calendar endCalendar = java.util.Calendar.getInstance();
 		endCalendar.add(java.util.Calendar.YEAR, 1);
-		
-		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startCalendar.getTimeInMillis(), endCalendar.getTimeInMillis(), true, statuses,
-				0, 5, new CalendarBookingComparator());
+
+		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startCalendar.getTimeInMillis(),
+				endCalendar.getTimeInMillis(), true, statuses, 0, 5, new CalendarBookingComparator());
 
 		final JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookings, getTimeZone(resourceRequest));
 
@@ -1003,27 +1005,38 @@ public class CalendarPortlet extends MVCPortlet {
 
 	protected void serveCalendarBookings(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
-		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
-		long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
-		long endTime = ParamUtil.getLong(resourceRequest, "endTime");
-		long startTime = ParamUtil.getLong(resourceRequest, "startTime");
-		int[] statuses = ParamUtil.getIntegerValues(resourceRequest, "statuses");
+		final long currentUserId = themeDisplay.getUserId();
 		
-		PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
+		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+		final boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
 
-		List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true, statuses,
+		final long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
+		final long endTime = ParamUtil.getLong(resourceRequest, "endTime");
+		final long startTime = ParamUtil.getLong(resourceRequest, "startTime");
+		final int[] statuses = ParamUtil.getIntegerValues(resourceRequest, "statuses");
+
+		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
+
+		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true, statuses,
 				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
-		
+
 		final List<CalendarBooking> calendarBookingsViewable = new ArrayList<CalendarBooking>();
-		for (final CalendarBooking calendarBooking : calendarBookings) {
-			final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
-			for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
-				if (childCalendarBooking.getCalendarResource().getClassPK() == themeDisplay.getUserId() || permissionChecker.isOmniadmin()) {
-					calendarBookingsViewable.add(calendarBooking);
-					break;
+
+		if (!permissionChecker.isOmniadmin() && !isGestionnaireGlobal && !isGestionnaireSection) {
+			for (final CalendarBooking calendarBooking : calendarBookings) {
+				final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
+				for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
+					if (childCalendarBooking.getCalendarResource().getClassPK() == currentUserId) {
+						calendarBookingsViewable.add(calendarBooking);
+						break;
+					}
 				}
 			}
+		} else {
+			// L'administrateur, le gestionnaire global et les gestionnaires de section peuvent voir les évènements même s'ils ne font pas partie des invités
+			calendarBookingsViewable.addAll(calendarBookings);
 		}
 
 		JSONArray jsonArray = CalendarUtil.toCalendarBookingsJSONArray(themeDisplay, calendarBookingsViewable, getTimeZone(resourceRequest));
@@ -1100,8 +1113,8 @@ public class CalendarPortlet extends MVCPortlet {
 
 		List<CalendarResource> companyCalendarResources = CalendarResourceServiceUtil.search(themeDisplay.getCompanyId(), new long[] { themeDisplay.getCompanyGroupId() },
 				new long[] { groupClassNameId }, keywords, true, true, 0, SearchContainer.DEFAULT_DELTA, new CalendarResourceNameComparator());
-		
-		//_log.error("keywords : " + keywords);
+
+		// _log.error("keywords : " + keywords);
 
 		for (CalendarResource calendarResource : companyCalendarResources) {
 			addCalendarJSONObject(resourceRequest, jsonArray, calendarResource.getClassNameId(), calendarResource.getClassPK());
@@ -1116,7 +1129,7 @@ public class CalendarPortlet extends MVCPortlet {
 		List<Group> groups = GroupLocalServiceUtil.search(themeDisplay.getCompanyId(), name, name, params, true, 0, SearchContainer.DEFAULT_DELTA);
 
 		for (Group group : groups) {
-			//_log.error("group : " + group.getName());
+			// _log.error("group : " + group.getName());
 			addCalendarJSONObject(resourceRequest, jsonArray, groupClassNameId, group.getGroupId());
 		}
 
@@ -1127,15 +1140,14 @@ public class CalendarPortlet extends MVCPortlet {
 		for (User user : users) {
 			addCalendarJSONObject(resourceRequest, jsonArray, userClassNameId, user.getUserId());
 		}
-		
-		
+
 		// TEAM ELUS
 		long teamClassNameId = PortalUtil.getClassNameId(Team.class);
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
-			//_log.error("team : " + team.getTeamId());
+			// _log.error("team : " + team.getTeamId());
 			if (team.getName().toUpperCase().contains(keywords.toUpperCase())) {
-				//_log.error("team added : " + team.getTeamId());
+				// _log.error("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}
 		}
@@ -1198,19 +1210,19 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	protected void serveResourceCalendars(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
-		
+
 		_log.error("begin method serveResourceCalendars");
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		long calendarResourceId = ParamUtil.getLong(resourceRequest, "calendarResourceId");
-		
+
 		_log.error("calendarResourceId : " + calendarResourceId);
 
 		List<Calendar> calendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] { calendarResourceId }, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		JSONArray jsonObject = CalendarUtil.toCalendarsJSONArray(themeDisplay, calendars);
-		
+
 		_log.error("jsonObject : " + jsonObject);
 
 		writeJSON(resourceRequest, resourceResponse, jsonObject);
