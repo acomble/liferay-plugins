@@ -24,11 +24,14 @@ import com.liferay.calendar.DuplicateCalendarResourceException;
 import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarBooking;
 import com.liferay.calendar.model.CalendarResource;
+import com.liferay.calendar.portlet.CalendarPortlet;
 import com.liferay.calendar.service.base.CalendarResourceLocalServiceBaseImpl;
 import com.liferay.calendar.util.PortletPropsValues;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.lar.ExportImportThreadLocal;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.LocaleUtil;
@@ -50,6 +53,8 @@ import com.liferay.portal.service.ServiceContext;
  */
 public class CalendarResourceLocalServiceImpl
 	extends CalendarResourceLocalServiceBaseImpl {
+	
+	protected static Log	_log	= LogFactoryUtil.getLog(CalendarResourceLocalServiceImpl.class);
 
 	@Override
 	public CalendarResource addCalendarResource(
@@ -219,12 +224,16 @@ public class CalendarResourceLocalServiceImpl
 	public CalendarResource getCalendarResource(long calendarResourceId)
 		throws PortalException, SystemException {
 
+		_log.debug("getCalendarResource calendarResourceId : " + calendarResourceId);
+		
 		return calendarResourcePersistence.findByPrimaryKey(calendarResourceId);
 	}
 
 	@Override
 	public List<CalendarResource> getCalendarResources(long groupId)
 		throws SystemException {
+		
+		_log.debug("getCalendarResources groupId : " + groupId);
 
 		return calendarResourcePersistence.findByGroupId(groupId);
 	}

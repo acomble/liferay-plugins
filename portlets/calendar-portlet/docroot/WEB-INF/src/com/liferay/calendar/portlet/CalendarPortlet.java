@@ -441,12 +441,17 @@ public class CalendarPortlet extends MVCPortlet {
 
 	public void updateCalendarBooking(ActionRequest actionRequest, ActionResponse actionResponse) throws Exception {
 
-		// TODO save questionnaireId in custom field
 		final String questionnaireId = ParamUtil.getString(actionRequest, "questionnaireId");
+		
+		//
+		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarBooking.class.getName(), actionRequest);
 
 		long calendarBookingId = ParamUtil.getLong(actionRequest, "calendarBookingId");
 
 		long calendarId = ParamUtil.getLong(actionRequest, "calendarId");
+		
+		final Calendar calendar = CalendarLocalServiceUtil.getCalendar(calendarId);
+		
 		long[] childCalendarIds = ParamUtil.getLongValues(actionRequest, "childCalendarIds");
 		Map<Locale, String> titleMap = LocalizationUtil.getLocalizationMap(actionRequest, "title");
 		Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(actionRequest, "description");
@@ -457,13 +462,40 @@ public class CalendarPortlet extends MVCPortlet {
 		String recurrence = getRecurrence(actionRequest);
 		long[] reminders = getReminders(actionRequest);
 		String[] remindersType = getRemindersType(actionRequest);
-		int status = 0; //ParamUtil.getInteger(actionRequest, "status");
+		final int status = 0; //ParamUtil.getInteger(actionRequest, "status");
 		
-		for (long childCalendarId : childCalendarIds) {
-			_log.error("childCalendarId : " + childCalendarId);
+		final List<Calendar> userCalendarIds = new ArrayList<Calendar>();
+		for (final long childCalendarId : childCalendarIds) {
+			final Calendar childCalendar = CalendarLocalServiceUtil.getCalendar(childCalendarId);
+			if (childCalendar.getCalendarResource().getClassNameId() == PortalUtil.getClassNameId(Team.class)) {
+				final List<User> users = UserLocalServiceUtil.getTeamUsers(childCalendar.getCalendarResource().getClassPK());
+				for (final User user : users) {
+					final CalendarResource userCalendarResource = CalendarResourceUtil.getUserCalendarResource(user.getUserId(), serviceContext);
+					if (userCalendarResource != null) {
+						final List<Calendar> userCalendars = CalendarServiceUtil.search(calendar.getCompanyId(), null, new long[] {userCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+						userCalendarIds.addAll(userCalendars);
+					}
+				}
+			}
+		}
+		
+		final long[] newChildCalendarIds = new long[userCalendarIds.size() + childCalendarIds.length];
+		int index = 0;
+		for (final long childCalendarId : childCalendarIds) {
+			final Calendar childCalendar = CalendarLocalServiceUtil.getCalendar(childCalendarId);
+			if (childCalendarId > 0 && childCalendar.getCalendarResource().getClassNameId() != PortalUtil.getClassNameId(Team.class)) {
+				newChildCalendarIds[index] = childCalendarId;
+				index++;
+			}
+		}
+		for (final Calendar c : userCalendarIds) {
+			if (c.getCalendarId() > 0) {
+				newChildCalendarIds[index] = c.getCalendarId();
+				index++;
+			}
 		}
 
-		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarBooking.class.getName(), actionRequest);
+		childCalendarIds = newChildCalendarIds;
 
 		CalendarBooking calendarBooking = null;
 
@@ -502,8 +534,6 @@ public class CalendarPortlet extends MVCPortlet {
 		final AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(PortalUtil.getClassName(10511L), calendarBooking.getCalendarBookingId());
 		assetEntry.setVisible(true);
 		AssetEntryLocalServiceUtil.updateAssetEntry(assetEntry);
-		
-		_log.error("assetEntryId : " + assetEntry.getEntryId());
 		
 		actionRequest.setAttribute(WebKeys.CALENDAR_BOOKING, calendarBooking);
 
@@ -704,11 +734,17 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	protected void getCalendarResource(PortletRequest portletRequest) throws Exception {
+		
+		_log.error("begin method getCalendarResource");
 
 		long calendarResourceId = ParamUtil.getLong(portletRequest, "calendarResourceId");
 
 		long classNameId = ParamUtil.getLong(portletRequest, "classNameId");
 		long classPK = ParamUtil.getLong(portletRequest, "classPK");
+		
+		_log.error("calendarResourceId : " + calendarResourceId);
+		_log.error("classNameId : " + classNameId);
+		_log.error("classPK : " + classPK);
 
 		CalendarResource calendarResource = null;
 
@@ -719,6 +755,8 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 
 		portletRequest.setAttribute(WebKeys.CALENDAR_RESOURCE, calendarResource);
+		
+		_log.error("end method getCalendarResource");
 	}
 
 	protected String getEditCalendarURL(ActionRequest actionRequest, ActionResponse actionResponse, Calendar calendar) throws Exception {
@@ -927,7 +965,7 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 	}
 	
-	protected void serveCalendarBookingsAsset(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {
+	protected void serveCalendarBookingsAsset(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		
@@ -963,7 +1001,7 @@ public class CalendarPortlet extends MVCPortlet {
 		writeJSON(resourceRequest, resourceResponse, jsonArray);
 	}
 
-	protected void serveCalendarBookings(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws IOException, PortalException, SystemException {
+	protected void serveCalendarBookings(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
@@ -1147,14 +1185,20 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	protected void serveResourceCalendars(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
+		
+		_log.error("begin method serveResourceCalendars");
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		long calendarResourceId = ParamUtil.getLong(resourceRequest, "calendarResourceId");
+		
+		_log.error("calendarResourceId : " + calendarResourceId);
 
 		List<Calendar> calendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] { calendarResourceId }, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		JSONArray jsonObject = CalendarUtil.toCalendarsJSONArray(themeDisplay, calendars);
+		
+		_log.error("jsonObject : " + jsonObject);
 
 		writeJSON(resourceRequest, resourceResponse, jsonObject);
 	}

@@ -532,8 +532,13 @@ var SchedulerEvent = A.Component.create({
             instance._uiSetRepeated(
                 instance.get(REPEATED));
 
-            instance._uiSetVisible(
-                instance.get(VISIBLE));
+            if (instance.get(DISABLED)) {
+            	// ESPACE ELUS DISABLED
+            	instance._uiSetVisible(false);
+            } else {
+	            instance._uiSetVisible(
+	                instance.get(VISIBLE));
+            }
 
             instance.syncNodeTitleUI();
             instance.syncNodeContentUI();

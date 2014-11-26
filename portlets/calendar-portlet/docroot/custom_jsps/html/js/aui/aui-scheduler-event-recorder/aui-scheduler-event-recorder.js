@@ -530,7 +530,7 @@ var SchedulerEventRecorder = A.Component.create({
         _onClickSchedulerEvent: function(event) {
             var instance = this;
             var evt = event.currentTarget.getData(SCHEDULER_EVENT);
-            if (evt) {
+            if (evt && !evt.get('disabled')) {
             	// Manage portlet disposition
             	manageEventDetailDisplay(instance.get('portletNamespace'), instance.get('scheduler').get('activeView').name);
             	//
