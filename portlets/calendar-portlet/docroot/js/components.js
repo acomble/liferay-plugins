@@ -788,7 +788,7 @@
 				'</label>' +
 				'<label class="reminder-type" for="{portletNamespace}reminder{i}">' +
 					'<input id="{portletNamespace}reminderType{i}" name="{portletNamespace}reminderType{i}" type="hidden" value="email" />' +
-					'{email}'+
+					'{sms}'+
 				'</label>' +
 				'<input class="input-mini reminder-value" name="{portletNamespace}reminderValue{i}" type="text" size="5" value="{time.value}" <tpl if="disabled">disabled="disabled"</tpl> /> ' +
 				'<select class="reminder-duration span2" name="{portletNamespace}reminderDuration{i}" <tpl if="disabled">disabled="disabled"</tpl>>' +
@@ -812,7 +812,8 @@
 								email: Liferay.Language.get('email'),
 								hours: Liferay.Language.get('hours'),
 								minutes: Liferay.Language.get('minutes'),
-								weeks: Liferay.Language.get('weeks')
+								weeks: Liferay.Language.get('weeks'),
+								sms: 'sms'
 							}
 						},
 

@@ -818,10 +818,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				{
 					interval: <%= firstReminder %>,
 					type: '<%= HtmlUtil.escapeJS(firstReminderType) %>'
-				},
-				{
-					interval: <%= secondReminder %>,
-					type: '<%= HtmlUtil.escapeJS(secondReminderType) %>'
 				}
 			]
 		}
