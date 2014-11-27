@@ -367,7 +367,8 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	/**
-	 * 
+	 * Generate ICS file with all events where current user is invited.
+	 * ICS File name is user portal login.
 	 * @param resourceRequest
 	 * @param resourceResponse
 	 * @throws SystemException
@@ -391,8 +392,9 @@ public class CalendarPortlet extends MVCPortlet {
 				for (final CalendarResource calendarResource : calendarResources) {
 					final Calendar defaultCalendar = calendarResource.getDefaultCalendar();
 					if (calendarResource.isUser() && defaultCalendar.getUserId() == user.getUserId()) {
-						// _log.error("user - userId : " + defaultCalendar.getUserId());
-						// _log.error("user - userName : " + defaultCalendar.getUserName());
+						_log.debug("user - userId : " + defaultCalendar.getUserId());
+						_log.debug("user - userName : " + defaultCalendar.getUserName());
+						_log.debug("event title : " + cb.getTitle(resourceRequest.getLocale()));
 						userCalendarBookings.add(cb);
 					}
 				}
@@ -400,7 +402,7 @@ public class CalendarPortlet extends MVCPortlet {
 		}
 		// Generate ics file
 		final String filePath = PropsUtil.get("dl.store.file.system.root.dir") + "/ics";
-		final File icsFile = ICSFileGenerator.createCalEntry(filePath, "ESPACE-ELUS", userCalendarBookings);
+		final File icsFile = ICSFileGenerator.createCalEntry(filePath, user.getScreenName(), userCalendarBookings);
 		if (icsFile != null) {
 			resourceResponse.setContentType("text/Calendar");
 			resourceResponse.setProperty("Content-Disposition", "attachment; filename=" + icsFile.getName());
@@ -578,9 +580,9 @@ public class CalendarPortlet extends MVCPortlet {
 		Map<Locale, String> descriptionMap = LocalizationUtil.getLocalizationMap(actionRequest, "description");
 		boolean active = ParamUtil.getBoolean(actionRequest, "active");
 
-		_log.error("calendarResourceId : " + calendarResourceId);
-		_log.error("code : " + code);
-		_log.error("name : " + nameMap.get(Locale.FRENCH));
+		_log.debug("calendarResourceId : " + calendarResourceId);
+		_log.debug("code : " + code);
+		_log.debug("name : " + nameMap.get(Locale.FRENCH));
 
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(CalendarResource.class.getName(), actionRequest);
 
@@ -737,16 +739,16 @@ public class CalendarPortlet extends MVCPortlet {
 
 	protected void getCalendarResource(PortletRequest portletRequest) throws Exception {
 
-		_log.error("begin method getCalendarResource");
+		_log.debug("begin method getCalendarResource");
 
 		long calendarResourceId = ParamUtil.getLong(portletRequest, "calendarResourceId");
 
 		long classNameId = ParamUtil.getLong(portletRequest, "classNameId");
 		long classPK = ParamUtil.getLong(portletRequest, "classPK");
 
-		_log.error("calendarResourceId : " + calendarResourceId);
-		_log.error("classNameId : " + classNameId);
-		_log.error("classPK : " + classPK);
+		_log.debug("calendarResourceId : " + calendarResourceId);
+		_log.debug("classNameId : " + classNameId);
+		_log.debug("classPK : " + classPK);
 
 		CalendarResource calendarResource = null;
 
@@ -758,7 +760,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 		portletRequest.setAttribute(WebKeys.CALENDAR_RESOURCE, calendarResource);
 
-		_log.error("end method getCalendarResource");
+		_log.debug("end method getCalendarResource");
 	}
 
 	protected String getEditCalendarURL(ActionRequest actionRequest, ActionResponse actionResponse, Calendar calendar) throws Exception {
@@ -972,7 +974,7 @@ public class CalendarPortlet extends MVCPortlet {
 		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		final String calendarIdsAsStr = ParamUtil.getString(resourceRequest, "calendarIds");
-		_log.error(calendarIdsAsStr);
+		_log.debug(calendarIdsAsStr);
 		final String[] split = calendarIdsAsStr.split(",");
 		final long[] calendarIds = new long[split.length - 1];
 		int i = 0;
@@ -1211,19 +1213,19 @@ public class CalendarPortlet extends MVCPortlet {
 
 	protected void serveResourceCalendars(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
-		_log.error("begin method serveResourceCalendars");
+		_log.debug("begin method serveResourceCalendars");
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		long calendarResourceId = ParamUtil.getLong(resourceRequest, "calendarResourceId");
 
-		_log.error("calendarResourceId : " + calendarResourceId);
+		_log.debug("calendarResourceId : " + calendarResourceId);
 
 		List<Calendar> calendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] { calendarResourceId }, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		JSONArray jsonObject = CalendarUtil.toCalendarsJSONArray(themeDisplay, calendars);
 
-		_log.error("jsonObject : " + jsonObject);
+		_log.debug("jsonObject : " + jsonObject);
 
 		writeJSON(resourceRequest, resourceResponse, jsonObject);
 	}

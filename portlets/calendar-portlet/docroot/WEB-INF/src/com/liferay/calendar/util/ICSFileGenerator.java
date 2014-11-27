@@ -6,9 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
@@ -21,33 +26,38 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Organizer;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.util.UidGenerator;
 
 import com.liferay.calendar.model.CalendarBooking;
+import com.liferay.portal.model.User;
+import com.liferay.portal.service.UserLocalServiceUtil;
 
 public class ICSFileGenerator {
+	
+	private static final Pattern REMOVE_TAGS = Pattern.compile("<.+?>");
 
 	public static File createCalEntry(final String filePath, final String calendarName, final List<CalendarBooking> calendarBookings) {
 
 		// create a calendar object
-		Calendar icsCalendar = new Calendar();
+		final Calendar icsCalendar = new Calendar();
 
 		// assign props to calendar object
 		icsCalendar.getProperties().add(new ProdId("-//Events Calendar//iCal4j 1.0//EN"));
 		icsCalendar.getProperties().add(CalScale.GREGORIAN);
 
 		// create a file object
-		File calFile = new File(filePath + File.separatorChar + "cristal-union-" + calendarName + "-" + java.util.Calendar.getInstance().getTimeInMillis() + ".ics");
+		final File calFile = new File(filePath + File.separatorChar + "CU_ESPACE-ELUS_" + calendarName + ".ics");
 
 		try {
 
 			// Create a TimeZone
-			TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-			TimeZone timezone = registry.getTimeZone("Europe/Paris");
-			VTimeZone tz = ((net.fortuna.ical4j.model.TimeZone) timezone).getVTimeZone();
+			final TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+			final TimeZone timezone = registry.getTimeZone("Europe/Paris");
+			final VTimeZone tz = ((net.fortuna.ical4j.model.TimeZone) timezone).getVTimeZone();
 
 			for (final CalendarBooking calendarBooking : calendarBookings) {
 
@@ -55,7 +65,7 @@ public class ICSFileGenerator {
 				startCalendar.setTimeInMillis(calendarBooking.getStartTime());
 
 				// Start Date
-				java.util.Calendar startDate = new GregorianCalendar();
+				final java.util.Calendar startDate = new GregorianCalendar();
 				startDate.setTimeZone(timezone);
 				startDate.set(java.util.Calendar.MONTH, startCalendar.get(java.util.Calendar.MONTH));
 				startDate.set(java.util.Calendar.DAY_OF_MONTH, startCalendar.get(java.util.Calendar.DAY_OF_MONTH));
@@ -68,7 +78,7 @@ public class ICSFileGenerator {
 				endCalendar.setTimeInMillis(calendarBooking.getEndTime());
 
 				// End Date
-				java.util.Calendar endDate = new GregorianCalendar();
+				final java.util.Calendar endDate = new GregorianCalendar();
 				endDate.setTimeZone(timezone);
 				endDate.set(java.util.Calendar.MONTH, endCalendar.get(java.util.Calendar.MONTH));
 				endDate.set(java.util.Calendar.DAY_OF_MONTH, endCalendar.get(java.util.Calendar.DAY_OF_MONTH));
@@ -78,34 +88,33 @@ public class ICSFileGenerator {
 				endDate.set(java.util.Calendar.SECOND, endCalendar.get(java.util.Calendar.SECOND));
 
 				// Create the event props
-				String eventName = calendarBooking.getTitle(Locale.FRANCE) + "-" + calendarBooking.getTitle();
-				DateTime start = new DateTime(startDate.getTime());
-				DateTime end = new DateTime(endDate.getTime());
+				final String eventName = calendarBooking.getTitle(Locale.FRANCE);
+				final DateTime start = new DateTime(startDate.getTime());
+				final DateTime end = new DateTime(endDate.getTime());
 
 				// Create the event
-				VEvent meeting = new VEvent(start, end, eventName);
+				final VEvent meeting = new VEvent(start, end, eventName);
 
 				// create Organizer object and add it to vEvent
-				// TODO get organizer
-				// Organizer organizer = new Organizer(URI.create("mailto:antoine.comble@gmail.com"));
-				// meeting.getProperties().add(organizer);
+				final User organizerUser = UserLocalServiceUtil.getUser(calendarBooking.getUserId());
+				final Organizer organizer = new Organizer(URI.create("mailto:" + organizerUser.getEmailAddress()));
+				meeting.getProperties().add(organizer);
 
 				// add timezone to vEvent
 				meeting.getProperties().add(tz.getTimeZoneId());
 				
 				// add location to vEvent
-				meeting.getProperties().add(new Location(calendarBooking.getLocation()));
+				meeting.getProperties().add(new Location(StringEscapeUtils.unescapeHtml(calendarBooking.getLocation())));
 				
 				// add status to vEvent
 				meeting.getProperties().add(new Status("" + calendarBooking.getStatusByUserId()));
 				
 				// add description to vEvent
-				meeting.getProperties().add(new Description(calendarBooking.getDescription(Locale.FRANCE)));
+				meeting.getProperties().add(new Description(StringEscapeUtils.unescapeHtml(removeTags(calendarBooking.getDescription(Locale.FRANCE)))));
 
 				// generate unique identifier and add it to vEvent
-				UidGenerator ug;
-				ug = new UidGenerator("uidGen");
-				Uid uid = ug.generateUid();
+				final UidGenerator ug = new UidGenerator("uidGen");
+				final Uid uid = ug.generateUid();
 				meeting.getProperties().add(uid);
 
 				// add attendees..
@@ -118,10 +127,10 @@ public class ICSFileGenerator {
 				icsCalendar.getComponents().add(meeting);
 			}
 
-			CalendarOutputter outputter = new CalendarOutputter();
+			final CalendarOutputter outputter = new CalendarOutputter();
 			outputter.setValidating(false);
 
-			FileOutputStream fout = new FileOutputStream(calFile);
+			final FileOutputStream fout = new FileOutputStream(calFile);
 			outputter.output(icsCalendar, fout);
 
 			return calFile;
@@ -133,7 +142,7 @@ public class ICSFileGenerator {
 		}
 	}
 
-	public static byte[] getFileBytes(File file) throws IOException {
+	public static byte[] getFileBytes(final File file) throws IOException {
 	    ByteArrayOutputStream ous = null;
 	    InputStream ios = null;
 	    try {
@@ -158,5 +167,13 @@ public class ICSFileGenerator {
 	        }
 	    }
 	    return ous.toByteArray();
+	}
+	
+	private static String removeTags(final String string) {
+	    if (string == null || string.length() == 0) {
+	        return string;
+	    }
+	    final Matcher m = REMOVE_TAGS.matcher(string);
+	    return m.replaceAll("");
 	}
 }
