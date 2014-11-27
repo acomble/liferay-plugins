@@ -26,6 +26,7 @@ import com.liferay.calendar.notification.NotificationTemplateContext;
 import com.liferay.calendar.notification.NotificationTemplateContextFactory;
 import com.liferay.calendar.notification.NotificationTemplateType;
 import com.liferay.calendar.notification.NotificationType;
+import com.liferay.calendar.service.CalendarBookingLocalServiceUtil;
 import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.portal.kernel.bean.BeanPropertiesUtil;
 import com.liferay.portal.kernel.configuration.Filter;
@@ -43,6 +44,7 @@ import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.ContentUtil;
 import com.liferay.util.portlet.PortletProps;
 
@@ -115,36 +117,40 @@ public class NotificationUtil {
 	public static void notifyCalendarBookingRecipients(CalendarBooking calendarBooking, NotificationType notificationType, NotificationTemplateType notificationTemplateType) throws Exception {
 
 		_log.debug("notifyCalendarBookingRecipients begin");
-		
+
 		NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString());
-		
+
 		_log.debug("notifyCalendarBookingRecipients getNotificationSender");
 
 		List<NotificationRecipient> notificationRecipients = _getNotificationRecipients(calendarBooking);
-		
+
 		_log.debug("notifyCalendarBookingRecipients _getNotificationRecipients");
 
 		for (NotificationRecipient notificationRecipient : notificationRecipients) {
 
 			User user = notificationRecipient.getUser();
-			
+
 			_log.debug("notifyCalendarBookingRecipients notificationRecipient loop : " + user.getUserId());
 
 			NotificationTemplateContext notificationTemplateContext = NotificationTemplateContextFactory.getInstance(notificationType, notificationTemplateType, calendarBooking, user);
 
 			notificationSender.sendNotification(notificationRecipient, notificationTemplateContext);
 		}
-		
+
 		_log.debug("notifyCalendarBookingRecipients end");
 	}
 
 	public static void notifyCalendarBookingReminders(CalendarBooking calendarBooking, long nowTime) throws Exception {
-
+		
+		_log.debug("calendar booking title : " + calendarBooking.getTitle() + " / " + calendarBooking.getCalendarBookingId());
+		
 		List<NotificationRecipient> notificationRecipients = _getNotificationRecipients(calendarBooking);
 
 		for (NotificationRecipient notificationRecipient : notificationRecipients) {
 
 			User user = notificationRecipient.getUser();
+			
+			_log.debug("user : " + user.getFullName() + " / " + user.getUserId());
 
 			long startTime = calendarBooking.getStartTime();
 
@@ -155,84 +161,59 @@ public class NotificationUtil {
 			NotificationType notificationType = null;
 
 			long deltaTime = startTime - nowTime;
+			
+			_log.debug("deltaTime : " + deltaTime);
 
 			if (_isInCheckInterval(deltaTime, calendarBooking.getFirstReminder())) {
 
 				notificationType = calendarBooking.getFirstReminderNotificationType();
-			} else if (_isInCheckInterval(deltaTime, calendarBooking.getSecondReminder())) {
-
-				notificationType = calendarBooking.getSecondReminderNotificationType();
 			}
+			// Commented for Espace Elus because only one reminder is enabled : sms
+			/*
+			 * else if (_isInCheckInterval(deltaTime, calendarBooking.getSecondReminder())) {
+			 * notificationType = calendarBooking.getSecondReminderNotificationType(); 
+			 * }
+			 */
+			
+			_log.debug("notificationType : " + notificationType);
 
 			if (notificationType == null) {
 				continue;
 			}
 
-			NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString());
-
-			NotificationTemplateContext notificationTemplateContext = NotificationTemplateContextFactory.getInstance(notificationType, NotificationTemplateType.REMINDER, calendarBooking, user);
-
-			notificationSender.sendNotification(notificationRecipient, notificationTemplateContext);
+			// Commented for Espace Elus because only one reminder is enabled : sms and not email
+			/*
+			 * NotificationSender notificationSender = NotificationSenderFactory.getNotificationSender(notificationType.toString()); NotificationTemplateContext notificationTemplateContext =
+			 * NotificationTemplateContextFactory.getInstance(notificationType, NotificationTemplateType.REMINDER, calendarBooking, user); notificationSender.sendNotification(notificationRecipient,
+			 * notificationTemplateContext);
+			 */
 		}
 	}
 
 	private static List<NotificationRecipient> _getNotificationRecipients(CalendarBooking calendarBooking) throws Exception {
-
-		Calendar calendar = calendarBooking.getCalendar();
-
-		CalendarResource calendarResource = calendarBooking.getCalendarResource();
-
-		List<NotificationRecipient> notificationRecipients = new ArrayList<NotificationRecipient>();
-
-		_log.debug("calendarResource classNameId : " + calendarResource.getClassNameId());
-		_log.debug("calendarResource classPK : " + calendarResource.getClassPK());
-
-		final long teamClassNameId = ClassNameLocalServiceUtil.getClassNameId(Team.class);
-
-		if (teamClassNameId == calendarResource.getClassNameId()) {
-
-			final List<User> teamUsers = UserLocalServiceUtil.getTeamUsers(calendarResource.getClassPK());
-			for (final User user : teamUsers) {
-				_log.debug("user to contact : " + user.getFullName());
-				notificationRecipients.add(new NotificationRecipient(user));
-			}
-			
+		final String userClassName = PortalUtil.getClassName(PortalUtil.getClassNameId(User.class));
+		final List<NotificationRecipient> notificationRecipients = new ArrayList<NotificationRecipient>();
+		
+		CalendarBooking parentCalendarBooking = null;
+		if (calendarBooking.getCalendarBookingId() == calendarBooking.getParentCalendarBookingId()) {
+			parentCalendarBooking = calendarBooking;
 		} else {
-
-			List<Role> roles = RoleLocalServiceUtil.getResourceBlockRoles(calendar.getResourceBlockId(), Calendar.class.getName(), ActionKeys.MANAGE_BOOKINGS);
-
-
-			for (Role role : roles) {
-				String name = role.getName();
-
-				if (name.equals(RoleConstants.OWNER)) {
-					User calendarResourceUser = UserLocalServiceUtil.getUser(calendarResource.getUserId());
-
-					notificationRecipients.add(new NotificationRecipient(calendarResourceUser));
-
-					User calendarUser = UserLocalServiceUtil.getUser(calendar.getUserId());
-
-					if (calendarResourceUser.getUserId() != calendarUser.getUserId()) {
-
-						notificationRecipients.add(new NotificationRecipient(calendarUser));
-					}
-				} else {
-					List<User> roleUsers = UserLocalServiceUtil.getRoleUsers(role.getRoleId());
-
-					for (User roleUser : roleUsers) {
-						PermissionChecker permissionChecker = PermissionCheckerFactoryUtil.create(roleUser);
-
-						if (!CalendarPermission.contains(permissionChecker, calendar, ActionKeys.MANAGE_BOOKINGS)) {
-
-							continue;
-						}
-
-						notificationRecipients.add(new NotificationRecipient(roleUser));
-					}
-				}
+			parentCalendarBooking = CalendarBookingLocalServiceUtil.getCalendarBooking(calendarBooking.getParentCalendarBookingId());
+		}
+		
+		_log.debug("parentCalendarBooking : " + parentCalendarBooking);
+		
+		final List<CalendarBooking> childCalendarBookings = parentCalendarBooking.getChildCalendarBookings();
+		for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
+			_log.debug("childCalendarBooking : " + childCalendarBooking.getCalendarBookingId());
+			final CalendarResource childCalendarResource = childCalendarBooking.getCalendarResource();
+			_log.debug("childCalendarResource.getClassName() : " + childCalendarResource.getClassName());
+			if (childCalendarResource.getClassName().equals(userClassName)) {
+				final long userId = childCalendarResource.getClassPK();
+				_log.debug("user recipient added : " + userId);
+				notificationRecipients.add(new NotificationRecipient(UserLocalServiceUtil.getUser(userId)));
 			}
 		}
-
 		return notificationRecipients;
 	}
 
