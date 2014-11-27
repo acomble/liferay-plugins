@@ -145,12 +145,13 @@ import com.liferay.portal.service.LayoutLocalServiceUtil;
 import javax.portlet.PortletURL;
 import javax.portlet.PortletMode;
 
+import org.apache.commons.lang.ArrayUtils;
+
 import com.liferay.portlet.PortletURLFactoryUtil;
 import com.liferay.util.portlet.PortletProps;
 import com.liferay.portal.service.TeamLocalServiceUtil;
 import com.liferay.portal.model.Team;
 import com.liferay.calendar.util.CalendarBookingComparator;
-
 import com.liferay.portal.service.UserGroupRoleLocalServiceUtil;
 
 /**
@@ -1097,6 +1098,11 @@ public class CalendarPortlet extends MVCPortlet {
 	protected void serveCalendarResources(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		
+		final User currentUser = themeDisplay.getUser();
+		
+		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
 		String keywords = ParamUtil.getString(resourceRequest, "keywords");
 
@@ -1116,8 +1122,6 @@ public class CalendarPortlet extends MVCPortlet {
 		List<CalendarResource> companyCalendarResources = CalendarResourceServiceUtil.search(themeDisplay.getCompanyId(), new long[] { themeDisplay.getCompanyGroupId() },
 				new long[] { groupClassNameId }, keywords, true, true, 0, SearchContainer.DEFAULT_DELTA, new CalendarResourceNameComparator());
 
-		// _log.error("keywords : " + keywords);
-
 		for (CalendarResource calendarResource : companyCalendarResources) {
 			addCalendarJSONObject(resourceRequest, jsonArray, calendarResource.getClassNameId(), calendarResource.getClassPK());
 		}
@@ -1128,28 +1132,27 @@ public class CalendarPortlet extends MVCPortlet {
 
 		params.put("usersGroups", themeDisplay.getUserId());
 
+		// Groups
 		List<Group> groups = GroupLocalServiceUtil.search(themeDisplay.getCompanyId(), name, name, params, true, 0, SearchContainer.DEFAULT_DELTA);
-
 		for (Group group : groups) {
-			// _log.error("group : " + group.getName());
 			addCalendarJSONObject(resourceRequest, jsonArray, groupClassNameId, group.getGroupId());
 		}
 
+		// Users
 		long userClassNameId = PortalUtil.getClassNameId(User.class);
-
 		List<User> users = UserLocalServiceUtil.search(themeDisplay.getCompanyId(), keywords, 0, null, 0, SearchContainer.DEFAULT_DELTA, new UserFirstNameComparator());
-
 		for (User user : users) {
 			addCalendarJSONObject(resourceRequest, jsonArray, userClassNameId, user.getUserId());
 		}
 
 		// TEAM ELUS
+		final long[] currentUserTeamIds = currentUser.getTeamIds();
 		long teamClassNameId = PortalUtil.getClassNameId(Team.class);
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
-			// _log.error("team : " + team.getTeamId());
-			if (team.getName().toUpperCase().contains(keywords.toUpperCase())) {
-				// _log.error("team added : " + team.getTeamId());
+			_log.debug("team : " + team.getTeamId());
+			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
+				_log.debug("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}
 		}
