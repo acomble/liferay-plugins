@@ -67,9 +67,9 @@ public class NotificationTemplateRenderer {
 						"[$TO_NAME$]" 
 				},
 				new String[] { 
-						GetterUtil.getString(SDF_DATE.format(endDate) + " ра " + SDF_HOUR.format(endDate) + "h" + SDF_MINUTE.format(endDate)), 
+						GetterUtil.getString(SDF_DATE.format(endDate) + " ра" + SDF_HOUR.format(endDate) + "h" + SDF_MINUTE.format(endDate)), 
 						GetterUtil.getString(attributes.get("location")),
-						GetterUtil.getString(SDF_DATE.format(startDate) + " ра " + SDF_HOUR.format(startDate) + "h" + SDF_MINUTE.format(startDate)), 
+						GetterUtil.getString(SDF_DATE.format(startDate) + " ра" + SDF_HOUR.format(startDate) + "h" + SDF_MINUTE.format(startDate)), 
 						GetterUtil.getString(attributes.get("title")),
 						GetterUtil.getString(attributes.get("url")), 
 						GetterUtil.getString(notificationTemplateContext.getFromAddress()),
