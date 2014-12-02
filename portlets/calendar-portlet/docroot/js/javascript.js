@@ -289,7 +289,8 @@ AUI.add(
 						startDate: startDate.getTime(),
 						status: calendarBooking.status,
 						questionnaireId: calendarBooking.questionnaireId,
-						organizerEmail: calendarBooking.organizerEmail
+						organizerEmail: calendarBooking.organizerEmail,
+						eventPast: calendarBooking.eventPast
 					}
 				);
 

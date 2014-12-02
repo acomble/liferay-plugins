@@ -274,6 +274,14 @@ public class CalendarUtil {
 		
 		final Integer nbDaysHurryUp =  (Integer)calendarBooking.getExpandoBridge().getAttribute("NbDaysHurryUp");
 		jsonObject.put("nbDaysHurryUp", nbDaysHurryUp);
+		
+		jsonObject.put("myParam", "false");
+		
+		if (java.util.Calendar.getInstance().after(startTimeJCalendar)) {
+			jsonObject.put("eventPast", "true");
+		} else {
+			jsonObject.put("eventPast", "false");
+		}
 
 		return jsonObject;
 	}

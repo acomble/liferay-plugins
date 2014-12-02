@@ -669,10 +669,18 @@ var SchedulerEventRecorder = A.Component.create({
 				document.getElementById('event-detail-more-info').innerHTML = '<a href="mailto:' + organizerEmail + '?subject=Cristal Union Espace Elus - Questions">' + organizerEmail + '</a>';
 				
 				// Edit questionnaire button
-				if (document.getElementById('event-questionnaire-submit')) {
-					document.getElementById('event-questionnaire-edit').style.display = 'none';
+				var past = evt.get('eventPast');
+				if (past == 'false') {
+					if (document.getElementById('event-questionnaire-submit')) {
+						document.getElementById('event-questionnaire-edit').style.display = 'none';
+					} else {
+						document.getElementById('event-questionnaire-edit').style.display = 'block';
+					}
 				} else {
-					document.getElementById('event-questionnaire-edit').style.display = 'block';
+					if (document.getElementById('event-questionnaire-submit')) {
+						document.getElementById('event-questionnaire-submit').style.display = 'none';
+					}
+					document.getElementById('event-questionnaire-edit').style.display = 'none';
 				}
             }
         },
