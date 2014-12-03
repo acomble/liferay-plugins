@@ -32,7 +32,7 @@ public class PortletPropsValues {
 		GetterUtil.getInteger(
 			PortletProps.get(
 				PortletPropsKeys.CALENDAR_NOTIFICATION_CHECK_INTERVAL));
-
+	
 	public static final String CALENDAR_NOTIFICATION_DEFAULT_TYPE =
 		PortletProps.get(PortletPropsKeys.CALENDAR_NOTIFICATION_DEFAULT_TYPE);
 

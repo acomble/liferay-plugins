@@ -77,8 +77,8 @@ public class EmailNotificationSender implements NotificationSender {
 			notificationTemplateContext.setToAddress(notificationRecipient.getEmailAddress());
 			notificationTemplateContext.setToName(notificationRecipient.getName());
 			
-			_log.debug("notificationRecipient.getEmailAddress() : " + notificationRecipient.getEmailAddress());
-			_log.debug("notificationRecipient.getName() : " + notificationRecipient.getName());
+			_log.error("notificationRecipient.getEmailAddress() : " + notificationRecipient.getEmailAddress());
+			_log.error("notificationRecipient.getName() : " + notificationRecipient.getName());
 
 			String subject = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.SUBJECT);
 			String body = NotificationTemplateRenderer.render(notificationTemplateContext, NotificationField.BODY);
