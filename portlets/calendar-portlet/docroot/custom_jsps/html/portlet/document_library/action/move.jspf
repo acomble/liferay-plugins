@@ -1,0 +1,46 @@
+<%--
+/**
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+--%>
+
+<c:if test="<%= (!checkedOut || hasLock) && DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE) && ((portletName.equals(PortletKeys.TRASH) && (restore || !fileEntry.isInTrash())) || showActions) %>">
+
+	<%
+	PortletURL moveURL = liferayPortletResponse.createRenderURL(PortletKeys.DOCUMENT_LIBRARY);
+
+	if (fileShortcut != null) {
+		moveURL.setParameter("struts_action", "/document_library/move_file_shortcut");
+		moveURL.setParameter("fileShortcutId", String.valueOf(fileShortcut.getFileShortcutId()));
+	}
+	else {
+		moveURL.setParameter("struts_action", "/document_library/move_file_entry");
+		moveURL.setParameter("fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
+	}
+
+	if (portletName.equals(PortletKeys.TRASH)) {
+		moveURL.setParameter(Constants.CMD, Constants.MOVE_FROM_TRASH);
+		moveURL.setParameter("redirect", PortalUtil.getCurrentURL(request));
+		moveURL.setParameter("folderId", String.valueOf(DLFolderConstants.DEFAULT_PARENT_FOLDER_ID));
+	}
+	else if (showActions) {
+		moveURL.setParameter("redirect", viewFolderURL.toString());
+	}
+	%>
+
+	<liferay-ui:icon
+		image="submit"
+		message="move"
+		url="<%= moveURL.toString() %>"
+	/>
+</c:if>
