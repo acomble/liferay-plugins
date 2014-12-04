@@ -16,6 +16,9 @@
 
 <%@ include file="/html/portlet/document_library_display/init.jsp" %>
 
+<%@page import="java.net.URL" %>
+<%@page import="java.net.URI" %>
+
 <%
 String redirect = ParamUtil.getString(request, "redirect");
 
@@ -75,6 +78,7 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 	<aui:input name="searchFolderIds" type="hidden" value="<%= searchFolderIds %>" />
 
 	<liferay-ui:header
+		cssClass="fLeft width60"
 		backURL="<%= redirect %>"
 		title="search"
 	/>
@@ -208,6 +212,15 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 						<portlet:param name="redirect" value="<%= currentURL %>" />
 						<portlet:param name="fileEntryId" value="<%= String.valueOf(fileEntry.getFileEntryId()) %>" />
 					</portlet:renderURL>
+					
+					<%
+						URL url = new URL(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, ""));
+						URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+						url = uri.toURL();
+						final String title = fileEntry.getFileVersion().getTitle().replace("'","\\'");
+						String rowHREF = "javascript:window.open('" + url.toString() + "','" + title + "','directories=no, height=640, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=680')" ;
+
+					%>
 
 					<liferay-ui:app-view-search-entry
 						actionJsp='<%= (showActions) ? "/html/portlet/document_library/file_entry_action.jsp" : StringPool.BLANK %>'
@@ -218,7 +231,7 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 						queryTerms="<%= hits.getQueryTerms() %>"
 						thumbnailSrc="<%= DLUtil.getThumbnailSrc(fileEntry, null, themeDisplay) %>"
 						title="<%= (summary != null) ? HtmlUtil.escape(summary.getTitle()) : fileEntry.getTitle() %>"
-						url="<%= rowURL %>"
+						url="<%= rowHREF %>"
 					/>
 				</c:when>
 				<c:when test="<%= folder != null %>">
