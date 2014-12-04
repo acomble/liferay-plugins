@@ -360,3 +360,6 @@
 .firefox .portlet-document-library .audio-node, .firefox .portlet-document-library-display .audio-node {
   height: 28px; }
 
+.lfr-preview-file-image-current {
+  max-height: 200% !important; }
+
