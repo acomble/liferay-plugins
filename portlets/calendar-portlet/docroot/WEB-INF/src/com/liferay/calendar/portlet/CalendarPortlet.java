@@ -64,6 +64,7 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.portlet.PortletResponseUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.upload.UploadPortletRequest;
 import com.liferay.portal.kernel.util.CalendarFactoryUtil;
@@ -111,6 +112,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.TimeZone;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URI;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -132,10 +135,15 @@ import com.liferay.portlet.asset.model.AssetRendererFactory;
 import com.liferay.portlet.asset.service.AssetEntryLocalServiceUtil;
 import com.liferay.portlet.asset.service.AssetLinkLocalServiceUtil;
 import com.liferay.portlet.asset.AssetRendererFactoryRegistryUtil;
+import com.liferay.portlet.documentlibrary.model.DLFileEntry;
+import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.util.DLUtil;
 import com.liferay.portal.kernel.portlet.LiferayPortletURL;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.LiferayPortletRequest;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
+
+import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 
 import javax.portlet.WindowState;
 
@@ -319,30 +327,36 @@ public class CalendarPortlet extends MVCPortlet {
 							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
 						}
 						assetLinkEntry = assetLinkEntry.toEscapedModel();
-						final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
-						final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
-						if (Validator.isNull(assetRendererFactory)) {
-							if (_log.isWarnEnabled()) {
-								_log.warn("No asset renderer factory found for class " + className);
-							}
+//						final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
+//						final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
+//						if (Validator.isNull(assetRendererFactory)) {
+//							if (_log.isWarnEnabled()) {
+//								_log.warn("No asset renderer factory found for class " + className);
+//							}
+//
+//							continue;
+//						}
+//						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
+//						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
+//						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false,
+//								(mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
+//						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
+//						portletURL.setWindowState(WindowState.MAXIMIZED);
+//						portletURL.setPortletMode(PortletMode.VIEW);
+//						portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
+//						// portletURL.setParameter("redirect", currentURL);
+//						portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
 
-							continue;
-						}
-						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
-						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
-						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false,
-								(mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
-						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
-						portletURL.setWindowState(WindowState.MAXIMIZED);
-						portletURL.setPortletMode(PortletMode.VIEW);
-						portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
-						// portletURL.setParameter("redirect", currentURL);
-						portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
-
+						final DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getFileEntry(assetLinkEntry.getClassPK());
+						FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dlFileEntry.getFileEntryId());
+						fileEntry = fileEntry.toEscapedModel();
+						final URL url = new URL(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, ""));
+						final URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+						
 						urlsAsJSON += "{";
 						urlsAsJSON += "\"assetLinkEntry\" : " + "\"" + assetLinkEntry.getEntryId() + "\"" + ",";
 						urlsAsJSON += "\"assetLinkEntryTitle\" : " + "\"" + assetLinkEntry.getTitle(resourceRequest.getLocale()) + "\"" + ",";
-						urlsAsJSON += "\"assetLinkEntryURL\" : " + "\"" + portletURL.toString() + "\"";
+						urlsAsJSON += "\"assetLinkEntryURL\" : " + "\"" + uri.toURL().toString() + "\"";
 						urlsAsJSON += "},";
 					}
 

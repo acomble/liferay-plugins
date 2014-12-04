@@ -145,37 +145,13 @@
 				String rowHREF = null;
 
 				if (DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.VIEW)) {
-					/*
-					PortletURL tempRowURL = renderResponse.createRenderURL();
-
-					if (portletName.equals(PortletKeys.TRASH)) {
-						tempRowURL.setParameter("struts_action", "/trash/view_content");
-						tempRowURL.setParameter("redirect", currentURL);
-						tempRowURL.setParameter("className", DLFileEntryConstants.getClassName());
-						tempRowURL.setParameter("classPK", String.valueOf(fileEntry.getPrimaryKey()));
-					}
-					else if (fileShortcut == null) {
-						tempRowURL.setParameter("struts_action", "/document_library_display/view_file_entry");
-						tempRowURL.setParameter("redirect", currentURL);
-						tempRowURL.setParameter("fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
-						tempRowURL.setParameter("windowState", LiferayWindowState.POP_UP.toString());
-					}
-					else {
-						tempRowURL.setParameter("struts_action", "/document_library_display/view_file_entry");
-						tempRowURL.setParameter("redirect", currentURL);
-						tempRowURL.setParameter("fileEntryId", String.valueOf(fileShortcut.getToFileEntryId()));
-					}
-
-					rowHREF = "javascript:window.open('" + tempRowURL.toString() + "','" + fileEntry.getFileVersion().getTitle() + "','directories=no, height=640, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=680')" ;
-					*/
-					
 					URL url = new URL(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, ""));
 					URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
 					url = uri.toURL();
 					
 					final String title = fileEntry.getFileVersion().getTitle().replace("'","\\'");
 
-					rowHREF = "javascript:window.open('" + url.toString() + "','" + title + "','directories=no, height=640, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=680')" ;
+					rowHREF = "javascript:window.open('" + url.toString() + "','" + title + "','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900')" ;
 				}
 			%>
 

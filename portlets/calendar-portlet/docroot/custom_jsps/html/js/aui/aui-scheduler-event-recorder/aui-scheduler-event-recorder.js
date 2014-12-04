@@ -632,7 +632,7 @@ var SchedulerEventRecorder = A.Component.create({
 						var entryTitle = entry.assetLinkEntryTitle;
 						var entryURL = entry.assetLinkEntryURL;
 						entriesHTML += '<span class=\'width100 fLeft\'>';
-						entriesHTML += '<a href=\''+ entryURL + '\' target=\'_blank\'>';
+						entriesHTML += '<a href="javascript:window.open(\'' + entryURL + '\',\'' + entryTitle + '\',\'directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900\');">';
 						entriesHTML += entryTitle;
 						entriesHTML += '</a>';
 						entriesHTML += '</span>';
