@@ -16,6 +16,8 @@
 
 <%@ include file="/html/portlet/document_library_display/init.jsp" %>
 
+<%@page import="com.liferay.portal.kernel.util.OrderByComparatorFactoryUtil" %>
+
 <%
 String topLink = ParamUtil.getString(request, "topLink", "home");
 
@@ -156,9 +158,18 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 							iteratorURL="<%= portletURL %>"
 							total="<%= foldersCount %>"
 						>
-							<liferay-ui:search-container-results
-								results="<%= DLAppServiceUtil.getFolders(repositoryId, folderId, searchContainer.getStart(), searchContainer.getEnd()) %>"
-							/>
+							<!-- si affichage répertoire racine (Accueil) alors ordre alphabétique -->
+							<c:if test="<%= defaultFolderId == folderId %>">
+								<liferay-ui:search-container-results
+									results="<%= DLAppServiceUtil.getFolders(repositoryId, folderId, searchContainer.getStart(), searchContainer.getEnd()) %>"
+								/>
+							</c:if>
+							<!-- si affichage répertoire autre que racine (Accueil) alors ordre alphabétique inversé -->
+							<c:if test="<%= defaultFolderId != folderId %>">
+								<liferay-ui:search-container-results
+									results='<%= DLAppServiceUtil.getFolders(repositoryId, folderId, searchContainer.getStart(), searchContainer.getEnd(), OrderByComparatorFactoryUtil.create("DLFolder", new String[] {"name", "DESC"})) %>'
+								/>
+							</c:if>
 
 							<liferay-ui:search-container-row
 								className="com.liferay.portal.kernel.repository.model.Folder"

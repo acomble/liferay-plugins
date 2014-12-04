@@ -73,7 +73,7 @@ for (int j = 0; j < folderColumns.length; j++) {
 					buffer.append("\">");
 				}
 
-				buffer.append("<img align=\"left\" border=\"0\" src=\"");
+				buffer.append("<img align=\"left\" style=\"margin-right: 5px;\" border=\"0\" src=\"");
 				buffer.append(HtmlUtil.escapeHREF(themeDisplay.getPathThemeImages()));
 
 				if (curFolder.isMountPoint()) {
@@ -95,7 +95,7 @@ for (int j = 0; j < folderColumns.length; j++) {
 				}
 
 				buffer.append("<strong>");
-				buffer.append(HtmlUtil.escape(curFolder.getName()));
+				buffer.append(curFolder.getName());
 				buffer.append("</strong>");
 
 				if (!repositoryAccess) {
