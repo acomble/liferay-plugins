@@ -63,7 +63,7 @@ for (int j = 0; j < folderColumns.length; j++) {
 			<liferay-ui:search-container-column-text
 				buffer="buffer"
 				href="<%= repositoryAccess ? rowURL : null %>"
-				name="<%= folderColumn %>"
+				name="folder-recent"
 			>
 
 				<%

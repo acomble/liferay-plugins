@@ -51,6 +51,20 @@ int mountFoldersCount = DLAppServiceUtil.getMountFoldersCount(scopeGroupId, DLFo
 	<portlet:param name="struts_action" value="/document_library_display/search" />
 </liferay-portlet:renderURL>
 
+<%
+
+PortletPreferences preferences = renderRequest.getPreferences();
+String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes documents");
+
+%>
+
+<span class="aqua">
+	<h1 class="portlet-title-spec"><%=portletCustomTitle%></h1>
+	<span class="tgl"></span>
+</span>
+
+<div class="aqua">
+
 <aui:form action="<%= searchURL %>" method="get" name="fm">
 	<liferay-portlet:renderURLParams varImpl="searchURL" />
 	<aui:input name="redirect" type="hidden" value="<%= redirect %>" />
@@ -65,9 +79,13 @@ int mountFoldersCount = DLAppServiceUtil.getMountFoldersCount(scopeGroupId, DLFo
 		title="search"
 	/>
 
-	<div class="form-search">
-		<liferay-ui:input-search autoFocus="<%= windowState.equals(WindowState.MAXIMIZED) %>" placeholder='<%= LanguageUtil.get(locale, "keywords") %>' title='<%= LanguageUtil.get(locale, "search-documents") %>' />
-	</div>
+	<aui:nav-bar>
+		<aui:nav-bar-search cssClass="pull-right">
+			<div class="form-search">
+				<liferay-ui:input-search autoFocus="<%= windowState.equals(WindowState.MAXIMIZED) %>" placeholder='<%= LanguageUtil.get(locale, "keywords") %>' title='<%= LanguageUtil.get(locale, "search-documents") %>' />
+			</div>
+		</aui:nav-bar-search>
+	</aui:nav-bar>
 
 	<br /><br />
 
@@ -240,6 +258,8 @@ int mountFoldersCount = DLAppServiceUtil.getMountFoldersCount(scopeGroupId, DLFo
 		<liferay-ui:search-paginator searchContainer="<%= searchContainer %>" type="more" />
 	</liferay-ui:search-container>
 </aui:form>
+
+</div>
 
 <%
 if (searchFolderId > 0) {

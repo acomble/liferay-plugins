@@ -159,7 +159,9 @@
 			<div class="separator"><!-- --></div>
 		</c:if>
 
-		<liferay-ui:search-iterator />
+		<liferay-ui:search-iterator
+			paginate="false"
+		/>
 	</liferay-ui:search-container>
 </aui:form>
 

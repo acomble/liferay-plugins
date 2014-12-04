@@ -103,8 +103,24 @@ for (int j = 0; j < fileEntryColumns.length; j++) {
 						<%
 						fileEntryFolder = fileEntry.getFolder();
 						List<Folder> ancestors = fileEntryFolder.getAncestors();
+						int ancestorsIndex = 0;
+						if (ancestors != null && !ancestors.isEmpty()) {
+							%>
+							
+							<liferay-ui:icon
+								image='folder'
+								label="<%= true %>"
+								message='<%= LanguageUtil.get(locale, "folder") %>'
+							/>
+							:
+							<%
+						}
 						for (final Folder ancestor : ancestors) {
-							%>> <%= ancestor.getName() %><%
+							if (ancestorsIndex > 0) {
+								%>&nbsp;&raquo;&nbsp;<%
+							}
+							%><%= ancestor.getName() %><%
+							ancestorsIndex++;
 						}
 						%>
 					</div>

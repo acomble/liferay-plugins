@@ -138,12 +138,14 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 				<liferay-ui:header
 					backURL="<%= redirect %>"
 					localizeTitle="<%= false %>"
-					title="<%= folder.getName() %>"
+					title='<%= "Dossier : " + folder.getName() %>'
 				/>
 			</c:if>
 
 			<aui:col cssClass="lfr-asset-column lfr-asset-column-details" width="<%= showFolderMenu ? 75 : 100 %>">
 				<liferay-ui:panel-container extended="<%= false %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayInfoPanelContainer" %>' persistState="<%= true %>">
+					<%@ include file="/html/portlet/document_library_display/view_file_entries.jspf" %>
+					
 					<c:if test="<%= foldersCount > 0 %>">
 						<liferay-ui:search-container
 							curParam="cur1"
@@ -176,8 +178,6 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 							<liferay-ui:search-iterator />
 						</liferay-ui:search-container>
 					</c:if>
-
-					<%@ include file="/html/portlet/document_library_display/view_file_entries.jspf" %>
 				</liferay-ui:panel-container>
 			</aui:col>
 		</aui:row>
