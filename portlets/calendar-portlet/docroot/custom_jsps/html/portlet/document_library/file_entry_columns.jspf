@@ -91,10 +91,15 @@ for (int j = 0; j < fileEntryColumns.length; j++) {
 				</span>
 				
 				<div style="display: block;width: 80%;float: left;">
-					<div class="entry-title" id="yui_patched_v3_11_0_1_1417609631532_1791" style="float: left;width: 100%;">
+					<div class="entry-title fLeft width100" id="yui_patched_v3_11_0_1_1417609631532_1791">
 						<%= HtmlUtil.escape(latestFileVersion.getTitle()) %>
 					</div>
-					<div class="entry-title" style="float: left;font-size:9pt;color: #c0c0c0;">
+					<c:if test="<%= Validator.isNotNull(latestFileVersion.getDescription()) %>">
+					<div class="file-entry-list-description fLeft width100" style="margin-left:0px; font-size:9pt;">
+						<%= HtmlUtil.escape(latestFileVersion.getDescription()) %>
+					</div>
+					</c:if>
+					<div class="entry-title fLeft width100" style="font-size:9pt;color: #c0c0c0;padding-top:0px;">
 						<%
 						fileEntryFolder = fileEntry.getFolder();
 						List<Folder> ancestors = fileEntryFolder.getAncestors();
@@ -103,11 +108,6 @@ for (int j = 0; j < fileEntryColumns.length; j++) {
 						}
 						%>
 					</div>
-					<c:if test="<%= Validator.isNotNull(latestFileVersion.getDescription()) %>">
-					<div class="file-entry-list-description" style="margin-left:0px; font-size:9pt;">
-						<%= HtmlUtil.escape(latestFileVersion.getDescription()) %>
-					</div>
-					</c:if>
 				</div>
 
 			</liferay-ui:search-container-column-text>

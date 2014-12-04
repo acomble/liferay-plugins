@@ -50,7 +50,7 @@ if (folder != null) {
 
 int status = WorkflowConstants.STATUS_APPROVED;
 
-if (permissionChecker.isContentReviewer(user.getCompanyId(), scopeGroupId)) {
+if (permissionChecker.isCompanyAdmin() || permissionChecker.isGroupAdmin(scopeGroupId)) {
 	status = WorkflowConstants.STATUS_ANY;
 }
 
@@ -81,14 +81,46 @@ request.setAttribute("view.jsp-viewFolder", Boolean.TRUE.toString());
 request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntryQuery));
 %>
 
-<portlet:actionURL var="undoTrashURL">
-	<portlet:param name="struts_action" value="/document_library/edit_entry" />
-	<portlet:param name="<%= Constants.CMD %>" value="<%= Constants.RESTORE %>" />
-</portlet:actionURL>
+<%
 
-<liferay-ui:trash-undo portletURL="<%= undoTrashURL %>" />
+PortletPreferences preferences = renderRequest.getPreferences();
+String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes documents");
 
-<liferay-util:include page="/html/portlet/document_library/top_links.jsp" />
+%>
+
+<span class="aqua">
+	<h1 class="portlet-title-spec"><%=portletCustomTitle%></h1>
+	<span class="tgl"></span>
+</span>
+
+<div class="aqua">
+
+<aui:nav-bar>
+	<liferay-portlet:renderURL varImpl="searchURL">
+		<portlet:param name="struts_action" value="/document_library_display/search" />
+	</liferay-portlet:renderURL>
+	
+	<aui:nav-bar-search cssClass="pull-right">
+		<div class="form-search">
+			<aui:form action="<%= searchURL %>" method="get" name="searchFm">
+				<liferay-portlet:renderURLParams varImpl="searchURL" />
+				<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+				<aui:input name="repositoryId" type="hidden" value="<%= repositoryId %>" />
+				<aui:input name="folderId" type="hidden" value="<%= folderId %>" />
+				<aui:input name="breadcrumbsFolderId" type="hidden" value="<%= folderId %>" />
+				<aui:input name="searchFolderIds" type="hidden" value="<%= folderId %>" />
+	
+				<liferay-ui:input-search id="keywords1" />
+			</aui:form>
+		</div>
+	</aui:nav-bar-search>
+	
+	<c:if test="<%= windowState.equals(WindowState.MAXIMIZED) %>">
+		<aui:script>
+			Liferay.Util.focusFormField(document.getElementById('<portlet:namespace />keywords1'));
+		</aui:script>
+	</c:if>
+</aui:nav-bar>
 
 <c:choose>
 	<c:when test="<%= useAssetEntryQuery %>">
@@ -101,109 +133,53 @@ request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntry
 
 	</c:when>
 	<c:when test='<%= topLink.equals("home") %>'>
-		<c:if test="<%= (folder != null) %>">
-			<liferay-ui:header
-				backURL="<%= redirect %>"
-				localizeTitle="<%= false %>"
-				title="<%= folder.getName() %>"
-			/>
-		</c:if>
-
 		<aui:row>
+			<c:if test="<%= (folder != null) %>">
+				<liferay-ui:header
+					backURL="<%= redirect %>"
+					localizeTitle="<%= false %>"
+					title="<%= folder.getName() %>"
+				/>
+			</c:if>
+
 			<aui:col cssClass="lfr-asset-column lfr-asset-column-details" width="<%= showFolderMenu ? 75 : 100 %>">
 				<liferay-ui:panel-container extended="<%= false %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayInfoPanelContainer" %>' persistState="<%= true %>">
-					<c:if test="<%= folder != null %>">
-						<c:if test="<%= Validator.isNotNull(folder.getDescription()) %>">
-							<div class="lfr-asset-description">
-								<%= HtmlUtil.escape(folder.getDescription()) %>
-							</div>
-						</c:if>
-
-						<div class="lfr-asset-metadata">
-							<div class="lfr-asset-icon lfr-asset-date">
-								<%= LanguageUtil.format(pageContext, "last-updated-x", dateFormatDateTime.format(folder.getModifiedDate())) %>
-							</div>
-
-							<div class="lfr-asset-icon lfr-asset-subfolders">
-								<%= foldersCount %> <liferay-ui:message key='<%= (foldersCount == 1) ? "subfolder" : "subfolders" %>' />
-							</div>
-
-							<div class="lfr-asset-icon lfr-asset-items last">
-								<%= fileEntriesCount %> <liferay-ui:message key='<%= (fileEntriesCount == 1) ? "document" : "documents" %>' />
-							</div>
-						</div>
-
-						<liferay-ui:custom-attributes-available className="<%= DLFolderConstants.getClassName() %>">
-							<liferay-ui:custom-attribute-list
-								className="<%= DLFolderConstants.getClassName() %>"
-								classPK="<%= (folder != null) ? folder.getFolderId() : 0 %>"
-								editable="<%= false %>"
-								label="<%= true %>"
-							/>
-						</liferay-ui:custom-attributes-available>
-					</c:if>
-
 					<c:if test="<%= foldersCount > 0 %>">
-						<liferay-ui:panel collapsible="<%= true %>" cssClass="view-folders" extended="<%= true %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayFoldersListingPanel" %>' persistState="<%= true %>" title='<%= (folder != null) ? "subfolders" : "folders" %>'>
-							<liferay-ui:search-container
-								curParam="cur1"
-								delta="<%= foldersPerPage %>"
-								deltaConfigurable="<%= false %>"
-								headerNames="<%= StringUtil.merge(folderColumns) %>"
-								iteratorURL="<%= portletURL %>"
-								total="<%= foldersCount %>"
+						<liferay-ui:search-container
+							curParam="cur1"
+							delta="<%= foldersPerPage %>"
+							deltaConfigurable="<%= false %>"
+							headerNames="<%= StringUtil.merge(folderColumns) %>"
+							iteratorURL="<%= portletURL %>"
+							total="<%= foldersCount %>"
+						>
+							<liferay-ui:search-container-results
+								results="<%= DLAppServiceUtil.getFolders(repositoryId, folderId, searchContainer.getStart(), searchContainer.getEnd()) %>"
+							/>
+
+							<liferay-ui:search-container-row
+								className="com.liferay.portal.kernel.repository.model.Folder"
+								escapedModel="<%= true %>"
+								keyProperty="folderId"
+								modelVar="curFolder"
+								rowVar="row"
 							>
-								<liferay-ui:search-container-results
-									results="<%= DLAppServiceUtil.getFolders(repositoryId, folderId, searchContainer.getStart(), searchContainer.getEnd()) %>"
-								/>
+								<liferay-portlet:renderURL varImpl="rowURL">
+									<portlet:param name="struts_action" value="/document_library_display/view" />
+									<portlet:param name="redirect" value="<%= currentURL %>" />
+									<portlet:param name="folderId" value="<%= String.valueOf(curFolder.getFolderId()) %>" />
+								</liferay-portlet:renderURL>
 
-								<liferay-ui:search-container-row
-									className="com.liferay.portal.kernel.repository.model.Folder"
-									keyProperty="folderId"
-									modelVar="curFolder"
-									rowVar="row"
-								>
-									<liferay-portlet:renderURL varImpl="rowURL">
-										<portlet:param name="struts_action" value="/document_library_display/view" />
-										<portlet:param name="redirect" value="<%= currentURL %>" />
-										<portlet:param name="folderId" value="<%= String.valueOf(curFolder.getFolderId()) %>" />
-									</liferay-portlet:renderURL>
+								<%@ include file="/html/portlet/document_library/folder_columns.jspf" %>
+							</liferay-ui:search-container-row>
 
-									<%@ include file="/html/portlet/document_library/folder_columns.jspf" %>
-								</liferay-ui:search-container-row>
-
-								<liferay-ui:search-iterator />
-							</liferay-ui:search-container>
-						</liferay-ui:panel>
+							<liferay-ui:search-iterator />
+						</liferay-ui:search-container>
 					</c:if>
 
-					<liferay-ui:panel collapsible="<%= true %>" extended="<%= true %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayDocumentsListingPanel" %>' persistState="<%= true %>" title="documents">
-						<%@ include file="/html/portlet/document_library/view_file_entries.jspf" %>
-					</liferay-ui:panel>
+					<%@ include file="/html/portlet/document_library_display/view_file_entries.jspf" %>
 				</liferay-ui:panel-container>
 			</aui:col>
-
-			<c:if test="<%= showFolderMenu %>">
-				<aui:col cssClass="lfr-asset-column lfr-asset-column-actions" last="<%= true %>" width="<%= 25 %>">
-					<div class="lfr-asset-summary">
-						<liferay-ui:icon
-							cssClass="lfr-asset-avatar"
-							image='<%= "../file_system/large/" + (((foldersCount + fileEntriesCount) > 0) ? "folder_full_document" : "folder_empty_document") %>'
-							message=""
-						/>
-
-						<div class="lfr-asset-name">
-							<h4><%= (folder != null) ? HtmlUtil.escape(folder.getName()) : LanguageUtil.get(pageContext, "home") %></h4>
-						</div>
-					</div>
-
-					<%
-					request.removeAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW);
-					%>
-
-					<liferay-util:include page="/html/portlet/document_library/folder_action.jsp" />
-				</aui:col>
-			</c:if>
 		</aui:row>
 
 		<%
@@ -218,73 +194,9 @@ request.setAttribute("view.jsp-useAssetEntryQuery", String.valueOf(useAssetEntry
 		%>
 
 	</c:when>
-	<c:when test='<%= topLink.equals("mine") || topLink.equals("recent") %>'>
-		<aui:row>
-			<liferay-ui:header
-				backURL="<%= redirect %>"
-				title="<%= topLink %>"
-			/>
-
-			<%
-			long groupFileEntriesUserId = 0;
-
-			if (topLink.equals("mine") && themeDisplay.isSignedIn()) {
-				groupFileEntriesUserId = user.getUserId();
-
-				status = WorkflowConstants.STATUS_ANY;
-			}
-			%>
-
-			<liferay-ui:search-container
-				delta="<%= fileEntriesPerPage %>"
-				deltaConfigurable="<%= false %>"
-				emptyResultsMessage="there-are-no-documents"
-				iteratorURL="<%= portletURL %>"
-				total="<%= DLAppServiceUtil.getGroupFileEntriesCount(repositoryId, groupFileEntriesUserId, defaultFolderId, null, status) %>"
-			>
-
-				<liferay-ui:search-container-results
-					results="<%= DLAppServiceUtil.getGroupFileEntries(repositoryId, groupFileEntriesUserId, defaultFolderId, null, status, searchContainer.getStart(), searchContainer.getEnd(), null) %>"
-				/>
-
-				<liferay-ui:search-container-row
-					className="com.liferay.portal.kernel.repository.model.FileEntry"
-					escapedModel="<%= true %>"
-					keyProperty="fileEntryId"
-					modelVar="fileEntry"
-				>
-
-					<%
-					DLFileShortcut fileShortcut = null;
-
-					String rowHREF = null;
-
-					if (DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.VIEW)) {
-						PortletURL viewFileEntryURL = renderResponse.createRenderURL();
-
-						viewFileEntryURL.setParameter("struts_action", "/document_library_display/view_file_entry");
-						viewFileEntryURL.setParameter("redirect", currentURL);
-						viewFileEntryURL.setParameter("fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
-
-						rowHREF = viewFileEntryURL.toString();
-					}
-					%>
-
-					<%@ include file="/html/portlet/document_library/file_entry_columns.jspf" %>
-				</liferay-ui:search-container-row>
-
-				<liferay-ui:search-iterator />
-			</liferay-ui:search-container>
-		</aui:row>
-
-		<%
-		PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(pageContext, topLink), currentURL);
-
-		PortalUtil.setPageSubtitle(LanguageUtil.get(pageContext, topLink), request);
-		%>
-
-	</c:when>
 </c:choose>
+
+</div>
 
 <%!
 private static Log _log = LogFactoryUtil.getLog("portal-web.docroot.html.portlet.document_library.view_jsp");

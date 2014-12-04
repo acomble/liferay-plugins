@@ -48,7 +48,7 @@ boolean versionSpecific = false;
 if (fileVersion != null) {
 	versionSpecific = true;
 }
-else if ((user.getUserId() == fileEntry.getUserId()) || permissionChecker.isContentReviewer(user.getCompanyId(), scopeGroupId) || DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE)) {
+else if ((user.getUserId() == fileEntry.getUserId()) || DLFileEntryPermission.contains(permissionChecker, fileEntry, ActionKeys.UPDATE)) {
 	fileVersion = fileEntry.getLatestFileVersion();
 }
 else {
