@@ -1140,7 +1140,8 @@ public class CalendarPortlet extends MVCPortlet {
 
 		// Users
 		long userClassNameId = PortalUtil.getClassNameId(User.class);
-		List<User> users = UserLocalServiceUtil.search(themeDisplay.getCompanyId(), keywords, 0, null, 0, SearchContainer.DEFAULT_DELTA, new UserFirstNameComparator());
+		// status = -1 to search all users even inactive
+		List<User> users = UserLocalServiceUtil.search(themeDisplay.getCompanyId(), keywords, -1, null, 0, SearchContainer.DEFAULT_DELTA, new UserFirstNameComparator());
 		for (User user : users) {
 			addCalendarJSONObject(resourceRequest, jsonArray, userClassNameId, user.getUserId());
 		}

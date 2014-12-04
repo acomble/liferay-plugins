@@ -123,7 +123,7 @@ for (final Layout lay: playouts){
 <aui:container cssClass="calendar-portlet-column-parent">
 	<aui:row>
 		<aui:col cssClass='<%= "calendar-portlet-column-options " + (columnOptionsVisible ? StringPool.BLANK : "hide") %>' id="columnOptions" span="<%= 3 %>">
-			<div class="calendar-portlet-mini-calendar" id="<portlet:namespace />miniCalendarContainer"></div>
+			<div class="calendar-portlet-mini-calendar hide" id="<portlet:namespace />miniCalendarContainer"></div>
 
 			<div id="<portlet:namespace />calendarListContainer">
 				<!-- Do not show user calendar -->
