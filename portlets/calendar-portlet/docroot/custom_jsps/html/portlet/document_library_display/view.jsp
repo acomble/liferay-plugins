@@ -95,33 +95,6 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 
 <div class="aqua">
 
-<aui:nav-bar>
-	<liferay-portlet:renderURL varImpl="searchURL">
-		<portlet:param name="struts_action" value="/document_library_display/search" />
-	</liferay-portlet:renderURL>
-	
-	<aui:nav-bar-search cssClass="pull-right">
-		<div class="form-search">
-			<aui:form action="<%= searchURL %>" method="get" name="searchFm">
-				<liferay-portlet:renderURLParams varImpl="searchURL" />
-				<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
-				<aui:input name="repositoryId" type="hidden" value="<%= repositoryId %>" />
-				<aui:input name="folderId" type="hidden" value="<%= folderId %>" />
-				<aui:input name="breadcrumbsFolderId" type="hidden" value="<%= folderId %>" />
-				<aui:input name="searchFolderIds" type="hidden" value="<%= folderId %>" />
-	
-				<liferay-ui:input-search id="keywords1" />
-			</aui:form>
-		</div>
-	</aui:nav-bar-search>
-	
-	<c:if test="<%= windowState.equals(WindowState.MAXIMIZED) %>">
-		<aui:script>
-			Liferay.Util.focusFormField(document.getElementById('<portlet:namespace />keywords1'));
-		</aui:script>
-	</c:if>
-</aui:nav-bar>
-
 <c:choose>
 	<c:when test="<%= useAssetEntryQuery %>">
 		<liferay-ui:categorization-filter
@@ -136,11 +109,39 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 		<aui:row>
 			<c:if test="<%= (folder != null) %>">
 				<liferay-ui:header
+					cssClass="fLeft width60"
 					backURL="<%= redirect %>"
 					localizeTitle="<%= false %>"
 					title='<%= "Dossier : " + folder.getName() %>'
 				/>
 			</c:if>
+			
+			<aui:nav-bar>
+				<liferay-portlet:renderURL varImpl="searchURL">
+					<portlet:param name="struts_action" value="/document_library_display/search" />
+				</liferay-portlet:renderURL>
+				
+				<aui:nav-bar-search cssClass="pull-right">
+					<div class="form-search">
+						<aui:form action="<%= searchURL %>" method="get" name="searchFm">
+							<liferay-portlet:renderURLParams varImpl="searchURL" />
+							<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
+							<aui:input name="repositoryId" type="hidden" value="<%= repositoryId %>" />
+							<aui:input name="folderId" type="hidden" value="<%= folderId %>" />
+							<aui:input name="breadcrumbsFolderId" type="hidden" value="<%= folderId %>" />
+							<aui:input name="searchFolderIds" type="hidden" value="<%= folderId %>" />
+				
+							<liferay-ui:input-search id="keywords1" />
+						</aui:form>
+					</div>
+				</aui:nav-bar-search>
+				
+				<c:if test="<%= windowState.equals(WindowState.MAXIMIZED) %>">
+					<aui:script>
+						Liferay.Util.focusFormField(document.getElementById('<portlet:namespace />keywords1'));
+					</aui:script>
+				</c:if>
+			</aui:nav-bar>
 
 			<aui:col cssClass="lfr-asset-column lfr-asset-column-details" width="<%= showFolderMenu ? 75 : 100 %>">
 				<liferay-ui:panel-container extended="<%= false %>" id='<%= renderResponse.getNamespace() + "documentLibraryDisplayInfoPanelContainer" %>' persistState="<%= true %>">
