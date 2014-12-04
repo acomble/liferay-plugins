@@ -42,8 +42,14 @@ else if (result instanceof Folder) {
 
 	curFolder = curFolder.toEscapedModel();
 }
-else if (result instanceof FileEntry || result instanceof DLFileEntry) {
+else if (result instanceof FileEntry) {
 	fileEntry = (FileEntry)result;
+
+	fileEntry = fileEntry.toEscapedModel();
+}
+else if (result instanceof DLFileEntry) {
+	DLFileEntry dlFileEntry = (DLFileEntry) result;
+	fileEntry = DLAppLocalServiceUtil.getFileEntry(dlFileEntry.getFileEntryId());
 
 	fileEntry = fileEntry.toEscapedModel();
 }

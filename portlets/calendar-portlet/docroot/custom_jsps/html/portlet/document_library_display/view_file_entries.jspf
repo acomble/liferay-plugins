@@ -133,6 +133,7 @@
 						tempRowURL.setParameter("struts_action", "/document_library_display/view_file_entry");
 						tempRowURL.setParameter("redirect", currentURL);
 						tempRowURL.setParameter("fileEntryId", String.valueOf(fileEntry.getFileEntryId()));
+						tempRowURL.setParameter("windowState", LiferayWindowState.POP_UP.toString());
 					}
 					else {
 						tempRowURL.setParameter("struts_action", "/document_library_display/view_file_entry");
@@ -140,7 +141,7 @@
 						tempRowURL.setParameter("fileEntryId", String.valueOf(fileShortcut.getToFileEntryId()));
 					}
 
-					rowHREF = tempRowURL.toString();
+					rowHREF = "javascript:window.open('" + tempRowURL.toString() + "','" + fileEntry.getFileVersion().getTitle() + "','directories=no, height=640, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=680')" ;
 				}
 			%>
 

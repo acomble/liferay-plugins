@@ -631,3 +631,7 @@
 		}
 	}
 }
+
+.lfr-preview-file-image-current {
+	max-height: 200% !important;
+}
