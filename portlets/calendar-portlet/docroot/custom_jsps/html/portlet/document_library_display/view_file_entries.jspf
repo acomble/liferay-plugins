@@ -76,16 +76,37 @@
 				else {
 					// Edited for Espace Elus
 					if (folderId != 0) {
-						total = DLFileEntryLocalServiceUtil.getFileEntriesCount(themeDisplay.getScopeGroupId(), folderId);
+						final Indexer indexer = IndexerRegistryUtil.getIndexer(DLFileEntryConstants.getClassName());
+						// Create SearchContext
+						final SearchContext sc = new SearchContext();
+						sc.setCompanyId(themeDisplay.getCompanyId());
+						sc.setGroupIds(new long[] {themeDisplay.getScopeGroupId()});
+						final List<Folder> subfolders = DLAppServiceUtil.getFolders(repositoryId, folderId);
+						final List<Long> subfolderIds = new ArrayList<Long>();
+						for (final Folder f : subfolders) {
+							subfolderIds.add(f.getFolderId());
+						}
+						subfolderIds.add(folderId);
+						sc.setFolderIds(subfolderIds);
+						final Map<String, Serializable> attributes = new HashMap<String, Serializable>();
+						sc.setAndSearch(true);
+						sc.setAttributes(attributes);
+						sc.setStart(searchContainer.getStart());
+						sc.setEnd(searchContainer.getEnd());
+						sc.setAttribute("paginationType", "none");
+						final Sort[] sorts = new Sort[] {new Sort(Field.MODIFIED_DATE, true)};
+						sc.setSorts(sorts);
+						final Hits hits = indexer.search(sc);
+						total = hits.getLength();
+						final List<DLFileEntry> tmpResults = new ArrayList<DLFileEntry>();
+						for (final Document doc : hits.getDocs()) {
+							final long resourcePrimKey = GetterUtil.getLong(doc.get(Field.ENTRY_CLASS_PK));
+							final DLFileEntry tmpFileEntry = DLFileEntryLocalServiceUtil.getFileEntry(resourcePrimKey);
+							tmpResults.add(tmpFileEntry);
+						}
+						results = tmpResults;
 					} else {
 						total = DLFileEntryLocalServiceUtil.getGroupFileEntriesCount(themeDisplay.getScopeGroupId());
-					}
-
-					searchContainer.setTotal(total);
-
-					if (folderId != 0) {
-						results = DLFileEntryLocalServiceUtil.getFileEntries(themeDisplay.getScopeGroupId(), folderId, searchContainer.getStart(), searchContainer.getEnd(), new RepositoryModelModifiedDateComparator(false));
-					} else {
 						results = DLFileEntryLocalServiceUtil.getGroupFileEntries(themeDisplay.getScopeGroupId(), searchContainer.getStart(), searchContainer.getEnd(), new RepositoryModelModifiedDateComparator(false));
 					}
 				}
