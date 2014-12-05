@@ -247,9 +247,9 @@ AUI.add(
 										var name = calendar.name;
 										var calendarResourceName = calendar.calendarResourceName;
 	
-										if (name !== calendarResourceName) {
-											name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
-										}
+										//if (name !== calendarResourceName) {
+										//	name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+										//}
 	
 										return A.Highlight.words(name, query);
 									}
@@ -455,9 +455,9 @@ AUI.add(
 			getCalendarName: function(name, calendarResourceName) {
 				var instance = this;
 
-				if (name !== calendarResourceName) {
-					name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
-				}
+				//if (name !== calendarResourceName) {
+					//name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+				//}
 
 				return name;
 			},
