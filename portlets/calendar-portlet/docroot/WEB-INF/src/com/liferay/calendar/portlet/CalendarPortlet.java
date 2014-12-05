@@ -369,7 +369,8 @@ public class CalendarPortlet extends MVCPortlet {
 					// Close JSON flux
 					response.append("}");
 
-					resourceResponse.getPortletOutputStream().write(response.toString().getBytes());
+					resourceResponse.setCharacterEncoding("UTF-8");
+					resourceResponse.getPortletOutputStream().write(response.toString().getBytes("UTF-8"));
 				}
 			} else if ("serveCalendarBookingsAsset".equals(resourceID)) {
 				serveCalendarBookingsAsset(resourceRequest, resourceResponse);
