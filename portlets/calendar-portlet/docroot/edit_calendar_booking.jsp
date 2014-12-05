@@ -208,7 +208,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					for (final Survey survey : surveys) {
 					%>
 		
-						<aui:option selected="<%= (surveyId != null && Long.parseLong(surveyId) == survey.getId()) ? true : false %>" value="<%= survey.getId() %>">
+						<aui:option selected="<%= (surveyId != null && !surveyId.isEmpty() && Long.parseLong(surveyId) == survey.getId()) ? true : false %>" value="<%= survey.getId() %>">
 							<%= HtmlUtil.escape(survey.getName()) + " - " + HtmlUtil.escape(survey.getDescription()) %>
 						</aui:option>
 		

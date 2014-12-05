@@ -2,6 +2,9 @@
 <%@ page import="com.liferay.portal.model.LayoutTypePortlet" %>
 <%@ page import="com.liferay.portal.model.Layout" %>
 <%@ page import="java.util.Map" %>
+<%@page import="java.net.URLEncoder" %>
+<%@page import="java.net.URL" %>
+<%@page import="java.net.URI" %>
 
 <%
 String backURL = ParamUtil.getString(request, "backURL");
@@ -38,6 +41,20 @@ if (calendarBookingId != parentCalendarBookingId) {
 
 // Get associated files
 Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries");
+
+String endTimeDay = endTimeJCalendar.get(java.util.Calendar.DAY_OF_YEAR) + "";
+String endTimeHour = endTimeJCalendar.get(java.util.Calendar.HOUR_OF_DAY) + "";
+String endTimeMinute = endTimeJCalendar.get(java.util.Calendar.MINUTE) + "";
+int endTimeMonthTmp  = endTimeJCalendar.get(java.util.Calendar.MONTH) + 2;
+String endTimeMonth = endTimeMonthTmp + "";
+String endTimeYear = (endTimeJCalendar.get(java.util.Calendar.YEAR) - 1) + "";
+String startTimeDay = startTimeJCalendar.get(java.util.Calendar.DAY_OF_YEAR) + "";
+String startTimeHour = startTimeJCalendar.get(java.util.Calendar.HOUR_OF_DAY) + "";
+String startTimeMinute = startTimeJCalendar.get(java.util.Calendar.MINUTE) + "";
+int startTimeMonthTmp = startTimeJCalendar.get(java.util.Calendar.MONTH) + 2;
+String startTimeMonth = startTimeMonthTmp  + "";
+String startTimeYear = (startTimeJCalendar.get(java.util.Calendar.YEAR) - 1) + "";
+String calendarBookingTitle = calendarBooking.getTitle(locale).replace("'","\\'");
 
 %>
 
@@ -95,6 +112,61 @@ Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries
 						<button class="presence fLeft" id="event-detail-delete" name="event-detail-delete" value="delete">Supprimer</button>
 				</span>
 			</div>
+			
+			<portlet:renderURL var="editCalendarBookingURL" windowState="<%= LiferayWindowState.POP_UP.toString() %>">
+				<portlet:param name="mvcPath" value="/edit_calendar_booking.jsp" />
+				<portlet:param name="activeView" value="<%=activeView%>" />
+				<portlet:param name="allDay" value='<%= calendarBooking.isAllDay() + "" %>' />
+				<portlet:param name="calendarBookingId" value='<%=calendarBookingId + ""%>' />
+				<portlet:param name="calendarId" value='<%=calendar.getCalendarId() + ""%>' />
+				<portlet:param name="date" value='<%=date + ""%>' />
+				<portlet:param name="endTimeDay" value="<%=endTimeDay%>" />
+				<portlet:param name="endTimeHour" value="<%=endTimeHour%>" />
+				<portlet:param name="endTimeMinute" value="<%=endTimeMinute%>" />
+				<portlet:param name="endTimeMonth" value="<%=endTimeMonth%>" />
+				<portlet:param name="endTimeYear" value="<%=endTimeYear%>" />
+				<portlet:param name="instanceIndex" value='<%=instanceIndex + ""%>' />
+				<portlet:param name="startTimeDay" value="<%=startTimeDay%>" />
+				<portlet:param name="startTimeHour" value="<%=startTimeHour%>" />
+				<portlet:param name="startTimeMinute" value="<%=startTimeMinute%>" />
+				<portlet:param name="startTimeMonth" value="<%=startTimeMonth%>" />
+				<portlet:param name="startTimeYear" value="<%=startTimeYear%>" />
+				<portlet:param name="titleCurrentValue" value="<%=calendarBookingTitle%>" />
+			</portlet:renderURL>
+			
+			<%= "MONTH START DATE : " + startTimeMonth %><%= "----" %>
+			
+			<%
+			
+			URL url = new URL(editCalendarBookingURL);
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+			url = uri.toURL();
+			
+			%>
+			<aui:script use="aui-base">
+				var editCalendarBookingElement = A.one('#event-detail-edit');
+				editCalendarBookingElement.on(
+					'click',
+					function(event) {
+						Liferay.Util.openWindow(
+							{
+								dialog: {
+									after: {
+										destroy: function(event) {
+											document.location.href = "<%= currentURL %>";
+										}
+									},
+									destroyOnHide: true,
+									modal: true
+								},
+								refreshWindow: window,
+								title: Liferay.Language.get('edit-calendar-booking'),
+								uri: '<%= editCalendarBookingURL %>'
+							}
+						);
+					}
+				);
+			</aui:script>
 		</c:if>
 		
 		<div class="entry-categories">
@@ -182,6 +254,12 @@ Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries
 			editQuestionnaireNode.toggleClass('hide');
 		}
 	);
+	<% if (java.util.Calendar.getInstance().after(startTimeJCalendar)) { %>
+		if (document.getElementById('event-questionnaire-submit')) {
+			document.getElementById('event-questionnaire-submit').style.display = 'none';
+		}
+		document.getElementById('event-questionnaire-edit').style.display = 'none';
+	<% } %>
 </aui:script>
 
 <c:if test="<%= calendarBooking.isRecurring() %>">
