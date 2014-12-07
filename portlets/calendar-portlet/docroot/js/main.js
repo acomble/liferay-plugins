@@ -36,6 +36,19 @@ function manageEventDetailHide(instance) {
 	}
 }
 
+function manageEventDetailHideNamespace(portletNamespace) {
+	document.getElementById(portletNamespace + 'calendar-portlet-column-details').style.display = 'none';
+	document.getElementById(portletNamespace + 'calendar-portlet-column-details').className = 'hide';
+	
+	var optionsVisible = document.getElementById(portletNamespace + 'columnToggler').innerHTML.indexOf('icon-caret-right');
+	
+	if (optionsVisible == -1) {
+		document.getElementById(portletNamespace + 'columnGrid').style.width = '74%';
+	} else {
+		document.getElementById(portletNamespace + 'columnGrid').style.width = '95%';
+	}
+}
+
 function manageEventAttendAnswers(portletNamespace, status) {
 	// Reinitialize buttons
     document.getElementById(portletNamespace + 'accept').disabled = false;

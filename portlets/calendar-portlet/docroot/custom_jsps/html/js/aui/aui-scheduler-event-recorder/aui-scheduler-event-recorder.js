@@ -601,6 +601,7 @@ var SchedulerEventRecorder = A.Component.create({
 					oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
 					newEditButton.addEventListener('click', eventEditListener);
 					document.getElementById('event-detail-actions').style.display = 'block';
+					document.getElementById('event-detail-delete').style.display = 'block';
 				}
 				// Set delete event button listener
 				var eventDeleteListener = A.bind(instance._handleDeleteEvent, instance);
@@ -610,6 +611,7 @@ var SchedulerEventRecorder = A.Component.create({
 					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
 					newDeleteButton.addEventListener('click', eventDeleteListener);
 					document.getElementById('event-detail-actions').style.display = 'block';
+					document.getElementById('event-detail-edit').style.display = 'block';
 				}
 				
 				// Set edit questionnaire button listener

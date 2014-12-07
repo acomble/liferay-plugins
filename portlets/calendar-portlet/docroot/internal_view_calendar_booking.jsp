@@ -5,6 +5,7 @@
 <%@page import="java.net.URLEncoder" %>
 <%@page import="java.net.URL" %>
 <%@page import="java.net.URI" %>
+<%@ page import="com.liferay.portal.kernel.util.PropsUtil" %>
 
 <%
 String backURL = ParamUtil.getString(request, "backURL");
@@ -45,16 +46,18 @@ Map<String, String> entries = (Map) request.getAttribute("calendarBookingEntries
 String endTimeDay = endTimeJCalendar.get(java.util.Calendar.DAY_OF_YEAR) + "";
 String endTimeHour = endTimeJCalendar.get(java.util.Calendar.HOUR_OF_DAY) + "";
 String endTimeMinute = endTimeJCalendar.get(java.util.Calendar.MINUTE) + "";
-int endTimeMonthTmp  = endTimeJCalendar.get(java.util.Calendar.MONTH) + 2;
+int endTimeMonthTmp  = endTimeJCalendar.get(java.util.Calendar.MONTH) + 1;
 String endTimeMonth = endTimeMonthTmp + "";
 String endTimeYear = (endTimeJCalendar.get(java.util.Calendar.YEAR) - 1) + "";
 String startTimeDay = startTimeJCalendar.get(java.util.Calendar.DAY_OF_YEAR) + "";
 String startTimeHour = startTimeJCalendar.get(java.util.Calendar.HOUR_OF_DAY) + "";
 String startTimeMinute = startTimeJCalendar.get(java.util.Calendar.MINUTE) + "";
-int startTimeMonthTmp = startTimeJCalendar.get(java.util.Calendar.MONTH) + 2;
+int startTimeMonthTmp = startTimeJCalendar.get(java.util.Calendar.MONTH) + 1;
 String startTimeMonth = startTimeMonthTmp  + "";
 String startTimeYear = (startTimeJCalendar.get(java.util.Calendar.YEAR) - 1) + "";
 String calendarBookingTitle = calendarBooking.getTitle(locale).replace("'","\\'");
+
+final String mesRendezvousURL = PropsUtil.get("espace.elus.mes.rendezvous.url");
 
 %>
 
@@ -134,7 +137,9 @@ String calendarBookingTitle = calendarBooking.getTitle(locale).replace("'","\\'"
 				<portlet:param name="titleCurrentValue" value="<%=calendarBookingTitle%>" />
 			</portlet:renderURL>
 			
-			<%= "MONTH START DATE : " + startTimeMonth %><%= "----" %>
+			<portlet:actionURL name="moveCalendarBookingToTrash" var="deleteCalendarBookingURL">
+				<portlet:param name="calendarBookingId" value='<%= calendarBookingId + "" %>' />
+			</portlet:actionURL>
 			
 			<%
 			
@@ -164,6 +169,27 @@ String calendarBookingTitle = calendarBooking.getTitle(locale).replace("'","\\'"
 								uri: '<%= editCalendarBookingURL %>'
 							}
 						);
+					}
+				);
+				var deleteCalendarBookingElement = A.one('#event-detail-delete');
+				deleteCalendarBookingElement.on(
+					'click',
+					function(event) {
+						if (confirm(Liferay.Language.get('deleting-this-event-will-cancel-the-meeting-with-your-guests-would-you-like-to-delete'))) {
+							A.io.request(
+								'<%= deleteCalendarBookingURL %>',
+								{
+									dataType: 'html',
+									on: {
+										success: function() {
+											alert('Le rendez-vous a été supprimé avec succès');
+											document.location.href= "<%= mesRendezvousURL %>";
+										}
+									},
+									sync: true
+								}
+						    );
+						}
 					}
 				);
 			</aui:script>
