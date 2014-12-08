@@ -2286,8 +2286,10 @@ AUI.add(
 								CalendarUtil.getCalendarBookingRelatedAsset(
 									calendarBookingId,
 									function(data) {
-										instance.set('assetEntryId', data.entryId);
-										instance.set('assetEntries', data.entries);
+										if (data != null) {
+											instance.set('assetEntryId', data.entryId);
+											instance.set('assetEntries', data.entries);
+										}
 									}
 								);
 							}

@@ -627,23 +627,24 @@ var SchedulerEventRecorder = A.Component.create({
 				instance._syncRelatedAsset();
 				var entriesHTML = '';
 				var entries = instance.get('assetEntries');
-				if (entries && entries.length > 0) {
-					for (var i = 0; i < entries.length; i++) {
-						var entry = entries[i];
-						var entryId = entry.assetLinkEntry;
-						var entryTitle = entry.assetLinkEntryTitle;
-						var entryURL = entry.assetLinkEntryURL;
-						entriesHTML += '<span class=\'width100 fLeft\'>';
-						entriesHTML += '<a href="javascript:window.open(\'' + entryURL + '\',\'' + entryTitle.replace("&#039;","\\&#039;") + '\',\'directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900\');">';
-						entriesHTML += entryTitle;
-						entriesHTML += '</a>';
-						entriesHTML += '</span>';
-					}
-					document.getElementById('event-detail-related-asset-zone').className = 'fLeft';
-					document.getElementById('event-detail-related-asset').innerHTML = entriesHTML;
-				} else {
-					document.getElementById('event-detail-related-asset-zone').className = 'fLeft hide';
-					document.getElementById('event-detail-related-asset').innerHTML = '';
+				document.getElementById('event-detail-related-asset-zone').className = 'fLeft hide';
+				document.getElementById('event-detail-related-asset').innerHTML = '';
+				if (entries != null && entries != undefined) {
+					if (entries && entries.length > 0) {
+						for (var i = 0; i < entries.length; i++) {
+							var entry = entries[i];
+							var entryId = entry.assetLinkEntry;
+							var entryTitle = entry.assetLinkEntryTitle;
+							var entryURL = entry.assetLinkEntryURL;
+							entriesHTML += '<span class=\'width100 fLeft\'>';
+							entriesHTML += '<a href="javascript:window.open(\'' + entryURL + '\',\'' + entryTitle.replace("&#039;","\\&#039;") + '\',\'directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900\');">';
+							entriesHTML += entryTitle;
+							entriesHTML += '</a>';
+							entriesHTML += '</span>';
+						}
+						document.getElementById('event-detail-related-asset-zone').className = 'fLeft';
+						document.getElementById('event-detail-related-asset').innerHTML = entriesHTML;
+					} 
 				}
 				
 				// Location
