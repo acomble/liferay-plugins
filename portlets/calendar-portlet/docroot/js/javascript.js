@@ -247,9 +247,9 @@ AUI.add(
 										var name = calendar.name;
 										var calendarResourceName = calendar.calendarResourceName;
 	
-										//if (name !== calendarResourceName) {
-										//	name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
-										//}
+										if (name !== calendarResourceName && calendarResourceName != 'Liferay') {
+											name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+										}
 	
 										return A.Highlight.words(name, query);
 									}
