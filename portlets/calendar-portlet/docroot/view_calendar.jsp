@@ -91,10 +91,11 @@ long currentUserId = currentUser.getUserId();
 boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
 boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
+boolean isGestionnaireCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-cun", false);
 
 boolean columnOptionsVisible = false;
 boolean displayOptions = false;
-if (isGestionnaireGlobal || permissionChecker.isOmniadmin() || isPresidentCUN) {
+if (isGestionnaireGlobal || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN) {
 	columnOptionsVisible = true;
 	displayOptions = true;
 }
@@ -128,7 +129,7 @@ for (final Layout lay: playouts){
 
 			<div id="<portlet:namespace />calendarListContainer">
 				<!-- Do not show user calendar -->
-				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN %>">
+				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 
@@ -159,7 +160,7 @@ for (final Layout lay: playouts){
 				</c:if>
 
 				<!-- Do not show add calendars menu -->
-				<c:if test="<%= isGestionnaireGlobal || permissionChecker.isOmniadmin() || isPresidentCUN %>">
+				<c:if test="<%= isGestionnaireGlobal || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 
@@ -280,7 +281,7 @@ for (final Layout lay: playouts){
 					<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
 					<span class="fLeft pT2 invitees-zone" id="event-detail-invitees"></span>
 				</div>
-				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN %>">
+				<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN %>">
 					<div class="fLeft h30 mT25 width100" id="event-detail-actions">
 						<span>
 								<button class="presence fLeft" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
@@ -418,7 +419,7 @@ for (final Layout lay: playouts){
 			}
 		).render();
 		
-		<c:if test="<%= !isGestionnaireGlobal && !permissionChecker.isOmniadmin() && !isGestionnaireSection && !isPresidentCUN %>">
+		<c:if test="<%= !isGestionnaireGlobal && !permissionChecker.isOmniadmin() && !isGestionnaireSection && !isPresidentCUN  & !isGestionnaireCUN %>">
 			var x = document.getElementsByClassName("calendar-list-item-arrow");
 			var i;
 			for (i = 0; i < x.length; i++) {

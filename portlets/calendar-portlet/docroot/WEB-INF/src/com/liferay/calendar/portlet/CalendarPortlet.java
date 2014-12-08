@@ -1030,7 +1030,8 @@ public class CalendarPortlet extends MVCPortlet {
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 		final boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
 		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
-
+		final boolean isGestionnaireCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-cun", false);
+		
 		final long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
 		final long endTime = ParamUtil.getLong(resourceRequest, "endTime");
 		final long startTime = ParamUtil.getLong(resourceRequest, "startTime");
@@ -1043,7 +1044,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 		final List<CalendarBooking> calendarBookingsViewable = new ArrayList<CalendarBooking>();
 
-		if (!permissionChecker.isOmniadmin() && !isGestionnaireGlobal && !isGestionnaireSection && !isPresidentCUN) {
+		if (!permissionChecker.isOmniadmin() && !isGestionnaireGlobal && !isGestionnaireSection && !isPresidentCUN && !isGestionnaireCUN) {
 			for (final CalendarBooking calendarBooking : calendarBookings) {
 				final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
 				for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
@@ -1119,6 +1120,7 @@ public class CalendarPortlet extends MVCPortlet {
 		
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "president-cun", false);
+		final boolean isGestionnaireCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-cun", false);
 		
 		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
@@ -1170,7 +1172,7 @@ public class CalendarPortlet extends MVCPortlet {
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
 			_log.debug("team : " + team.getTeamId());
-			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isPresidentCUN || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
+			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isGestionnaireCUN || isPresidentCUN || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
 				_log.debug("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}
