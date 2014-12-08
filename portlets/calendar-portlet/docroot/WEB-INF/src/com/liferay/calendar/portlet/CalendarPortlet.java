@@ -1029,6 +1029,7 @@ public class CalendarPortlet extends MVCPortlet {
 		
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 		final boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
+		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
 
 		final long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
 		final long endTime = ParamUtil.getLong(resourceRequest, "endTime");
@@ -1042,7 +1043,7 @@ public class CalendarPortlet extends MVCPortlet {
 
 		final List<CalendarBooking> calendarBookingsViewable = new ArrayList<CalendarBooking>();
 
-		if (!permissionChecker.isOmniadmin() && !isGestionnaireGlobal && !isGestionnaireSection) {
+		if (!permissionChecker.isOmniadmin() && !isGestionnaireGlobal && !isGestionnaireSection && !isPresidentCUN) {
 			for (final CalendarBooking calendarBooking : calendarBookings) {
 				final List<CalendarBooking> childCalendarBookings = calendarBooking.getChildCalendarBookings();
 				for (final CalendarBooking childCalendarBooking : childCalendarBookings) {
@@ -1117,6 +1118,8 @@ public class CalendarPortlet extends MVCPortlet {
 		final User currentUser = themeDisplay.getUser();
 		
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
+		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "president-cun", false);
+		
 		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
 		String keywords = ParamUtil.getString(resourceRequest, "keywords");
@@ -1167,7 +1170,7 @@ public class CalendarPortlet extends MVCPortlet {
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
 			_log.debug("team : " + team.getTeamId());
-			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
+			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isPresidentCUN || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
 				_log.debug("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}

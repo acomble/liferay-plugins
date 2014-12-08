@@ -29,6 +29,7 @@ User currentUser = (User) request.getAttribute("USER");
 long currentUserId = currentUser.getUserId();
 boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
+boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
 
 //Questionnaire Portlet Id
 final String questionnairePortletId = "igiTakeSurvey_WAR_QuestionnairePortlet";

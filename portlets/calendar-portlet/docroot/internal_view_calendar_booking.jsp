@@ -108,7 +108,7 @@ final String mesRendezvousURL = PropsUtil.get("espace.elus.mes.rendezvous.url");
 			<span class="fLeft pT2" style="width:50px;">Invités&nbsp;:</span>
 			<span class="fLeft pT2 invitees-zone" id="event-detail-invitees"></span>
 		</div>
-		<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() %>">
+		<c:if test="<%= isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN %>">
 			<div class="fLeft h30 mT25 width100" id="event-detail-actions">
 				<span>
 						<button class="presence fLeft" id="event-detail-edit" name="event-detail-edit" value="edit">Modifier</button>
