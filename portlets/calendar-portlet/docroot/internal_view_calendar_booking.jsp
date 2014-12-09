@@ -70,13 +70,13 @@ final String mesRendezvousURL = PropsUtil.get("espace.elus.mes.rendezvous.url");
 		<div class="fLeft h30 width100" id="event-detail-startdate-zone">
 			<span class="fLeft pT2">Du</span>
 			<span class="fLeft pT2 event-detail-detail" id="event-detail-startdate">
-				<%= dateFormatLongDate.format(startTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(startTimeJCalendar.getTime()) %>h<%= minuteFormat.format(startTimeJCalendar.getTime()) %>
+				<%= eventLongDateFormat.format(startTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(startTimeJCalendar.getTime()) %>h<%= minuteFormat.format(startTimeJCalendar.getTime()) %>
 			</span>
 		</div>
 		<div class="fLeft h30 width100" id="event-detail-enddate-zone">
 			<span class="fLeft pT2">Au</span>
 			<span class="fLeft pT2 event-detail-detail" id="event-detail-enddate">
-				<%= dateFormatLongDate.format(endTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(endTimeJCalendar.getTime()) %>h<%= minuteFormat.format(endTimeJCalendar.getTime()) %>
+				<%= eventLongDateFormat.format(endTimeJCalendar.getTime()) %>&nbsp;&agrave;&nbsp;<%= hourFormat.format(endTimeJCalendar.getTime()) %>h<%= minuteFormat.format(endTimeJCalendar.getTime()) %>
 			</span>
 		</div>
 		<div class="fLeft width100" id="event-detail-location-zone">

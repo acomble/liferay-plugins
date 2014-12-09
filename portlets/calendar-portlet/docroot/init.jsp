@@ -172,6 +172,7 @@ else {
 	dateFormatTime = FastDateFormatFactoryUtil.getSimpleDateFormat("hh:mm a", locale, timeZone);
 }
 
+Format eventLongDateFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("EEE dd MMM yyyy", locale);
 Format hourFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("HH", locale);
 Format minuteFormat = FastDateFormatFactoryUtil.getSimpleDateFormat("mm", locale);
 %>
