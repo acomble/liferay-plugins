@@ -455,10 +455,14 @@ AUI.add(
 			getCalendarName: function(name, calendarResourceName) {
 				var instance = this;
 
-				//if (name !== calendarResourceName) {
-					//name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
-				//}
-
+				if (name !== calendarResourceName && calendarResourceName != 'Liferay') {
+					if (name) {
+						name = [calendarResourceName, STR_DASH, name].join(STR_SPACE);
+					} else {
+						name = calendarResourceName;
+					}
+				}
+				
 				return name;
 			},
 
