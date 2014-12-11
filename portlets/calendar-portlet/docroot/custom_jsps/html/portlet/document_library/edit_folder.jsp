@@ -266,6 +266,7 @@ if (workflowEnabled) {
 			</aui:field-wrapper>
 		</c:if>
 
+		<div class="hide">
 		<c:if test="<%= !rootFolder && (folder == null) %>">
 			<aui:field-wrapper label="permissions">
 				<liferay-ui:input-permissions
@@ -273,6 +274,7 @@ if (workflowEnabled) {
 				/>
 			</aui:field-wrapper>
 		</c:if>
+		</div>
 
 		<aui:button-row>
 			<aui:button type="submit" />

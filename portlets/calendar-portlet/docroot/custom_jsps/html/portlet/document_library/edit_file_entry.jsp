@@ -421,6 +421,7 @@ if ((checkedOut || pending) && !PropsValues.DL_FILE_ENTRY_DRAFTS_ENABLED) {
 			</liferay-ui:panel>
 		</c:if>
 
+		<div class="hide">
 		<c:if test="<%= fileEntry == null %>">
 			<aui:field-wrapper label="permissions">
 				<liferay-ui:input-permissions
@@ -428,6 +429,7 @@ if ((checkedOut || pending) && !PropsValues.DL_FILE_ENTRY_DRAFTS_ENABLED) {
 				/>
 			</aui:field-wrapper>
 		</c:if>
+		</div>
 
 		<c:if test="<%= approved %>">
 			<div class="alert alert-info">

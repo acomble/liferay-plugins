@@ -1978,9 +1978,14 @@ AUI.add(
 						popoverBB.toggleClass('calendar-portlet-event-recorder-editing', !!schedulerEvent);
 
 						var defaultUserCalendar = CalendarUtil.getDefaultUserCalendar();
-
-						var calendarId = defaultUserCalendar.get('calendarId');
-						var color = defaultUserCalendar.get('color');
+						
+						var calendarId;
+						var color;
+						
+						if (defaultUserCalendar) {
+							calendarId = defaultUserCalendar.get('calendarId');
+							color = defaultUserCalendar.get('color');
+						}
 
 						var eventInstance = instance;
 

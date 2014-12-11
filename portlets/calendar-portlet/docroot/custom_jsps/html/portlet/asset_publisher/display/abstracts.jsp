@@ -16,6 +16,15 @@
 
 <%@ include file="/html/portlet/asset_publisher/init.jsp" %>
 
+<%@page import="java.net.URL" %>
+<%@page import="java.net.URI" %>
+
+<%@page import="com.liferay.portlet.documentlibrary.model.DLFileEntry" %>
+<%@page import="com.liferay.portal.kernel.repository.model.FileEntry" %>
+<%@page import="com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil" %>
+<%@page import="com.liferay.portlet.documentlibrary.util.DLUtil" %>
+<%@page import="com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil" %>
+
 <%
 
 List results = (List)request.getAttribute("view.jsp-results");
@@ -74,6 +83,14 @@ String viewURLMessage = viewInContext ? assetRenderer.getViewInContextMessage() 
 
 viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDisplay);
 
+if (assetEntry.getClassNameId() == 10011) {
+	final DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getFileEntry(assetEntry.getClassPK());
+	FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dlFileEntry.getFileEntryId());
+	fileEntry = fileEntry.toEscapedModel();
+	final URL url = new URL(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, ""));
+	final URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+	viewURL = uri.toURL().toString();
+}
 %>
 
 <c:if test="<%= show %>">
@@ -102,7 +119,7 @@ viewURL = _checkViewURL(assetEntry, viewInContext, viewURL, currentURL, themeDis
 			<h3 class="asset-title">
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(viewURL) %>">
-						<a href="<%= viewURL %>">
+						<a href="javascript:window.open('<%= viewURL %>','Voir le document','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900');">
 							<img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /> <%= HtmlUtil.escape(title) %>
 						</a>
 					</c:when>
