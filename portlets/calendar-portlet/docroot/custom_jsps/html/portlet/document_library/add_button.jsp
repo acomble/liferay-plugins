@@ -52,38 +52,6 @@ boolean hasAddDocumentPermission = DLFolderPermission.contains(permissionChecker
 		<aui:nav-item href="<%= addFolderURL %>" iconCssClass="icon-folder-open" label='<%= (folder != null) ? "subfolder" : "folder" %>' />
 	</c:if>
 
-	<c:if test="<%= ((folder == null) || folder.isSupportsShortcuts()) && DLFolderPermission.contains(permissionChecker, scopeGroupId, folderId, ActionKeys.ADD_SHORTCUT) %>">
-		<portlet:renderURL var="editFileShortcutURL">
-			<portlet:param name="struts_action" value="/document_library/edit_file_shortcut" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="repositoryId" value="<%= String.valueOf(repositoryId) %>" />
-			<portlet:param name="folderId" value="<%= String.valueOf(folderId) %>" />
-		</portlet:renderURL>
-
-		<aui:nav-item href="<%= editFileShortcutURL %>" label="shortcut" />
-	</c:if>
-
-	<c:if test="<%= (folderId == DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) && (DLFolderPermission.contains(permissionChecker, scopeGroupId, folderId, ActionKeys.ADD_REPOSITORY)) %>">
-		<portlet:renderURL var="addRepositoryURL">
-			<portlet:param name="struts_action" value="/document_library/edit_repository" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
-		</portlet:renderURL>
-
-		<aui:nav-item href="<%= addRepositoryURL %>" iconCssClass="icon-hdd" label="repository" />
-	</c:if>
-
-	<c:if test="<%= ((folder == null) || folder.isSupportsMultipleUpload()) && hasAddDocumentPermission && !fileEntryTypes.isEmpty() %>">
-		<portlet:renderURL var="editFileEntryURL">
-			<portlet:param name="struts_action" value="/document_library/upload_multiple_file_entries" />
-			<portlet:param name="redirect" value="<%= currentURL %>" />
-			<portlet:param name="backURL" value="<%= currentURL %>" />
-			<portlet:param name="repositoryId" value="<%= String.valueOf(repositoryId) %>" />
-			<portlet:param name="folderId" value="<%= String.valueOf(folderId) %>" />
-		</portlet:renderURL>
-
-		<aui:nav-item href="<%= editFileEntryURL %>" label="multiple-documents" />
-	</c:if>
-
 	<c:choose>
 		<c:when test="<%= hasAddDocumentPermission && (repositoryId != scopeGroupId) %>">
 			<portlet:renderURL var="editFileEntryURL">
@@ -101,6 +69,7 @@ boolean hasAddDocumentPermission = DLFolderPermission.contains(permissionChecker
 
 			<%
 			for (DLFileEntryType fileEntryType : fileEntryTypes) {
+				if (fileEntryType.getFileEntryTypeId() == 0) {
 			%>
 
 				<portlet:renderURL var="addFileEntryTypeURL">
@@ -115,6 +84,7 @@ boolean hasAddDocumentPermission = DLFolderPermission.contains(permissionChecker
 				<aui:nav-item href="<%= addFileEntryTypeURL %>" iconCssClass="icon-file" label="<%= HtmlUtil.escape(fileEntryType.getName(locale)) %>" />
 
 			<%
+				}
 			}
 			%>
 
