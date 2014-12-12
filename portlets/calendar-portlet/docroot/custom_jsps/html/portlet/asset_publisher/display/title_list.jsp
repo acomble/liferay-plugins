@@ -90,7 +90,7 @@ if (assetEntry.getClassNameId() == 10011) {
 		/>
 		<liferay-util:include page="/html/portlet/asset_publisher/asset_actions.jsp" />
 		<% } else { %>
-		<a href="javascript:void(window.open('<%= viewURL %>','Voir le document','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900'));">
+		<a style="width: 100%" href="javascript:void(window.open('<%= viewURL %>','Voir le document','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900'));">
 			<img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /> <%= HtmlUtil.escape(title) %>
 		</a>
 		<% } %>
