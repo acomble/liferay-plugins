@@ -218,7 +218,7 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "Mes
 						URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
 						url = uri.toURL();
 						final String title = fileEntry.getFileVersion().getTitle().replace("'","\\'");
-						String rowHREF = "javascript:window.open('" + url.toString() + "','" + title + "','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900')" ;
+						String rowHREF = "javascript:void(window.open('" + url.toString() + "','" + title + "','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900'))" ;
 
 					%>
 

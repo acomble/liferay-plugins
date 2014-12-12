@@ -119,7 +119,7 @@ if (assetEntry.getClassNameId() == 10011) {
 			<h3 class="asset-title">
 				<c:choose>
 					<c:when test="<%= Validator.isNotNull(viewURL) %>">
-						<a href="javascript:window.open('<%= viewURL %>','Voir le document','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900');">
+						<a href="javascript:void(window.open('<%= viewURL %>','Voir le document','directories=no, height=720, location=no, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no, width=900'));">
 							<img alt="" src="<%= assetRenderer.getIconPath(renderRequest) %>" /> <%= HtmlUtil.escape(title) %>
 						</a>
 					</c:when>
