@@ -183,7 +183,9 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					<a class="calendar-portlet-recurrence-summary" href="javascript:;" id="<portlet:namespace />summary"></a>
 				</aui:field-wrapper>
 		
-				<aui:input defaultLanguageId="<%= themeDisplay.getLanguageId() %>" name="description" />
+				<div class="hide">
+				<aui:input cssClass="hide" type="editor" defaultLanguageId="<%= themeDisplay.getLanguageId() %>" localized="<%= true %>" name="description" />
+				</div>
 				
 				<aui:input name="location" resizable="false" value="<%= location %>" />
 				
@@ -352,6 +354,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	<aui:button-row>
 		<aui:button cssClass="btn-orange" type="submit" />
 
+		<div class="hide">
 		<c:if test="<%= calendarBooking != null %>">
 			<liferay-security:permissionsURL
 				modelResource="<%= CalendarBooking.class.getName() %>"
@@ -363,6 +366,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 			<aui:button href="<%= permissionsCalendarBookingURL %>" value="permissions" />
 		</c:if>
+		</div>
 	</aui:button-row>
 </aui:form>
 
