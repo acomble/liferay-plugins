@@ -75,6 +75,20 @@ request.setAttribute("view.jsp-folderId", String.valueOf(folderId));
 request.setAttribute("view.jsp-repositoryId", String.valueOf(repositoryId));
 %>
 
+<%
+
+PortletPreferences preferences = renderRequest.getPreferences();
+String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "G&eacute;rer les documents et les dossiers");
+
+%>
+
+<span class="aqua">
+	<h1 class="portlet-title-spec"><%=portletCustomTitle%></h1>
+	<span class="tgl"></span>
+</span>
+
+<div class="aqua">
+
 <liferay-util:buffer var="uploadURL"><liferay-portlet:actionURL><portlet:param name="struts_action" value="/document_library/view_file_entry" /><portlet:param name="<%= Constants.CMD %>" value="<%= Constants.ADD_DYNAMIC %>" /><portlet:param name="folderId" value="{folderId}" /><portlet:param name="repositoryId" value="<%= String.valueOf(repositoryId) %>" /></liferay-portlet:actionURL><liferay-ui:input-permissions-params modelName="<%= DLFileEntryConstants.getClassName() %>" /></liferay-util:buffer>
 
 <portlet:actionURL var="undoTrashURL">
@@ -156,6 +170,8 @@ request.setAttribute("view.jsp-repositoryId", String.valueOf(repositoryId));
 			</aui:form>
 		</aui:col>
 	</aui:row>
+</div>
+
 </div>
 
 <%
