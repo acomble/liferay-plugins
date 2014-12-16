@@ -124,7 +124,7 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "G&e
 			}
 			%>
 
-			<div class="<%= cssClass %>" id="<portlet:namespace />showSyncMessageIconContainer">
+			<div class="<%= cssClass %> hide" id="<portlet:namespace />showSyncMessageIconContainer">
 				<img alt="<%= LanguageUtil.get(pageContext, "show-liferay-sync-tip") %>" class="show-sync-message" id="<portlet:namespace />showSyncMessageIcon" src="<%= themeDisplay.getPathThemeImages() + "/common/liferay_sync.png" %>" title="<%= LanguageUtil.get(pageContext, "liferay-sync") %>" />
 			</div>
 
@@ -301,8 +301,8 @@ if (!defaultFolderView && (folder != null) && portletName.equals(PortletKeys.DOC
 			select: {
 				displayViews: ['<%= StringUtil.merge(escapedDisplayViews, "','") %>']
 			},
-			syncMessageDisabled: <%= !PropsValues.DL_SHOW_LIFERAY_SYNC_MESSAGE %>,
-			syncMessageSuppressed: <%= !GetterUtil.getBoolean(SessionClicks.get(request, liferayPortletResponse.getNamespace() + "show-sync-message", "true")) %>,
+			syncMessageDisabled: <%= true %>,
+			syncMessageSuppressed: <%= true %>,
 			updateable: <%= DLFolderPermission.contains(permissionChecker, scopeGroupId, folderId, ActionKeys.UPDATE) %>,
 			uploadURL: '<%= uploadURL %>',
 			viewFileEntryURL: '<portlet:renderURL><portlet:param name="struts_action" value="/document_library/view_file_entry" /><portlet:param name="redirect" value="<%= currentURL %>" /></portlet:renderURL>'
