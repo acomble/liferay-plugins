@@ -22,6 +22,7 @@
 <%@ page import="com.liferay.portal.service.LayoutLocalServiceUtil" %>
 <%@ page import="com.liferay.portal.model.LayoutTypePortlet" %>
 <%@ page import="com.liferay.portal.model.Layout" %>
+<%@ page import="com.liferay.calendar.util.comparator.CalendarNameComparator" %>
 
 <%
 
@@ -38,7 +39,7 @@ long date = ParamUtil.getLong(request, "date", System.currentTimeMillis());
 List<Calendar> groupCalendars = null;
 
 if (groupCalendarResource != null) {
-	groupCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {groupCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator)null);
+	groupCalendars = CalendarServiceUtil.search(themeDisplay.getCompanyId(), null, new long[] {groupCalendarResource.getCalendarResourceId()}, null, true, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new CalendarNameComparator(true));
 }
 
 List<Calendar> userCalendars = null;

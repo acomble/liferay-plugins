@@ -30,6 +30,18 @@
 .scheduler-event-recorder-form .popover-footer {
   margin-top: 5px !important; }
 
+.aui button.close, .aui button.btn.close {
+  cursor: pointer;
+  padding: 5px !important;
+  color: #FFF !important;
+  background-color: #FF9966 !important;
+  text-shadow: none !important;
+  border-radius: 10px 10px 10px 10px !important;
+  margin-right: 5px;
+  background-image: none !important;
+  border: none !important;
+  opacity: 1 !important; }
+
 .presence, .presence:hover, .presence:focus, .presence:active,
 .btn-orange, .btn-orange:hover, .btn-orange:focus, .btn-orange:active,
 .span7 button[type="button"],

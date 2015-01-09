@@ -1,0 +1,79 @@
+<%--
+/**
+ * Copyright (c) 2000-2013 Liferay, Inc. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of the Liferay Enterprise
+ * Subscription License ("License"). You may not use this file except in
+ * compliance with the License. You can obtain a copy of the License by
+ * contacting Liferay, Inc. See the License for the specific language governing
+ * permissions and limitations under the License, including but not limited to
+ * distribution rights of the Software.
+ *
+ *
+ *
+ */
+--%>
+
+<%
+for (int i = 0; i < results.size(); i++) {
+	FileEntry fileEntry = (FileEntry)results.get(i);
+
+	ResultRow row = new ResultRow(fileEntry, fileEntry.getFileEntryId(), i);
+
+	// Title
+
+	StringBundler sb = new StringBundler(13);
+
+	sb.append("<img alt=\"\" align=\"left\" border=\"0\" src=\"");
+
+	DLFileShortcut fileShortcut = null;
+
+	sb.append(DLUtil.getThumbnailSrc(fileEntry, fileShortcut, themeDisplay));
+	sb.append("\" style=\"");
+	sb.append(DLUtil.getThumbnailStyle());
+	sb.append("\">");
+	sb.append(fileEntry.getTitle());
+
+	row.addText(sb.toString());
+
+	// Author
+
+	row.addText(fileEntry.getUserName());
+
+	// Action
+
+	sb.setIndex(0);
+
+	//sb.append("Liferay.Util.getOpener().");
+	//sb.append(renderResponse.getNamespace());
+	//sb.append("selectDocumentLibrary('");
+	//sb.append(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, StringPool.BLANK, false, false));
+	//sb.append("', '");
+	//sb.append(fileEntry.getUuid());
+	//sb.append("', '");
+	//sb.append(fileEntry.getGroupId());
+	//sb.append("', '");
+	//sb.append(HtmlUtil.escapeJS(fileEntry.getTitle()));
+	//sb.append("', '");
+	//sb.append(fileEntry.getVersion());
+	//sb.append("'); Liferay.Util.getWindow().hide();");
+
+	row.addButton("right", SearchEntry.DEFAULT_VALIGN, LanguageUtil.get(pageContext, "choose"), sb.toString());
+	
+	// Set data
+	AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(DLFileEntry.class.getName(), fileEntry.getPrimaryKey());
+	Map<String, Object> data = new HashMap<String, Object>();
+	data.put("assetentryid", assetEntry.getEntryId());
+	data.put("assetclassname", assetEntry.getClassName());
+	//data.put("assettype", assetRendererFactory.getTypeName(locale, true));
+	data.put("assettitle", HtmlUtil.escape(assetEntry.getTitle(locale)));
+	//data.put("groupdescriptivename", HtmlUtil.escape(group.getDescriptiveName(locale)));
+	row.setData(data);
+
+	row.setClassName("selector-button");
+	
+	// Add result row
+
+	resultRows.add(row);
+}
+%>

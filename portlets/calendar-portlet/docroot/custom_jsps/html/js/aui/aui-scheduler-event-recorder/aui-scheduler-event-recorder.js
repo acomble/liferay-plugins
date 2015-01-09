@@ -599,7 +599,11 @@ var SchedulerEventRecorder = A.Component.create({
 				if (oldEditButton) {
 					var newEditButton = oldEditButton.cloneNode(true);
 					oldEditButton.parentNode.replaceChild(newEditButton, oldEditButton);
-					newEditButton.addEventListener('click', eventEditListener);
+					if (newEditButton.addEventListener) {
+						newEditButton.addEventListener('click', eventEditListener);
+					} else {
+						newEditButton.attachEvent("onclick",eventEditListener);
+					}
 					document.getElementById('event-detail-actions').style.display = 'block';
 					document.getElementById('event-detail-delete').style.display = 'block';
 				}
@@ -609,7 +613,11 @@ var SchedulerEventRecorder = A.Component.create({
 				if (oldDeleteButton) {
 					var newDeleteButton = oldDeleteButton.cloneNode(true);
 					oldDeleteButton.parentNode.replaceChild(newDeleteButton, oldDeleteButton);
-					newDeleteButton.addEventListener('click', eventDeleteListener);
+					if (newDeleteButton.addEventListener) {
+						newDeleteButton.addEventListener('click', eventDeleteListener);
+					} else {
+						newDeleteButton.attachEvent("onclick",eventDeleteListener);
+					}
 					document.getElementById('event-detail-actions').style.display = 'block';
 					document.getElementById('event-detail-edit').style.display = 'block';
 				}
@@ -620,7 +628,11 @@ var SchedulerEventRecorder = A.Component.create({
 				if (oldEditQuestionnaireButton) {
 					var newEditQuestionnaireButton = oldEditQuestionnaireButton.cloneNode(true);
 					oldEditQuestionnaireButton.parentNode.replaceChild(newEditQuestionnaireButton, oldEditQuestionnaireButton);
-					newEditQuestionnaireButton.addEventListener('click', eventEditQuestionnaireListener);
+					if (newEditQuestionnaireButton.addEventListener) {
+						newEditQuestionnaireButton.addEventListener('click', eventEditQuestionnaireListener);
+					} else {
+						newEditQuestionnaireButton.attachEvent("onclick", eventEditQuestionnaireListener);
+					}
 				}
 				
 				// Get Related assets
@@ -890,7 +902,7 @@ var SchedulerEventRecorder = A.Component.create({
 
         showPopover: function(node) {
         	
-        	console.error('la');
+        	//console.error('la');
         	
             var instance = this,
                 event = instance.get(EVENT);

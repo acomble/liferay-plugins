@@ -155,7 +155,7 @@ assetBrowserURL.setWindowState(LiferayWindowState.POP_UP);
 </liferay-util:buffer>
 
 <liferay-ui:search-container
-	headerNames="type,title,scope,null"
+	headerNames="title,null"
 >
 	<liferay-ui:search-container-results
 		results="<%= assetLinks %>"
@@ -186,18 +186,9 @@ assetBrowserURL.setWindowState(LiferayWindowState.POP_UP);
 		%>
 
 		<liferay-ui:search-container-column-text
-			name="type"
-			value="<%= assetRendererFactory.getTypeName(locale, false) %>"
-		/>
-
-		<liferay-ui:search-container-column-text
 			name="title"
 			value="<%= assetLinkEntry.getTitle(locale) %>"
-		/>
-
-		<liferay-ui:search-container-column-text
-			name="scope"
-			value="<%= HtmlUtil.escape(assetLinkEntryGroup.getDescriptiveName(locale)) %>"
+			cssClass="width90"
 		/>
 
 		<liferay-ui:search-container-column-text>
@@ -234,7 +225,7 @@ assetBrowserURL.setWindowState(LiferayWindowState.POP_UP);
 
 					var entryLink = '<a class="modify-link" data-rowId="' + event.assetentryid + '" href="javascript:;"><%= UnicodeFormatter.toString(removeLinkIcon) %></a>';
 
-					searchContainer.addRow([event.assettype, A.Escape.html(event.assettitle), A.Escape.html(event.groupdescriptivename), entryLink], event.assetentryid);
+					searchContainer.addRow([A.Escape.html(event.assettitle), entryLink], event.assetentryid);
 
 					searchContainer.updateDataStore();
 				}

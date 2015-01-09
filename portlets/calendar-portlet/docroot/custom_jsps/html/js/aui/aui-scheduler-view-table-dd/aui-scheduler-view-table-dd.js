@@ -521,14 +521,14 @@ A.mix(A.SchedulerTableViewDD.prototype, {
      */
     _onMouseUpGrid: function(event) {
     	
-    	console.error('_onMouseUpGrid');
+    	//console.error('_onMouseUpGrid');
     	
         var instance = this;
         var scheduler = instance.get(SCHEDULER);
         var recorder = scheduler.get(EVENT_RECORDER);
         
-        console.error('scheduler.get(DISABLED) : ' + scheduler.get(DISABLED));
-        console.error('instance._recording : ' + instance._recording);
+        //console.error('scheduler.get(DISABLED) : ' + scheduler.get(DISABLED));
+        //console.error('instance._recording : ' + instance._recording);
 
         if (recorder && instance._recording && !scheduler.get(DISABLED)) {
             var startPositionDate = instance._getPositionDate(instance.lassoStartPosition);
@@ -548,11 +548,11 @@ A.mix(A.SchedulerTableViewDD.prototype, {
                 silent: true
             });
             
-            console.error('before showPopover');
+            //console.error('before showPopover');
 
-            recorder.showPopover(instance.lasso);
+            //recorder.showPopover(instance.lasso);
             
-            console.error('after showPopover');
+            //console.error('after showPopover');
 
             instance._recording = false;
         }
