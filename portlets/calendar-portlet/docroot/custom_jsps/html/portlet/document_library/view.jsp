@@ -16,6 +16,8 @@
 
 <%@ include file="/html/portlet/document_library/init.jsp" %>
 
+<%@ page import="fr.cristalunion.espaceelus.utils.FolderNameComparator" %>
+
 <%
 String strutsAction = ParamUtil.getString(request, "struts_action");
 
@@ -128,7 +130,7 @@ String portletCustomTitle = preferences.getValue("portletSetupTitle_fr_FR", "G&e
 				<img alt="<%= LanguageUtil.get(pageContext, "show-liferay-sync-tip") %>" class="show-sync-message" id="<portlet:namespace />showSyncMessageIcon" src="<%= themeDisplay.getPathThemeImages() + "/common/liferay_sync.png" %>" title="<%= LanguageUtil.get(pageContext, "liferay-sync") %>" />
 			</div>
 
-			<div class="document-library-breadcrumb" id="<portlet:namespace />breadcrumbContainer">
+			<div class="document-library-breadcrumb" style="font-size: 15px;" id="<portlet:namespace />breadcrumbContainer">
 				<liferay-util:include page="/html/portlet/document_library/breadcrumb.jsp" />
 			</div>
 
@@ -282,8 +284,13 @@ if (!defaultFolderView && (folder != null) && portletName.equals(PortletKeys.DOC
 				}
 
 				<%
-				List<Folder> mountFolders = DLAppServiceUtil.getMountFolders(repositoryId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, QueryUtil.ALL_POS, QueryUtil.ALL_POS);
-
+				
+				List<Folder> mountFolders = null;
+				if (folderId == 0) {
+					mountFolders = DLAppServiceUtil.getMountFolders(repositoryId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new FolderNameComparator(true));
+				} else {
+					mountFolders = DLAppServiceUtil.getMountFolders(repositoryId, DLFolderConstants.DEFAULT_PARENT_FOLDER_ID, QueryUtil.ALL_POS, QueryUtil.ALL_POS, new FolderNameComparator());
+				}
 				for (Folder mountFolder : mountFolders) {
 				%>
 

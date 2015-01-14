@@ -204,8 +204,8 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	
 	<aui:fieldset>
 		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingQuestionnairesPanelContainer" persistState="<%= true %>">
-			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="Questionnaire associé">
-				<aui:select label="Sélectionner le questionnaire" name="questionnaireId">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingQuestionnairesPanel" persistState="<%= true %>" title="Formulaire associé">
+				<aui:select label="Sélectionner le formulaire" name="questionnaireId">
 					<%
 					for (final Survey survey : surveys) {
 					%>
@@ -329,24 +329,38 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 					</aui:column>
 				</aui:layout>
 			</liferay-ui:panel>
-
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingReminderPanel" persistState="<%= true %>" title="reminders">
+		</liferay-ui:panel-container>
+	</aui:fieldset>
+	
+	<aui:fieldset>
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingReminderPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingReminderPanel" persistState="<%= true %>" title="reminders">
 				<div class="calendar-booking-reminders" id="<portlet:namespace />reminders"></div>
 			</liferay-ui:panel>
+		</liferay-ui:panel-container>
+	</aui:fieldset>
 
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingCategorizationPanel" persistState="<%= true %>" title="categorization">
-				<aui:input classPK="<%= calendarBookingId %>" name="categories" type="assetCategories" />
-
-				<aui:input classPK="<%= calendarBookingId %>" name="tags" type="assetTags" />
-			</liferay-ui:panel>
-
-			<liferay-ui:panel collapsible="<%= true %>" defaultState="closed" extended="<%= false %>" id="calendarBookingAssetLinksPanel" persistState="<%= true %>" title="related-assets">
+	<aui:fieldset>
+		<liferay-ui:panel-container extended="<%= true %>" id="calendarBookingAssetLinksPanelContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= false %>" defaultState="closed" extended="<%= true %>" id="calendarBookingAssetLinksPanel" persistState="<%= true %>" title="related-documents">
 				<liferay-ui:input-asset-links
 					className="<%= CalendarBooking.class.getName() %>"
 					classPK="<%= calendarBookingId %>"
 				/>
 			</liferay-ui:panel>
 		</liferay-ui:panel-container>
+	</aui:fieldset>
+		
+	<aui:fieldset>
+		<div class="hide">
+		<liferay-ui:panel-container extended="<%= false %>" id="calendarBookingCategorizationContainer" persistState="<%= true %>">
+			<liferay-ui:panel collapsible="<%= true %>" defaultState="collapsed" extended="<%= false %>" id="calendarBookingCategorizationPanel" persistState="<%= true %>" title="categorization">
+				<aui:input classPK="<%= calendarBookingId %>" name="categories" type="assetCategories" />
+
+				<aui:input classPK="<%= calendarBookingId %>" name="tags" type="assetTags" />
+			</liferay-ui:panel>
+		</liferay-ui:panel-container>
+		</div>
 	</aui:fieldset>
 
 	<%@ include file="/calendar_booking_recurrence_container.jspf" %>
@@ -728,6 +742,7 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				},
 				startDateChange: function(event) {
 					Liferay.DatePickerUtil.syncUI(formNode, 'startTime', event.newVal);
+					Liferay.DatePickerUtil.syncUI(formNode, 'endTime', event.newVal);
 				}
 			},
 			borderColor: '#000',

@@ -39,7 +39,6 @@
 			<attribute name="maven.scope" value="provided"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/ajm-spring-survey"/>
 	<classpathentry kind="lib" path="C:/Users/CCKC3018/.m2/repository/com/liferay/portal/portal-service/6.2.1/portal-service-6.2.1.jar" sourcepath="C:/Users/CCKC3018/.m2/repository/com/liferay/portal/portal-service/6.2.1/portal-service-6.2.1-sources.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -51,7 +50,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/CCKC3018/dev/servers/liferay-portal-6.2-ee-sp8/tomcat-7.0.42/webapps/ROOT/WEB-INF/lib/hibernate3.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/ajm-spring-core"/>
 	<classpathentry kind="lib" path="C:/Users/CCKC3018/.m2/repository/com/liferay/portal/util-bridges/6.2.1/util-bridges-6.2.1.jar">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -137,5 +135,6 @@
 	<classpathentry kind="lib" path="docroot/WEB-INF/lib/woodstox-core-asl-4.1.4.jar"/>
 	<classpathentry kind="lib" path="docroot/WEB-INF/lib/wsdl4j-1.6.2.jar"/>
 	<classpathentry kind="lib" path="docroot/WEB-INF/lib/xmlschema-core-2.0.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EspaceElusUtils"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -90,6 +90,8 @@ assetBrowserURL.setParameter("struts_action", "/asset_browser/view");
 assetBrowserURL.setParameter("eventName", eventName);
 assetBrowserURL.setPortletMode(PortletMode.VIEW);
 assetBrowserURL.setWindowState(LiferayWindowState.POP_UP);
+
+request.setAttribute(WebKeys.DOCUMENT_LIBRARY_FOLDER, null);
 %>
 
 <liferay-ui:icon-menu cssClass="select-existing-selector" icon='<%= themeDisplay.getPathThemeImages() + "/common/search.png" %>' id='<%= randomNamespace + "inputAssetLinks" %>' message="select" showWhenSingleIcon="<%= true %>">

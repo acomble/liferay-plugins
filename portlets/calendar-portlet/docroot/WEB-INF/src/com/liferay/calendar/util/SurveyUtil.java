@@ -140,7 +140,7 @@ public class SurveyUtil {
 			con = InfrastructureUtil.getDataSource().getConnection();
 
 			// Create and execute an SQL statement that returns some data.
-			String SQL = "SELECT id, name, description, status FROM surveys WHERE base = 0";
+			String SQL = "SELECT id, name, description, status FROM surveys WHERE base = 0 ORDER BY name";
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(SQL);
 
