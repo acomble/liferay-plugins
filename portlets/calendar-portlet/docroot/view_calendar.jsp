@@ -143,6 +143,19 @@ for (final Layout lay: playouts){
 
 					<div class="calendar-portlet-calendar-list" id="<portlet:namespace />myCalendarList"></div>
 				</c:if>
+				<c:if test="<%= !isGestionnaireGlobal && !isGestionnaireSection && !permissionChecker.isOmniadmin() && !isPresidentCUN && !isGestionnaireCUN %>">
+					<div class="calendar-portlet-list-header toggler-header-expanded hide">
+						<span class="calendar-portlet-list-arrow"></span>
+
+						<span class="calendar-portlet-list-text"><liferay-ui:message key="my-calendars" /></span>
+
+						<c:if test="<%= userCalendarResource != null %>">
+							<span class="calendar-list-item-arrow" data-calendarResourceId="<%= userCalendarResource.getCalendarResourceId() %>" tabindex="0"><i class="icon-caret-down"></i></span>
+						</c:if>
+					</div>
+
+					<div class="calendar-portlet-calendar-list hide" id="<portlet:namespace />myCalendarList"></div>
+				</c:if>
 
 				<!-- Do not show site calendar -->
 				<!-- User cannot switch to another calendar -->
@@ -161,7 +174,7 @@ for (final Layout lay: playouts){
 				</c:if>
 
 				<!-- Do not show add calendars menu -->
-				<c:if test="<%= isGestionnaireGlobal || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN %>">
+				<c:if test="<%= permissionChecker.isOmniadmin() %>">
 					<div class="calendar-portlet-list-header toggler-header-expanded">
 						<span class="calendar-portlet-list-arrow"></span>
 
@@ -358,7 +371,7 @@ for (final Layout lay: playouts){
 				calendars: <%= userCalendarsJSONArray %>,
 				scheduler: <portlet:namespace />scheduler,
 				simpleMenu: window.<portlet:namespace />calendarsMenu,
-				visible: <%= themeDisplay.isSignedIn() %>
+				visible: <%= themeDisplay.isSignedIn() && (isGestionnaireGlobal || isGestionnaireSection || permissionChecker.isOmniadmin() || isPresidentCUN || isGestionnaireCUN) %>
 			}
 		).render();
 
@@ -392,7 +405,8 @@ for (final Layout lay: playouts){
 
 				calendars: <%= otherCalendarsJSONArray %>,
 				scheduler: <portlet:namespace />scheduler,
-				simpleMenu: window.<portlet:namespace />calendarsMenu
+				simpleMenu: window.<portlet:namespace />calendarsMenu,
+				visible: <%= themeDisplay.isSignedIn() && permissionChecker.isOmniadmin() %>
 			}
 		).render();
 	</c:if>
