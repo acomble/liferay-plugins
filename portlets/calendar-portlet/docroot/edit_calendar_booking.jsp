@@ -384,6 +384,10 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 	</aui:button-row>
 </aui:form>
 
+<div style="display:none;">
+	<div id="popupContentUsers"></div>
+</div>
+
 <aui:script>
 	function <portlet:namespace />filterCalendarBookings(calendarBooking) {
 		return <%= calendarBookingId %> !== calendarBooking.calendarBookingId;
@@ -533,8 +537,44 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 
 	var calendarsMenu = {
 		items: [
+			{
+				caption: '<%= UnicodeLanguageUtil.get(pageContext, "see-persons") %>',
+				fn: function(event) {
+					var instance = this;
+					var calendarList = instance.get('host');
+					var calendarActiveId = calendarList.activeItem.get('calendarId');
+					Liferay.CalendarUtil.getCalendarMembers(calendarActiveId, function(data) { 
+						//alert(data.users[0].fullname);
+						//
+						if (data.message == undefined) {
+							var users = data.users;
+							var result = '';
+							document.getElementById('popupContentUsers').innerHTML = '<ul>';
+							for (var i = 0; i<users.length; i++) {
+								result += '<li>' + data.users[i].fullname + '</li>';
+							}
+							document.getElementById('popupContentUsers').innerHTML += result;
+							document.getElementById('popupContentUsers').innerHTML += '</ul>';
+							// open popup
+							var modal = new A.Modal(  
+								{  
+								bodyContent: A.one('#popupContentUsers'),  
+								centered: true,  
+								headerContent: '<h3>Composition du groupe ' + calendarList.activeItem.get('name') + '</h3>',  
+								modal: true,  
+								render: '#modal',  
+								zIndex: 1100,  
+								height: 500,   
+								width: 360
+								}  
+							).render();
+						}
+					});
+				},
+				id: 'see-persons'
+			}
 			<c:if test="<%= invitable %>">
-				{
+				,{
 					caption: '<%= UnicodeLanguageUtil.get(pageContext, "remove") %>',
 					fn: function(event) {
 						var instance = this;
@@ -552,18 +592,24 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 				visibleChange: function(event) {
 					var instance = this;
 
+					var hiddenItems = [];
 					if (event.newVal) {
 						var calendarList = instance.get('host');
 						var calendar = calendarList.activeItem;
 
-						var hiddenItems = [];
 
 						if (calendar.get('calendarId') === defaultCalendarId) {
 							hiddenItems.push('remove');
+							hiddenItems.push('see-persons');
 						}
 
-						instance.set('hiddenItems', hiddenItems);
 					}
+					
+					if (instance.get('host') != undefined && instance.get('host').activeItem != undefined && instance.get('host').activeItem.get('classNameId') != 10064) {
+						hiddenItems.push('see-persons');
+					}
+					
+					instance.set('hiddenItems', hiddenItems);
 				}
 			}
 		</c:if>
@@ -815,9 +861,6 @@ List<Calendar> manageableCalendars = CalendarServiceUtil.search(themeDisplay.get
 			'<%= calendarResourcesURL %>',
 			inviteResourcesInput,
 			function(event) {
-			
-				console.log('event.result.raw : ' + event.result.raw);
-			
 				var calendar = event.result.raw;
 
 				calendar.disabled = true;

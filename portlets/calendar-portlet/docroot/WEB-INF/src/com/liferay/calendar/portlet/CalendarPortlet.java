@@ -327,32 +327,32 @@ public class CalendarPortlet extends MVCPortlet {
 							assetLinkEntry = AssetEntryLocalServiceUtil.getEntry(assetLink.getEntryId1());
 						}
 						assetLinkEntry = assetLinkEntry.toEscapedModel();
-//						final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
-//						final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
-//						if (Validator.isNull(assetRendererFactory)) {
-//							if (_log.isWarnEnabled()) {
-//								_log.warn("No asset renderer factory found for class " + className);
-//							}
-//
-//							continue;
-//						}
-//						final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
-//						final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
-//						Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false,
-//								(mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
-//						PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
-//						portletURL.setWindowState(WindowState.MAXIMIZED);
-//						portletURL.setPortletMode(PortletMode.VIEW);
-//						portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
-//						// portletURL.setParameter("redirect", currentURL);
-//						portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
+						// final String className = PortalUtil.getClassName(assetLinkEntry.getClassNameId());
+						// final AssetRendererFactory assetRendererFactory = AssetRendererFactoryRegistryUtil.getAssetRendererFactoryByClassName(className);
+						// if (Validator.isNull(assetRendererFactory)) {
+						// if (_log.isWarnEnabled()) {
+						// _log.warn("No asset renderer factory found for class " + className);
+						// }
+						//
+						// continue;
+						// }
+						// final AssetRenderer assetRenderer = assetRendererFactory.getAssetRenderer(assetLinkEntry.getClassPK());
+						// final String asseLinktEntryTitle = assetLinkEntry.getTitle(resourceRequest.getLocale());
+						// Layout layout = LayoutLocalServiceUtil.getFriendlyURLLayout(themeDisplay.getLayout().getGroupId(), false,
+						// (mesDocumentsURL == null || mesDocumentsURL.isEmpty()) ? "/mes-documents" : mesDocumentsURL);
+						// PortletURL portletURL = PortletURLFactoryUtil.create(resourceRequest, PortletKeys.DOCUMENT_LIBRARY_DISPLAY, layout.getPlid(), PortletRequest.RENDER_PHASE);
+						// portletURL.setWindowState(WindowState.MAXIMIZED);
+						// portletURL.setPortletMode(PortletMode.VIEW);
+						// portletURL.setParameter("struts_action", "document_library_display/view_file_entry");
+						// // portletURL.setParameter("redirect", currentURL);
+						// portletURL.setParameter("fileEntryId", String.valueOf(assetLinkEntry.getClassPK()));
 
 						final DLFileEntry dlFileEntry = DLFileEntryLocalServiceUtil.getFileEntry(assetLinkEntry.getClassPK());
 						FileEntry fileEntry = DLAppLocalServiceUtil.getFileEntry(dlFileEntry.getFileEntryId());
 						fileEntry = fileEntry.toEscapedModel();
 						final URL url = new URL(DLUtil.getPreviewURL(fileEntry, fileEntry.getFileVersion(), themeDisplay, ""));
 						final URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-						
+
 						urlsAsJSON += "{";
 						urlsAsJSON += "\"assetLinkEntry\" : " + "\"" + assetLinkEntry.getEntryId() + "\"" + ",";
 						urlsAsJSON += "\"assetLinkEntryTitle\" : " + "\"" + assetLinkEntry.getTitle(resourceRequest.getLocale()) + "\"" + ",";
@@ -374,6 +374,8 @@ public class CalendarPortlet extends MVCPortlet {
 				}
 			} else if ("serveCalendarBookingsAsset".equals(resourceID)) {
 				serveCalendarBookingsAsset(resourceRequest, resourceResponse);
+			} else if ("calendarMembers".equals(resourceID)) {
+				serveCalendarMembers(resourceRequest, resourceResponse);
 			} else {
 				super.serveResource(resourceRequest, resourceResponse);
 			}
@@ -383,8 +385,62 @@ public class CalendarPortlet extends MVCPortlet {
 	}
 
 	/**
-	 * Generate ICS file with all events where current user is invited.
-	 * ICS File name is user portal login.
+	 * 
+	 * @param resourceRequest
+	 * @param resourceResponse
+	 * @throws Exception
+	 */
+	private void serveCalendarMembers(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
+		// ////////////////////////////
+		// GET MEMBERS OF A CALENDAR //
+		// ////////////////////////////
+		// write as json
+		final StringBuilder response = new StringBuilder();
+		
+		// get calendarId parameter
+		final long calendarId = ParamUtil.getLong(resourceRequest, "calendarId");
+
+		// get members
+		final Calendar calendar = CalendarLocalServiceUtil.getCalendar(calendarId);
+		if (calendar.getCalendarResource().getClassNameId() == 10064) {
+			// Open JSON flux
+			response.append("{");
+
+			response.append("\"users\": [");
+			// members
+			String usersAsJson = "";
+			final List<User> users = UserLocalServiceUtil.getTeamUsers(calendar.getCalendarResource().getClassPK());
+			for (final User user : users) {
+				usersAsJson += "{";
+				usersAsJson += "\"id\" : " + "\"" + user.getUserId() + "\"" + ",";
+				usersAsJson += "\"fullname\" : " + "\"" + user.getFullName() + "\"";
+				usersAsJson += "},";
+			}
+			
+			if (!usersAsJson.isEmpty()) {
+				response.append(usersAsJson.substring(0, usersAsJson.length() - 1));
+			}
+			
+			response.append("]");
+
+			// Close JSON flux
+			response.append("}");
+
+		} else {
+			// Open JSON flux
+			response.append("{");
+			//
+			response.append("\"message\" : \"not a team\"");
+			// Close JSON flux
+			response.append("}");
+		}
+		resourceResponse.setCharacterEncoding("UTF-8");
+		resourceResponse.getPortletOutputStream().write(response.toString().getBytes("UTF-8"));
+	}
+
+	/**
+	 * Generate ICS file with all events where current user is invited. ICS File name is user portal login.
+	 * 
 	 * @param resourceRequest
 	 * @param resourceResponse
 	 * @throws SystemException
@@ -1026,12 +1082,12 @@ public class CalendarPortlet extends MVCPortlet {
 		final ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 		final long currentUserId = themeDisplay.getUserId();
-		
+
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 		final boolean isGestionnaireSection = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-section", false);
 		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "president-cun", false);
 		final boolean isGestionnaireCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUserId, themeDisplay.getScopeGroupId(), "gestionnaire-cun", false);
-		
+
 		final long[] calendarIds = ParamUtil.getLongValues(resourceRequest, "calendarIds");
 		final long endTime = ParamUtil.getLong(resourceRequest, "endTime");
 		final long startTime = ParamUtil.getLong(resourceRequest, "startTime");
@@ -1039,8 +1095,8 @@ public class CalendarPortlet extends MVCPortlet {
 
 		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
-		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true, statuses,
-				QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
+		final List<CalendarBooking> calendarBookings = CalendarBookingServiceUtil.search(themeDisplay.getCompanyId(), new long[0], calendarIds, new long[0], -1, null, startTime, endTime, true,
+				statuses, QueryUtil.ALL_POS, QueryUtil.ALL_POS, null);
 
 		final List<CalendarBooking> calendarBookingsViewable = new ArrayList<CalendarBooking>();
 
@@ -1115,13 +1171,13 @@ public class CalendarPortlet extends MVCPortlet {
 	protected void serveCalendarResources(ResourceRequest resourceRequest, ResourceResponse resourceResponse) throws Exception {
 
 		ThemeDisplay themeDisplay = (ThemeDisplay) resourceRequest.getAttribute(WebKeys.THEME_DISPLAY);
-		
+
 		final User currentUser = themeDisplay.getUser();
-		
+
 		final boolean isGestionnaireGlobal = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-global", false);
 		final boolean isPresidentCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "president-cun", false);
 		final boolean isGestionnaireCUN = UserGroupRoleLocalServiceUtil.hasUserGroupRole(currentUser.getUserId(), themeDisplay.getScopeGroupId(), "gestionnaire-cun", false);
-		
+
 		final PermissionChecker permissionChecker = themeDisplay.getPermissionChecker();
 
 		String keywords = ParamUtil.getString(resourceRequest, "keywords");
@@ -1172,7 +1228,8 @@ public class CalendarPortlet extends MVCPortlet {
 		List<Team> teams = TeamLocalServiceUtil.getTeams(-1, -1);
 		for (Team team : teams) {
 			_log.debug("team : " + team.getTeamId());
-			if (team.getName().toUpperCase().contains(keywords.toUpperCase()) && (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isGestionnaireCUN || isPresidentCUN || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
+			if (team.getName().toUpperCase().contains(keywords.toUpperCase())
+					&& (ArrayUtils.contains(currentUserTeamIds, team.getTeamId()) || isGestionnaireCUN || isPresidentCUN || isGestionnaireGlobal || permissionChecker.isOmniadmin())) {
 				_log.debug("team added : " + team.getTeamId());
 				addCalendarJSONObject(resourceRequest, jsonArray, teamClassNameId, team.getTeamId());
 			}

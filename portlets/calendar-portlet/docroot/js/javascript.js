@@ -40,6 +40,8 @@ AUI.add(
 		
 		var TPL_QUESTIONNAIRE_URL = '{questionnaireURL}&{portletNamespace}calendarBookingId={calendarBookingId}';
 		
+		var TPL_CALENDAR_MEMBERS_URL = '{calendarMembersURL}&{portletNamespace}calendarId={calendarId}';
+		
 		var TPL_RELATED_ASSET_URL = '{relatedAssetURL}&{portletNamespace}calendarBookingId={calendarBookingId}';
 
 		var TPL_RENDERING_RULES_URL = '{renderingRulesURL}&{portletNamespace}calendarIds={calendarIds}&{portletNamespace}startTime={startTime}&{portletNamespace}endTime={endTime}&{portletNamespace}ruleName={ruleName}';
@@ -596,6 +598,34 @@ AUI.add(
 								callback(this.get('responseData'));
 							}
 						}
+					}
+				);
+			},
+			
+			getCalendarMembers: function(calendarId, callback) {
+				var instance = this;
+
+				var calendarMembersURL = Lang.sub(
+						TPL_CALENDAR_MEMBERS_URL,
+					{
+						calendarId: calendarId,
+						calendarMembersURL: instance.CALENDAR_BOOKINGS_URL,
+						portletNamespace: instance.PORTLET_NAMESPACE
+					}
+				);
+				
+				calendarMembersURL = calendarMembersURL.replace('calendarBookings', 'calendarMembers');
+				
+				A.io.request(
+						calendarMembersURL,
+					{
+						dataType: 'JSON',
+						on: {
+							success: function() {
+								callback(this.get('responseData'));
+							}
+						},
+						sync: true
 					}
 				);
 			},
